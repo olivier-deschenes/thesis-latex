@@ -1,7 +1,5 @@
 \documentclass[12pt]{article}
 
-\usepackage{geometry}
-
 % Core packages
 \usepackage{amsmath,amssymb}
 \usepackage{tikz-cd}
@@ -14,7 +12,11 @@
 \usepackage[labelfont=bf]{caption}
 \usepackage{amsmath}
 \usepackage{optidef}
-
+\usepackage{tikz}
+\usepackage{geometry}
+\usepackage{acro}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cleveref}
 % biblio
 
 % --- Bibliography Setup ---
@@ -31,6 +33,14 @@
 \preto{\section}{\clearpage}
 \setlength{\headheight}{15pt}
 \renewcommand{\sectionmark}[1]{\markboth{#1}{}}
+
+
+% acro
+
+\DeclareAcronym{osm}{
+  short = OSM,
+  long  = OpenStreetMap
+}
 
 % Header styles
 \fancyhf{}
@@ -50,32 +60,56 @@
 
 \begin{document}
 
+\newgeometry{
+  top=2.5cm,
+  bottom=2.5cm,
+  left=2.5cm,
+  right=2.5cm
+}
+
 \begin{titlepage}
+  \makebox[\textwidth]{%
+    \begin{minipage}[t]{0.45\textwidth}
+      \vspace{0pt}
+      \includegraphics[width=1.5cm]{logos/nhh.png}%
+      \quad
+      \includegraphics[height=1.5cm]{logos/hec.png}%
+    \end{minipage}%
+    \hfill
+    \begin{minipage}[t]{0.45\textwidth}
+      \vspace{0pt}
+      \raggedleft
+      {\small Norwegian School of Economics\par}
+      {\small HEC Montréal\par}
+      {\small Bergen, Spring 2026}
+    \end{minipage}%
+  }
+
   \centering
   \vspace*{\fill}
-
   {\textbf{\LARGE Ports, Boats and Packages}\par\vspace{-0.5\baselineskip}}
-  {\large{\textit{A Two-Stage Optimisation of Urban Waterborne Logistics in Bergen}}\par}
+  {\large{\textit{\large A Two-Stage Optimisation of Urban Waterborne Logistics in Bergen}}\par}
   \vspace*{\fill}
-  {\large{\textbf{Olivier Deschênes}}\par}
-  \vspace*{\fill}
+  {\large{\textbf{Olivier Deschênes}}\par\vspace{-0.5\baselineskip}}
   {\bfseries
-    {\large Jean-François Cordeau (HEC Montréal)\par\vspace{-0.5\baselineskip}}
-    {\large Supervisors: Julio C. Góez (NHH)\par\vspace{-0.5\baselineskip}}
-    {\large Stein W. Wallace (NHH)\par\vspace{-0.5\baselineskip}}
+    {\normalsize Supervisors: Jean-François Cordeau (HEC Montréal)\par\vspace{-1\baselineskip}}
+    {\normalsize Julio C. Góez (NHH)\par\vspace{-1\baselineskip}}
+    {\normalsize Stein W. Wallace (NHH)\par\vspace{-1\baselineskip}}
   }
   \vspace*{\fill}
-  {\large MSc in Economics and Business Administration\par\vspace{-0.5\baselineskip}}
-  {\large Energy, Natural Resources and the Environment\par}
+  {\normalsize Master thesis, Economics and Business Administration\par\vspace{-1\baselineskip}}
+  {\normalsize Major: Energy, Natural Resources and the Environment\par}
   \vspace*{\fill}
-  {\LARGE NORWEGIAN SCHOOL OF ECONOMICS\par}
+  {\normalsize NORWEGIAN SCHOOL OF ECONOMICS\par\vspace{-1\baselineskip}}
+  {\normalsize \&\par\vspace{-1\baselineskip}}
+  {\normalsize HEC MONTRÉAL\par}
   \vspace*{\fill}
-  \vspace*{\fill}
-  \begin{minipage}{1\textwidth}
-    {\small This thesis was written as a part of the Master of Science in Economics and Business Administration at NHH. Please note that neither the institution nor the examiners are responsible -- through the approval of this thesis -- for the theories and methods used, or results and conclusions drawn in this work.\par}
+  \begin{minipage}{0.9\textwidth}
+    {\small This thesis was written as a part of the Master of Science in Economics and Business Administration at NHH. Please note that neither the institution nor the examiners are responsible -- through the approval of this thesis -- for the theories and methods used, or results and conclusions drawn in this work.}
   \end{minipage}
 \end{titlepage}
 
+\restoregeometry
 \onehalfspacing
 
 \section{Acknowledgements}
@@ -94,6 +128,10 @@ This is a test \parencite{smith2023, savelsbergh2016}.
 Recent studies by \textcite{smith2023, savelsbergh2016} highlight the growing pressure of e-commerce on city infrastructure.
 
 As demonstrated in Figure \ref{fig:demand_variance}, the maritime last-mile network experiences highly concentrated delivery volumes on certain days.
+
+\Cref{sec:introduction}
+\cref{fig:demand_variance}
+\cref{tab:port_allocation_pro}
 
 \begin{table}[htbp]
   \centering
@@ -159,74 +197,165 @@ Because daily deliveries to small ports exhibit highly volatile, spiky demand pa
 \end{equation}
 
 \section{Introduction}
+\label{sec:introduction}
+
 \subsection{Motivation}
-dwadad
+\label{subsec:motivation}
+
 \subsection{Problem description}
+\label{subsec:problem-description}
+
 \subsection{Research question}
+\label{subsec:research-question}
+
 \subsection{Thesis structure}
+\label{subsec:thesis-structure}
 
 \section{Background}
+\label{sec:background}
+
 \subsection{Urban Parcel Delivery and Last-Mile Logistics}
+\label{subsec:urban-parcel-delivery}
+
 \subsection{Bergen as a Constrained Logistics Environment}
+\label{subsec:bergen-logistics-environment}
+
 \subsection{Waterborne Transport as an Urban Freight Alternative}
+\label{subsec:waterborne-urban-freight}
+
 \subsection{Facility Location and Accessibility}
+\label{subsec:facility-location-accessibility}
+
 \subsection{Vehicle Routing in Urban Freight Distribution}
+\label{subsec:vehicle-routing-urban-freight}
+
 \subsection{Demand Uncertainty and Scenario-Based Planning}
+\label{subsec:demand-uncertainty-scenarios}
+
 \subsection{Positioning of This Thesis}
+\label{subsec:thesis-positioning}
 
 \section{Data}
-\subsection{Overview of Data Sources}
-\subsection{PostNord Parcel Demand Data}
-\subsection{Population and Household Data}
+\label{sec:data}
+
+The data used in this thesis comes from three independent sources, each addressing a distinct aspect of the problem: the spatial distribution of Bergen's population, the parcel demand they generate, and the pedestrian network connecting them to possible candidate ports. Population data is provided at the household level by [source???]. Parcel demand is based on PostNord's weekly volumes by postal code of 2020. Finnaly, the walking network of Bergen is extracted from \ac{osm}. The remainder of this chapter describes these sources in detail and the steps taken to prepare them for use in the models that follow.
+
 \subsection{OpenStreetMap Data}
+\label{subsec:osm}
+
+\ac{osm} is first used to retreive the walking graph of Bergen by using the Python package \texttt{OSMnx} \parencite{osmnx}.
+
+\subsection{Population and Household Data}
+\label{subsec:population-household-data}
+
+The household dataset was provided by [source??] and contains the coordinates, number of residents, and district of each household in Bergen...
+
+\subsection{PostNord Parcel Demand Data}
+\label{subsec:postnord-parcel-demand-data}
+
+Parcel demand data was supplied by PostNord and covers weekly shipment volumes by postal code for the year 2020...
+
 \subsection{Candidate Port Locations}
+\label{subsec:candidate-port-locations}
+
 \subsection{Distance and Travel Time Data}
+\label{subsec:distance-travel-time-data}
+
 \subsection{Demand Scenarios}
+\label{subsec:demand-scenarios}
+
 \subsection{Data Limitations}
+\label{subsec:data-limitations}
 
 \section{Methodology}
+\label{sec:methodology}
+
 \subsection{Overall Methodological Framework}
+\label{subsec:overall-methodological-framework}
+
 \subsection{Port Location Model}
+\label{subsec:port-location-model}
+
 \subsubsection{Coverage Definition}
+\label{subsubsec:coverage-definition}
+
 \subsubsection{Partial Set Covering Location Problem}
+\label{subsubsec:partial-set-covering-location-problem}
+
 \subsubsection{Walking-Time Thresholds}
+\label{subsubsec:walking-time-thresholds}
+
 \subsection{Demand Allocation to Ports}
+\label{subsec:demand-allocation-to-ports}
+
 \subsubsection{Population-Based Allocation}
+\label{subsubsec:population-based-allocation}
+
 \subsubsection{Port-Level Parcel Demand}
+\label{subsubsec:port-level-parcel-demand}
+
 \subsection{Boat Routing Model}
-\clearpage
-\subsubsection{Capacitated Vehicle Routing Problem}
-\subsubsection{Split Delivery Vehicle Routing Problem}
-\subsubsection{Capacity Constraints}
-\subsubsection{Route Duration Constraints}
-\subsubsection{Handling and Maneuvering Time}
-\subsection{Scenario Design}
-\subsubsection{Demand Scenarios}
-\subsubsection{Boat Capacity Scenarios}
-\subsubsection{Fleet Size Assumptions}
+\label{subsec:boat-routing-model}
 
 \section{Analysis}
+\label{sec:analysis}
+
 \subsection{Port Location Results}
+\label{subsec:port-location-results}
+
 \subsection{Population Coverage Results}
+\label{subsec:population-coverage-results}
+
 \subsection{Port Demand Results}
+\label{subsec:port-demand-results}
+
 \subsection{Boat Routing Results}
+\label{subsec:boat-routing-results}
+
 \subsection{Fleet Feasibility}
+\label{subsec:fleet-feasibility}
+
 \subsection{Scenario Comparison}
+\label{subsec:scenario-comparison}
+
 \subsection{Sensitivity Analysis}
+\label{subsec:sensitivity-analysis}
 
 \section{Discussion}
+\label{sec:discussion}
+
 \subsection{Interpretation of Results}
+\label{subsec:interpretation-of-results}
+
 \subsection{Feasibility of Waterborne Parcel Delivery in Bergen}
+\label{subsec:feasibility-waterborne-parcel-delivery-bergen}
+
 \subsection{Operational Challenges}
+\label{subsec:operational-challenges}
+
 \subsection{Demand and Capacity Limitations}
+\label{subsec:demand-capacity-limitations}
+
 \subsection{Model Limitations}
+\label{subsec:model-limitations}
+
 \subsection{Practical Implications}
+\label{subsec:practical-implications}
+
 \subsection{Further Research}
+\label{subsec:further-research}
 
 \section{Conclusion}
+\label{sec:conclusion}
+
 \subsection{Summary of Findings}
+\label{subsec:summary-of-findings}
+
 \subsection{Answer to the Research Question}
+\label{subsec:answer-to-the-research-question}
+
 \subsection{Final Remarks}
+\label{subsec:final-remarks}
 
 \clearpage
 \printbibliography
