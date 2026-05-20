@@ -294,7 +294,7 @@ The resulted data contains \num{746} port locations. The distribution of the por
 \subsection{Distance and Travel Time Data}
 \label{subsec:distance-travel-time-data}
 
-Having defined our household nodes and ports nodes datasets, we can now build our distance matrix. To acheive this, the Python package \texttt{networkx} \parencite{networkx} was used to calculate the shortes distance between all combination of port and household nodes using its \texttt{single\_source\_dijkstra\_path\_length()} function. Resulted in a $m \times n$ matrix $D$. With $d_{i,j}$ representing the Dijkstra shortest-path distance between the $i$-th port and the $j$-th household nodes\footnote{All pairs were reachable by walking due to the \ac{osm} node snapping and filtering of the port nodes.}. The resulted population coverage by walking time, using the chosen walking speed of [???], can be seen in Figure \ref{fig:population_coverage} when all candidate port nodes are available.
+Having defined our household nodes and ports nodes datasets, we can now build our distance matrix. To acheive this, the Python package \texttt{networkx} \parencite{networkx} was used to calculate the shortes distance between all combination of port and household nodes using its \texttt{single\_source\_dijkstra\_path\_length()} function. Resulted in a $m \times n$ matrix $D$. With $d_{i,j}$ representing the Dijkstra shortest-path distance between the $i$-th port and the $j$-th household nodes\footnote{All pairs were reachable by walking due to the \ac{osm} node snapping and filtering of the port nodes.}. For this thesis, the distance between any $port_i$ and $household_j$ is assumed to be symmetric ($d_{i,j} = d_{j,i}$). The resulted population coverage by walking time, using the chosen walking speed of [???], can be seen in Figure \ref{fig:population_coverage} when all candidate port nodes are available.
 
 \begin{figure}[htbp]
   \centering
@@ -330,10 +330,15 @@ To correcly assinged demands to the nearest chosen ports, the demand of each Hou
 \subsection{Data Limitations}
 \label{subsec:data-limitations}
 
-\subsubsection{Representativeness}
-\subsubsection{Granularity}
-\subsubsection{Provenance}
-\subsubsection{Provenance}
+Although a substantial amount of data is available to address the thesis's research problem, some limitations remain: part of the required information is missing, and other elements must be approximated. The following subsections discuss each of these limitations in turn.
+
+\subsubsection{Lack of data}
+
+The first data that is missing is the information about the weight and volumn of the parcels, only the demand is present. Even if some average volumn and weight was chosen for the demand, the boat transporting the packages does not have any real volumn or weight limits, only a capacity was chosen. Therefore, these two variables will be ignored. The second data that is missing is related to the ports candiate real hability to be converted to a port location. Indeed, some ports could be not suitable for this operation or be privite and in no way of having a locker system be build on it.
+
+\subsubsection{Approximation}
+
+As described in the previous subsections, some data had to be approximated since exact figures were not available. First, the weekly demand was disaggregated into daily demand, and then further broken down to the household level. The resulting demand was subsequently scaled to the current year and finally adjusted to reflect the total market share of all shipping companies. The thesis could have directly used the 2020 data, but this would have produced an outdated scenario for waterway parcel deliveries, since demand has grown significantly since then."
 
 \section{Methodology}
 \label{sec:methodology}
