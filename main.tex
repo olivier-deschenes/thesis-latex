@@ -24,7 +24,7 @@
 % --- Bibliography Setup ---
 \usepackage[
   backend=biber,
-  style=authoryear,
+  style=authoryear-comp,
   maxcitenames=2,
   dashed=false
 ]{biblatex}
@@ -42,6 +42,11 @@
 \DeclareAcronym{osm}{
   short = OSM,
   long  = OpenStreetMap
+}
+
+\DeclareAcronym{cagr}{
+  short = CAGR,
+  long  = Compound annual growth rate
 }
 
 % Header styles
@@ -251,7 +256,7 @@ The data used in this thesis comes from three independent sources, each addressi
 
 The household data was obtained from the Master' thesis of \cite{pop_thesis} and originaly comes from the Bergen municipality. The dataset, from 2020, has information about population of the city at the household level, only the coordinates, number of resident, postal code and district was kept from the original data. A total of \num{149308} household was contained in the dataset (\num{73393} being unique), with around \num{280491} total population. This demographic is splitted into Bergen' eight districts, and \num{142} unique postal codes.
 
-To reduce the overall values of our data, the household coordinate were snapped to the nearest \ac{osm} node from our walking network. This helped us reduced drasticly the amount of rows for our dataset to \num{29991} unique \ac{osm} nodes. During this aggregation, some \ac{osm} nodes were assigned population that were from multiple differents districts, representing around \num{418} people (\qty{0.15}{\percent} of the population) and \num{27} nodes (\qty{0.07}{\percent} of nodes). Due to some results being shown per district, these nodes were excluded. The population distribution by districts can be seen in \Cref{fig:district_population}.
+To reduce the overall values of our data, the household coordinate were snapped to the nearest \ac{osm} node from our walking network. This helped us reduced drasticly the amount of rows for our dataset to \num{29991} unique \ac{osm} nodes. During this aggregation, some \ac{osm} nodes were assigned population that were from multiple differents districts, representing around \num{418} people (\qty{0.15}{\percent} of the population) and \num{27} nodes (\qty{0.07}{\percent} of nodes). Due to some results being shown per district, these nodes were excluded. The population distribution by districts can be seen in \Cref{fig:district_population}. It should be noted that some districts will be filtered out of the population data in Section \ref{subsec:overall-methodological-framework} (\nameref{subsec:overall-methodological-framework}).
 
 \begin{figure}[htbp]
   \centering
@@ -289,23 +294,46 @@ The resulted data contains \num{746} port locations. The distribution of the por
 \subsection{Distance and Travel Time Data}
 \label{subsec:distance-travel-time-data}
 
-Having defined our household nodes and ports nodes datasets, we can now build our distance matrix. To acheive this, 
+Having defined our household nodes and ports nodes datasets, we can now build our distance matrix. To acheive this, the Python package \texttt{networkx} \parencite{networkx} was used to calculate the shortes distance between all combination of port and household nodes using its \texttt{single\_source\_dijkstra\_path\_length()} function. Resulted in a $m \times n$ matrix $D$. With $d_{i,j}$ representing the Dijkstra shortest-path distance between the $i$-th port and the $j$-th household nodes\footnote{All pairs were reachable by walking due to the \ac{osm} node snapping and filtering of the port nodes.}. The resulted population coverage by walking time, using the chosen walking speed of [???], can be seen in Figure \ref{fig:population_coverage} when all candidate port nodes are available.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{graphs/walking_time_coverage.pdf}
+  \caption{Percentage of the population covered by walking time with all ports available.}
+  \label{fig:population_coverage}
+\end{figure}
 
 \subsection{PostNord Parcel Demand Data}
 \label{subsec:postnord-parcel-demand-data}
 
-Parcel demand data was obtained from \cite{household}, but originated from PostNord. It covers weekly (from week \num{1} to \num{48}) shipment and parcel volumes by postal code for the year 2020. The dataset had demand for \num{439} unique postal codes. Considering that our household data had only \num{142}, we will take for granted that the postal codes not present in our household dataset are from demand point other than households in Bergen.
+Parcel demand data was obtained from \cite{household}, but originated from PostNord. It covers weekly (from week \num{1} to \num{48}) shipment and parcel volumes by postal code for the year 2020. The dataset had demand for \num{439} unique postal codes. The given dataset contained information about the number of shipment and packages, however, in many cases, the amount of shipment was larger than the amount of packages for row. The demand was therefore calculated as the minimum of both colums.
 
-As compared to the household data, the real demand size is important to optimize our ports capacity. The PostNord dataset, representing only their share of the market and the year 2020, had have to be adjusted to the current market figures. We will therefore need the PostNord market share and the demand growth of parcel since 2020.
+As compared to the household data, the real demand size is important to optimize our ports capacity. The PostNord dataset being from 2020, it needs to be adjusted to reflect 2026 levels. This was acheived by using PostNord's annual reports, wich gives the total amount of parcel deliveries for the report's year. The yearly PostNord's demand can be found in Table \ref{anx:yearly_pn_demand} in the \nameref{sec:appendix}. Based on these yearly demands, the 2026 Bergen demand can be derived using the \ac{cagr} formula. Due to the Covid-19 pandemic, only the years 2022 to 2025 are used to calculate the growth rate, starting from a year in which demand had begun to normalize after the pandemic \parencite{pitney_bowes_index_2023}. As shown in Equation~\ref{eq:postnord_cagr}, the rate is \qty{4.68}{\percent} per year. Therefore, we can approximate that the 2026 demand has grew by around \qty{48.56}{\percent} since 2020.
 
-\subsection{Demand Scenarios}
-\label{subsec:demand-scenarios}
+
+Second, as the dataset represents only PostNord' share of the market and the year 2020, it needs to be adjusted to the current market figures. Using the \textit{Report on the Use of Postal Services by Private Individuals and Businesses in Norway, 2025}\footnote{Translated from \textit{Rapport om privatpersoners og bedrifters bruk av posttjenester i Norge - 2025} in norwegian.} \parencite{nkom_post_2025} done by the Norwegian Communications Authority, while not provide exact volume-based market shares for parcel deliveries, surveys consumer usage patterns across Norway's primary delivery companies. The market share of PostNord was then derived from the normalized results of the private market parcel survey to be around \qty{20}{\percent}. The survey data can be found in Table \ref{anx:private_parcel_usage} in the \nameref{sec:appendix}.
+
+Third, this dataset represents parcel demand for both households and other types of clients. However, since this thesis focuses on populations, the non-household demand needs to be removed. To achieve this, the household postcode data was joined with the weekly demand, and postcodes not present in the household dataset were excluded.
+
+Finally, since some districts will be filtered out of the population data in Section \ref{subsec:overall-methodological-framework} (\nameref{subsec:overall-methodological-framework}), the demand associated with these excluded household districts will also be removed. The overall demand quantities and changes by step can be seen in Table \ref{anx:parcel_volumes} in the \nameref{sec:appendix}. The total parcel demand taken in considuration for this Thesis will be \num{5977449} parcel for the year 2026.
+
+\subsection{Disaggregating Weekly Demand into Daily Demand}
+\label{subsec:weekly-to_daily-demand}
+
+Since daily scheduling for the boat network requires daily demand for each selected port, the PostNord weekly demand needs to be broken down. While several approaches were possible, such as splitting the demand equally across days or distributing it randomly, applying specific daily rates was chosen as the most representative of real demand patterns. Based on the work of \cite{dailydemand}, where a daily operational parcels operations was studied, the 5 Day split for this Thesis context can therefore be deduce by adding the weekend's demand to Monday. The resulted daily rates can be seen in Table \ref{anx:day_shares} in the \nameref{sec:appendix}.
+
+\subsection{Disaggregating Postcal Code Demand into Household Demand}
+\label{subsec:postal-code-to-household-demand}
+
+To correcly assinged demands to the nearest chosen ports, the demand of each Households must be known. However, the PostNord dataset is only by postal code. Nevertheless, the demand can still be allocated to each household based on its share of the population within its postal code. For example, if a postal code has a weekly demand of 100 parcels and contains two households, one with 1 resident ($a$) and the other with 2 ($b$), the demand is distributed as $\frac{1}{3}$ to $a$ and $\frac{2}{3}$ to $b$.
 
 \subsection{Data Limitations}
 \label{subsec:data-limitations}
 
-
-
+\subsubsection{Representativeness}
+\subsubsection{Granularity}
+\subsubsection{Provenance}
+\subsubsection{Provenance}
 
 \section{Methodology}
 \label{sec:methodology}
@@ -407,6 +435,7 @@ As compared to the household data, the real demand size is important to optimize
 
 \counterwithin{figure}{section}
 \counterwithin{table}{section}
+\counterwithin{equation}{section}
 
 \subsection{Ports}
 
@@ -428,6 +457,93 @@ As compared to the household data, the real demand size is important to optimize
 
   \vspace{1ex}
   {\raggedright \footnotesize * A node is classified as mixed when port locations of different tags were snaped to the same \ac{osm} node.\par}
+\end{table}
+
+\subsection{Demand}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Private market consumer parcel courier usage \parencite{nkom_post_2025}}
+  \label{anx:private_parcel_usage}
+
+  \begin{tabular}{l r r}
+    \toprule
+    \textbf{Company}         & \textbf{Survey Value (\%)} & \textbf{Normalized Value (\%)} \\
+    \midrule
+    Posten Norge AS/Bring AS & 85                         & 55.56                          \\
+    PostNord AS              & 30                         & 19.61                          \\
+    Helthjem AS              & 21                         & 13.73                          \\
+    Vet ikke                 & 8                          & 5.23                           \\
+    Instabox Norway          & 4                          & 2.61                           \\
+    Andre                    & 3                          & 1.96                           \\
+    Porterbuddy              & 2                          & 1.31                           \\
+
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \caption{PostNord annual parcel demand \parencite{pn_a_2020,pn_a_2021,pn_a_2022,pn_a_2023,pn_a_2024,pn_a_2025}}
+  \label{anx:yearly_pn_demand}
+
+  \begin{tabular}{l r}
+    \toprule
+    \textbf{Year} & \textbf{Parcel Demand (million)} \\
+    \midrule
+    2020          & 198                              \\
+    2021          & 226                              \\
+    2022          & 245                              \\
+    2023          & 243                              \\
+    2024          & 245                              \\
+    2025          & 281                              \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{equation}\label{eq:postnord_cagr}
+  \text{CAGR} = \left( \frac{D_{2025}}{D_{2022}} \right)^{\frac{1}{3}} - 1 \approx 4.68\%
+\end{equation}
+Equation~\ref{eq:postnord_cagr} outlines the \ac{cagr} formula for PostNord parcel volume, where $D_{2025}$ and $D_{2022}$ are the company yearly demand for those years. See Table \ref{anx:yearly_pn_demand} for all yearly demand.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Sequential adjustments and dataset filtration of parcel demand volumes.}
+  \label{anx:parcel_volumes}
+  \begin{tabular}{lrr}
+    \toprule
+    \textbf{Data Cleaning / Scaling Step}    & \textbf{Parcel Volume} & \textbf{Delta Variance} \\
+    \midrule
+    PostNord 2020 Baseline                   & 1,628,441              & --                      \\
+    PostNord 2026 Projection                 & 2,419,134              & $+790,693$              \\
+    With Total Market Share (20\%)           & 12,336,226             & $+9,917,092$            \\
+    Only Households                          & 8,125,871              & $-4,210,355$            \\
+    Operational Dataset (Filtered Districts) & 5,977,449              & $-2,148,422$            \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \caption{7-Day Split Weekly demand \parencite{dailydemand} and new 5-Day Split.}
+  \label{anx:day_shares}
+
+  \begin{tabular}{lrr}
+    \toprule
+    \textbf{Day of Week} & \textbf{7-Day Split} & \textbf{5-Day Split*} \\
+    \midrule
+    Monday               & 0.1965               & 0.1979                \\
+    Tuesday              & 0.2370               & 0.2370                \\
+    Wednesday            & 0.2047               & 0.2047                \\
+    Thursday             & 0.1901               & 0.1901                \\
+    Friday               & 0.1703               & 0.1703                \\
+    Saturday             & 0.0014               & --                    \\
+    Sunday               & 0.0000               & --                    \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{1ex}
+  {\raggedright \footnotesize * The 7-Day Split' Saturday volume is given to Monday's allocation for the 5-day weekday operations.\par}
 \end{table}
 
 \end{document}
