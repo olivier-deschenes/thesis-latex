@@ -49,6 +49,31 @@
   long  = Compound annual growth rate
 }
 
+\DeclareAcronym{vrp}{
+  short = VRP,
+  long  = Vehicle Routing Problem,
+}
+
+\DeclareAcronym{cvrp}{
+  short = CVRP,
+  long  = Capacitated Vehicle Routing Problem,
+}
+
+\DeclareAcronym{sdvrp}{
+  short = SDVRP,
+  long  = Split Delivery Vehicle Routing Problem,
+}
+
+\DeclareAcronym{psclp}{
+  short = PSCLP,
+  long  = Partial Set Covering Location Problem,
+}
+
+\DeclareAcronym{kpi}{
+  short = KPI,
+  long  = Key Performance Indicator,
+}
+
 % Header styles
 \fancyhf{}
 
@@ -346,32 +371,49 @@ Furthermore, walking time is directly computed from the walking distance and doe
 \section{Methodology}
 \label{sec:methodology}
 
-\subsection{Overall Methodological Framework}
-\label{subsec:overall-methodological-framework}
+In this section, the methodology of this thesis is explained in detail, in three separate parts. First, the model used to select a set of ports based on a desired walking distance is presented. Second, the two models used to generate a set of routes for these ports are described. Finally, it is explained how, given a set of ports and routes, a schedule can be constructed to measure the KPIs based on the yearly demand.
 
-\subsection{Port Location Model}
-\label{subsec:port-location-model}
+\subsection{Port Selection Model}
+\label{subsec:port_selection_model}
 
-\subsubsection{Coverage Definition}
-\label{subsubsec:coverage-definition}
+\subsubsection{Walking Time and Coverage}
+\label{ssec:walking_time_coverage}
 
 \subsubsection{Partial Set Covering Location Problem}
-\label{subsubsec:partial-set-covering-location-problem}
+\label{ssec:pscl_problem}
 
-\subsubsection{Walking-Time Thresholds}
-\label{subsubsec:walking-time-thresholds}
+\subsubsection{Demand Allocation to Selected Ports}
+\label{ssec:demand_allocation}
 
-\subsection{Demand Allocation to Ports}
-\label{subsec:demand-allocation-to-ports}
 
-\subsubsection{Population-Based Allocation}
-\label{subsubsec:population-based-allocation}
+\subsection{Boat Routing Models}
+\label{subsec:boat_routing_models}
 
-\subsubsection{Port-Level Parcel Demand}
-\label{subsubsec:port-level-parcel-demand}
+\subsubsection{Capacitated Vehicle Routing Problem}
+\label{ssec:cvrp}
 
-\subsection{Boat Routing Model}
-\label{subsec:boat-routing-model}
+\subsubsection{Split Delivery Vehicle Routing Problem}
+\label{ssec:sdvrp}
+
+\subsubsection{Capacity and Route Duration Constraints}
+\label{ssec:capacity_duration_constraints}
+
+\subsubsection{Handling and Manoeuvring Time}
+\label{ssec:handling_manoeuvring_time}
+
+
+\subsection{Scheduling and KPI Evaluation}
+\label{subsec:scheduling_kpi}
+
+\subsubsection{From Weekly to Yearly Demand}
+\label{ssec:weekly_to_yearly_demand}
+
+\subsubsection{Schedule Construction}
+\label{ssec:schedule_construction}
+
+\subsubsection{Key Performance Indicators}
+\label{ssec:kpis}
+
 
 \section{Analysis}
 \label{sec:analysis}
