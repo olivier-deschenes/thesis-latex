@@ -74,6 +74,8 @@
   long  = Key Performance Indicator,
 }
 
+\sisetup{range-units = single}
+
 % Header styles
 \fancyhf{}
 
@@ -281,7 +283,7 @@ The data used in this thesis comes from three independent sources, each addressi
 
 The household data was obtained from the Master' thesis of \cite{pop_thesis} and originaly comes from the Bergen municipality. The dataset, from 2020, has information about population of the city at the household level, only the coordinates, number of resident, postal code and district was kept from the original data. A total of \num{149308} household was contained in the dataset (\num{73393} being unique), with around \num{280491} total population. This demographic is splitted into Bergen' eight districts, and \num{142} unique postal codes.
 
-To reduce the overall values of our data, the household coordinate were snapped to the nearest \ac{osm} node from our walking network. This helped us reduced drasticly the amount of rows for our dataset to \num{29991} unique \ac{osm} nodes. During this aggregation, some \ac{osm} nodes were assigned population that were from multiple differents districts, representing around \num{418} people (\qty{0.15}{\percent} of the population) and \num{27} nodes (\qty{0.07}{\percent} of nodes). Due to some results being shown per district, these nodes were excluded. The population distribution by districts can be seen in \Cref{fig:district_population}. It should be noted that some districts will be filtered out of the population data in Section \ref{subsec:overall-methodological-framework} (\nameref{subsec:overall-methodological-framework}).
+To reduce the overall values of our data, the household coordinate were snapped to the nearest \ac{osm} node from our walking network. This helped us reduced drasticly the amount of rows for our dataset to \num{29991} unique \ac{osm} nodes. During this aggregation, some \ac{osm} nodes were assigned population that were from multiple differents districts, representing around \num{418} people (\qty{0.15}{\percent} of the population) and \num{27} nodes (\qty{0.07}{\percent} of nodes). Due to some results being shown per district, these nodes were excluded. The population distribution by districts can be seen in \Cref{fig:district_population}. It should be noted that some districts will be filtered out of the population data in Section \ref{subsec:temp} (\nameref{subsec:temp}).
 
 \begin{figure}[htbp]
   \centering
@@ -341,7 +343,7 @@ Second, as the dataset represents only PostNord' share of the market and the yea
 
 Third, this dataset represents parcel demand for both households and other types of clients. However, since this thesis focuses on populations, the non-household demand needs to be removed. To achieve this, the household postcode data was joined with the weekly demand, and postcodes not present in the household dataset were excluded.
 
-Finally, since some districts will be filtered out of the population data in Section \ref{subsec:overall-methodological-framework} (\nameref{subsec:overall-methodological-framework}), the demand associated with these excluded household districts will also be removed. The overall demand quantities and changes by step can be seen in Table \ref{anx:parcel_volumes} in the \nameref{sec:appendix}. The total parcel demand taken in considuration for this Thesis will be \num{5977449} parcel for the year 2026.
+Finally, since some districts will be filtered out of the population data in Section \ref{subsec:temp} (\nameref{subsec:temp}), the demand associated with these excluded household districts will also be removed. The overall demand quantities and changes by step can be seen in Table \ref{anx:parcel_volumes} in the \nameref{sec:appendix}. The total parcel demand taken in considuration for this Thesis will be \num{5977449} parcel for the year 2026.
 
 \subsection{Disaggregating Weekly Demand into Daily Demand}
 \label{subsec:weekly-to_daily-demand}
@@ -376,8 +378,38 @@ In this section, the methodology of this thesis is explained in detail, in three
 \subsection{Port Selection Model}
 \label{subsec:port_selection_model}
 
-\subsubsection{Walking Time and Coverage}
-\label{ssec:walking_time_coverage}
+The goal of this stage is to find the smallest set of ports that still covers a target share of the population within an acceptable walking time. The selection depends on two inputs: the walking threshold and the target coverage percentage. These two parameters are presented first, followed by the optimisation model chosen to perform the selection, and finally by the method used to allocate the household demand to the selected ports.
+
+\subsubsection{Walking Thresholds}
+\label{ssec:walking_time}
+
+\begin{figure}[httbp]
+  \centering
+  \includegraphics[width=1\textwidth]{graphs/walking_time_coverage_district.pdf}
+  \caption{Percentage of the population covered by walking time with all ports available by district.}
+  \label{fig:district_coverage}
+\end{figure}
+
+As discussed in the background section, a walking time of \qty{15}{minutes} is often the new goal when planning new city programs for its population. The walking time coverage distribution was alreay shown in Figure \ref{fig:population_coverage}, but it can be important to show also see the same data by district. This can be visualize in Figure \ref{fig:district_coverage}.
+
+% ['Arna', 'Bergenhus', 'Fana', 'Fylingsdalen', 'Laksevåg', 'Ytrebygda', 'Årstad', 'Åsane']
+
+The districts can be visually grouped into three categories based on how their population coverage evolves with the walking time threshold. The first group, composed of Bergenhus ({\color[HTML]{FF7500}\rule{1.5ex}{1.5ex}}), Ytrebygda ({\color[HTML]{7F7F7F}\rule{1.5ex}{1.5ex}}), and Laksevåg ({\color[HTML]{955348}\rule{1.5ex}{1.5ex}}), shows a rapid increase in coverage, reaching near-full coverage within approximately \qtyrange{35}{40}{\minute} of walking. The third group, formed by Arna ({\color[HTML]{0079B9}\rule{1.5ex}{1.5ex}}), Fana ({\color[HTML]{00A300}\rule{1.5ex}{1.5ex}}), and Åsane ({\color[HTML]{00C1D2}\rule{1.5ex}{1.5ex}}), are the opposite: coverage grows slowly and does not reach \qty{90}{\percent} even at a one-hour walking threshold, plateauing between \qtyrange{75}{85}{\percent}. The second group, composed of Årstad ({\color[HTML]{BCBD00}\rule{1.5ex}{1.5ex}}) and Fyllingsdalen ({\color[HTML]{9C65C2}\rule{1.5ex}{1.5ex}}), follows an intermediate pattern: their coverage initially grows more slowly than in the first group, but eventually reaches \qty{100}{\percent} at higher walking thresholds, around \qtyrange{50}{55}{\minute}. With these remarks, it was decided to exclude Arna, Fana and Åsane from the thesis as our port location can not reach them in a realistic time, combine with the points talked in the backtround section.
+
+The walking time threshold considered for this problem ranges from \qtyrange{15}{30}{\minute}, with every integer value within this range tested. Values below \qty{15}{\minute} were judged as too low for this context, as the resulting coverage was very limited, while values above \qty{30}{\minute} were judged as impractical, since citizens are unlikely to walk such distances to collect a parcel.
+
+\[
+  t \in \{15, 16, \ldots, 30\}
+\]
+
+\subsubsection{Coverage Percentages}
+\label{ssec:coverage_per}
+
+As achieving \qty{100}{\percent} coverage for a given walking time threshold $t$ could require a disproportionately large number of boats, due to certain households only being reachable through specific ports, a minimum coverage percentage will instead be defined to address this issue. It was decided that the range would be \qtyrange{75}{100}{\percent}, with every percentage point within this range tested. This range should be large enough to show if some ports are added only for a small portion of the population.
+
+\[
+  \alpha \in \{0.75, 0.76, \ldots, 1\}
+\]
 
 \subsubsection{Partial Set Covering Location Problem}
 \label{ssec:pscl_problem}
@@ -385,9 +417,30 @@ In this section, the methodology of this thesis is explained in detail, in three
 \subsubsection{Demand Allocation to Selected Ports}
 \label{ssec:demand_allocation}
 
-
 \subsection{Boat Routing Models}
 \label{subsec:boat_routing_models}
+
+
+\subsubsection{Operational Constraints}
+\label{ssec:operational_constraints}
+
+Operating a waterway parcel delivery service has multiple logicsital and operations constrains, this thesis will only take into account the following:
+
+\begin{description}
+  \item[Maximum Capacity:] This paragraph explains the boat's maximum capacity (in parcels) and how it constrains the routing model...
+
+  \item[Service Speed:] This paragraph details the operational speed (in knots) used to calculate transit times between nodes...
+
+  \item[Crew Size:] This paragraph discusses the total employees required on a boat and any associated labor constraints...
+
+  \item[Maneuvering Time:] This paragraph outlines the added fixed time (in seconds) required when navigating between two ports...
+
+  \item[Maximum Route Duration:] This paragraph defines the upper bound (in hours) a single route can take to satisfy shift limits...
+
+  \item[Discharge Time:] This paragraph covers the unit handling time (in seconds) per parcel at the port...
+\end{description}
+
+Other constraints, for example handling time at the depot or travel time from the port to the locker, are not considered in this thesis, as they would require specific definitions of operational processes as well as precise port-to-locker distances. The selected constraints still provide a broad enough basis to build the model upon.
 
 \subsubsection{Capacitated Vehicle Routing Problem}
 \label{ssec:cvrp}
@@ -395,25 +448,11 @@ In this section, the methodology of this thesis is explained in detail, in three
 \subsubsection{Split Delivery Vehicle Routing Problem}
 \label{ssec:sdvrp}
 
-\subsubsection{Capacity and Route Duration Constraints}
-\label{ssec:capacity_duration_constraints}
+\subsubsection{Daily Scheduling}
+\label{ssec:scheduling}
 
-\subsubsection{Handling and Manoeuvring Time}
-\label{ssec:handling_manoeuvring_time}
-
-
-\subsection{Scheduling and KPI Evaluation}
-\label{subsec:scheduling_kpi}
-
-\subsubsection{From Weekly to Yearly Demand}
-\label{ssec:weekly_to_yearly_demand}
-
-\subsubsection{Schedule Construction}
-\label{ssec:schedule_construction}
-
-\subsubsection{Key Performance Indicators}
-\label{ssec:kpis}
-
+\subsection{\ac{kpi} Evaluation}
+\label{subsec:kpi}
 
 \section{Analysis}
 \label{sec:analysis}
@@ -438,6 +477,9 @@ In this section, the methodology of this thesis is explained in detail, in three
 
 \subsection{Sensitivity Analysis}
 \label{subsec:sensitivity-analysis}
+
+\section{temp}
+\label{subsec:temp}
 
 \section{Discussion}
 \label{sec:discussion}
