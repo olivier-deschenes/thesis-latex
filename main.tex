@@ -19,6 +19,8 @@
 \usepackage{cleveref}
 \usepackage{siunitx}
 \usepackage{xurl}
+\usepackage{microtype}
+\usepackage{tabularx}
 % biblio
 
 % --- Bibliography Setup ---
@@ -398,21 +400,65 @@ The districts can be visually grouped into three categories based on how their p
 
 The walking time threshold considered for this problem ranges from \qtyrange{15}{30}{\minute}, with every integer value within this range tested. Values below \qty{15}{\minute} were judged as too low for this context, as the resulting coverage was very limited, while values above \qty{30}{\minute} were judged as impractical, since citizens are unlikely to walk such distances to collect a parcel.
 
-\[
-  t \in \{15, 16, \ldots, 30\}
-\]
-
 \subsubsection{Coverage Percentages}
 \label{ssec:coverage_per}
 
-As achieving \qty{100}{\percent} coverage for a given walking time threshold $t$ could require a disproportionately large number of boats, due to certain households only being reachable through specific ports, a minimum coverage percentage will instead be defined to address this issue. It was decided that the range would be \qtyrange{75}{100}{\percent}, with every percentage point within this range tested. This range should be large enough to show if some ports are added only for a small portion of the population.
-
-\[
-  \alpha \in \{0.75, 0.76, \ldots, 1\}
-\]
+As achieving \qty{100}{\percent} coverage for a given walking time threshold $s$ could require a disproportionately large number of boats, due to certain households only being reachable through specific ports, a minimum coverage percentage will instead be defined to address this issue. It was decided that the range would be \qtyrange{75}{100}{\percent}, with every percentage point within this range tested. This range should be large enough to show if some ports are added only for a small portion of the population.
 
 \subsubsection{Partial Set Covering Location Problem}
 \label{ssec:pscl_problem}
+
+Although various models exist to address this routing problem, the \ac{psclp} was selected for this thesis. It perfectly matches the network's operational objectives as it minimizes the number of active ports while relaxing the requirement to reach all households \parencite{psclp}.
+
+Most of the model implementation comes directly from the \cite{psclp} paper, altougt some changes were made to make it fit with this thesis. First, variavle
+
+\begin{table}[htbp]
+  \centering
+  \caption{Mathematical Notation for the Partial Set Covering Location Problem (PSCLP)}
+  \label{tab:psclp_notation}
+  \renewcommand{\arraystretch}{1.3}
+  \begin{tabularx}{\textwidth}{c X l}
+    \toprule
+
+    \multicolumn{3}{l}{\textbf{\textit{Data and Sets}}}                                                                                                 \\
+    \midrule
+    \textbf{Symbol} & \textbf{Description}                                                                                                              \\
+    \midrule
+    $I$             & \multicolumn{2}{l}{Set of candidate port nodes, indexed by $i$}                                                                   \\
+    $J$             & \multicolumn{2}{l}{Set of reachable household nodes, indexed by $j$}                                                              \\
+    $I(j)$          & \multicolumn{2}{l}{Subset of ports $i \in I$ capable of reaching demand node $j$}                                                 \\
+    $d_j$           & \multicolumn{2}{l}{Demand weight (number of people) associated with node $j$}                                                     \\
+    \midrule
+
+    \multicolumn{3}{l}{\textbf{\textit{Parameters}}}                                                                                                    \\
+    \midrule
+    \textbf{Symbol} & \textbf{Description}                                                                                  & \textbf{Value}            \\
+    \midrule
+    $\alpha$        & Target demand coverage threshold                                                                      & \{0.75, 0.76, \ldots, 1\} \\
+    $D$             & Minimum total demand weight to be covered                                                             & $\alpha \sum d_j$         \\
+    $f_i$           & Fixed cost of opening port $i$                                                                        & 1                         \\
+    $T_{\max}$      & Maximum allowable walking time limit (minutes)                                                        & \{15, 16, \ldots, 30\}    \\
+    \midrule
+
+    \multicolumn{3}{l}{\textbf{\textit{Decision Variables}}}                                                                                            \\
+    \midrule
+    \textbf{Symbol} & \textbf{Description}                                                                                  & \textbf{Value}            \\
+    \midrule
+    $y_i$           & $\begin{cases} 1, & \text{if port } i \text{ is opened} \\ 0, & \text{otherwise} \end{cases}$         & Binary $\in \{0, 1\}$     \\
+    [3ex]
+    $z_j$           & $\begin{cases} 1, & \text{if demand node } j \text{ is covered} \\ 0, & \text{otherwise} \end{cases}$ & Binary $\in \{0, 1\}$     \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{align}
+  \min \quad & \sum_{i \in I} f_i y_i                      \\
+  \text{s.t.} \quad
+             & \sum_{i \in I(j)} y_i \geq z_j &  & j \in J \\
+             & \sum_{j \in J} d_j z_j \geq D               \\
+             & y_i \in \{0,1\}                &  & i \in I \\
+             & z_j \in \{0,1\}                &  & j \in J
+\end{align}
 
 \subsubsection{Demand Allocation to Selected Ports}
 \label{ssec:demand_allocation}
@@ -519,7 +565,6 @@ Other constraints, for example handling time at the depot or travel time from th
 
 \clearpage
 \printbibliography
-
 \appendix
 
 \section{Appendix}
