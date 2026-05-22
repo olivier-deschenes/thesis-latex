@@ -380,7 +380,7 @@ In this section, the methodology of this thesis is explained in detail, in three
 \subsection{Port Selection Model}
 \label{subsec:port_selection_model}
 
-The goal of this stage is to find the smallest set of ports that still covers a target share of the population within an acceptable walking time. The selection depends on two inputs: the walking threshold and the target coverage percentage. These two parameters are presented first, followed by the optimisation model chosen to perform the selection, and finally by the method used to allocate the household demand to the selected ports.
+The goal of this stage is to find the smallest set of ports that still covers a target share of the population within an acceptable walking time. The selection depends on two inputs: the walking threshold and the target coverage percentage. These two configurations are presented first, followed by the optimisation model chosen to perform the selection.
 
 \subsubsection{Walking Thresholds}
 \label{ssec:walking_time}
@@ -403,7 +403,7 @@ The walking time threshold considered for this problem ranges from \qtyrange{15}
 \subsubsection{Coverage Percentages}
 \label{ssec:coverage_per}
 
-As achieving \qty{100}{\percent} coverage for a given walking time threshold $s$ could require a disproportionately large number of boats, due to certain households only being reachable through specific ports, a minimum coverage percentage will instead be defined to address this issue. It was decided that the range would be \qtyrange{75}{100}{\percent}, with every percentage point within this range tested. This range should be large enough to show if some ports are added only for a small portion of the population.
+As achieving \qty{100}{\percent} coverage for a given walking time threshold could require a disproportionately large number of boats, due to certain households only being reachable through specific ports, a minimum coverage percentage will instead be defined to address this issue. It was decided that the range would be \qtyrange{75}{100}{\percent}, with every percentage point within this range tested. This range should be large enough to show if some ports are added only for a small portion of the population.
 
 \subsubsection{Partial Set Covering Location Problem}
 \label{ssec:pscl_problem}
@@ -427,7 +427,7 @@ Table \ref{tab:pslcp_configs} presents the model configurations, all combination
   \end{tabularx}
 \end{table}
 
-Most of the model implementation comes directly from the \cite{psclp} paper, altougt some changes were made to make it fit with this thesis. Table \ref{tab:psclp_notation} details the notation used in the model. The changes made in the notation were mostly done to contextualize it for the thesis, as we have household and port nodes instead of demand nodes and facilities, while using population instead of weight. The \textit{Data and Sets} section of the table describes what the model needs as input, with the set of port and household nodes and population for each households. The subset of ports $I(j)$ is derived from the distance matrix $M$ defined in the data section, filtered by using the walking speed and the walking time threshold to get the maximum distance in meters.
+Most of the model implementation comes directly from the \cite{psclp} paper, altougt some changes were made to make it fit with this thesis. Table \ref{tab:psclp_notation} details the notation used in the model. The changes made in the notation were mostly done to contextualize it for the thesis, as we have household and port nodes instead of demand nodes and facilities, while using population instead of weight. The \textit{Data and Sets} section of the table describes what the model needs as input, with the set of port and household nodes and population for each households. The reachable household nodes $J$ is calculated using the previously defined distance matrix $M$, where every household nodes whitout a port node close enough is removed from considuration. The maximum distance used is derived from the walking speed and the current run $T_{max}$ resulted in a maximum amount of meters to given to reach a possible port.
 
 \begin{table}[htbp]
   \centering
@@ -482,12 +482,30 @@ Building upon the established notation, the problem is formulated as an optimiza
              &                                                   & j \in J \label{eq:psclp-z-binary}
 \end{align}
 
-\subsubsection{Demand Allocation to Selected Ports}
-\label{ssec:demand_allocation}
+The objective function~\eqref{eq:psclp-objective} traditionally minimizes the total fixed cost of the opened ports. Since every candidate port is given the same opening cost ($f_i = 1$), this is the same as minimizing the number of ports selected for the network.
+
+Constraint~\eqref{eq:psclp-coverage} ensures that for a household node $j$ to be covered ($z_j = 1$), at least one port from its subset $I(j)$ must be opened. If no port able to reach $j$ within the walking threshold $T_{\max}$ is opened, $z_j$ is forced to bo not covered ($z_j = 0$).
+
+Constraint~\eqref{eq:psclp-demand} ensures that the covered set of household populations is greater or equal to our minum covered population $D$.
+
+The last two constraints,~\eqref{eq:psclp-y-binary} and~\eqref{eq:psclp-z-binary}, keep the port and coverage variables binary.
+
+\subsubsection{Model implementation}
+\label{ssec:psclp_implementation}
+
+The \ac{psclp} is implemented with Google OR-Tools \parencite{ortools}, using its constraint-programming solver CP-SAT \parencite{cpsat}. One adjustment was needed to fit the model to the solver. CP-SAT only works with integer coefficients, but the coverage target $D = \alpha \sum_{j \in J} d_j$ is usually not a whole number, since $\alpha$ is a fraction. To account for this, the population and the coverage target are multiplied by \num{1000} and rounded to integers before the demand constraint~\eqref{eq:psclp-demand} is built. This keeps three decimal places of precision, so the rounding has no real effect on the result.
+
+The model is kept as compact as possible by removing, before optimization, all households that cannot be covered by any candidate port within the walking threshold $T_{\max}$. These households are therefore excluded from the formulation, and no associated coverage variable $z_j$ is introduced.
 
 \subsection{Boat Routing Models}
 \label{subsec:boat_routing_models}
 
+\subsubsection{Demand Allocation to Selected Ports}
+\label{ssec:demand_allocation}
+
+The \ac{psclp} gives a set of selected ports, but it does not say the households each port should serve. Each household is assigned to the nearest selected port based on the distance matrix $M$. The total household demands is then summed by ports to get a weekly demand for each ports.
+
+It should be noted that this is done for every household, not only for the ones the \ac{psclp} counted as covered. A household that was left uncovered, meaning that no selected port can be reached within the walking threshold $T_{\max}$, is still assigned to its nearest selected port, only with a longer walk. The selected ports therefore receive the parcel demand of every household in the included districts, and the coverage threshold $\alpha$ only shapes which ports are selected and how far people have to walk, not the amount of demand the network has to carry.
 
 \subsubsection{Operational Constraints}
 \label{ssec:operational_constraints}
@@ -495,17 +513,17 @@ Building upon the established notation, the problem is formulated as an optimiza
 Operating a waterway parcel delivery service has multiple logicsital and operations constrains, this thesis will only take into account the following:
 
 \begin{description}
-  \item[Maximum Capacity:] This paragraph explains the boat's maximum capacity (in parcels) and how it constrains the routing model...
+  \item[Maximum Capacity:] This thesis uses the Candela P-12 Shuttle, an electric hydrofoil ferry, as its reference boat \parencite{candela_p12}. Since this boat is built to carry passengers and not parcels, its capacity first has to be converted into a parcel capacity. This is done by weight: the boat holds \num{29} passengers, and with an average weight of \qty{75}{\kilogram} per passenger \parencite{nordic_boat_standard}, this gives a payload of \qty{2175}{\kilogram}. Dividing this payload by the average parcel weight of \qty{4.8}{\kilogram} \parencite{light_electric_freight} gives a baseline capacity of about \num{450} parcels. As the real usable capacity of such a service is uncertain, the capacity is treated as a parameter and tested from this baseline up to \num{3000} parcels, the larger values standing for a bigger conventional boat rather than the Candela P-12. In the routing models, a boat can never be assigned more parcels than its capacity on a single route.
 
-  \item[Service Speed:] This paragraph details the operational speed (in knots) used to calculate transit times between nodes...
+  \item[Service Speed:] The service speed sets how fast the boat travels between ports. Being a hydrofoil, the Candela P-12 can reach around \num{20} knots, but it stays light and is therefore limited in capacity, while a larger conventional boat carries more parcels but is slower. Capacity and speed are therefore tested together as pairs: about \num{450} parcels at \num{20} knots, or \numrange{1500}{3000} parcels at \num{8} knots. In addition, Bergen's waterways have their own speed limits, and parts of every crossing fall inside zones restricted to \num{8} or \num{5} knots. The travel time between two ports is computed from the nautical distance of the crossing, with each stretch covered at its matching speed: \num{8} or \num{5} knots in the restricted zones, and the service speed in open water.
 
-  \item[Crew Size:] This paragraph discusses the total employees required on a boat and any associated labor constraints...
+  \item[Crew Size:] Each boat is operated by a crew. The crew is responsible for discharging the parcels at the ports, and since the employees discharge parcels in parallel, the discharge time at a port is divided by the number of employees on board. A larger crew therefore lowers the time spent at each port, but it also raises the number of employees the service needs. For this reason, the crew size is also treated as a parameter and tested with \num{3} and \num{4} employees per boat.
 
-  \item[Maneuvering Time:] This paragraph outlines the added fixed time (in seconds) required when navigating between two ports...
+  \item[Maneuvering Time:] Every time the boat travels from one port to another, it needs time to dock and undock. This thesis accounts for it with a fixed maneuvering time, added to the travel time of every trip between two ports. The value used is a baseline of \qty{3.5}{\minute}, taken as the average of two estimates: a conservative one of about \qty{5}{\minute}, derived from a study of port operations on a passenger ferry \parencite{ferry_port_ops}, and an optimistic one of \qty{2}{\minute}, based on the Candela P-12 \parencite{candela_p12}.
 
-  \item[Maximum Route Duration:] This paragraph defines the upper bound (in hours) a single route can take to satisfy shift limits...
+  \item[Maximum Route Duration:] A single boat route, from the moment it leaves the depot to the moment it returns, cannot last longer than \qty{8}{\hour}. This upper bound represents a normal working shift for the crew. The duration of a route is the sum of all its travel times, including the maneuvering time, and the discharge time at every port it visits. Every route built by the routing models has to respect this limit.
 
-  \item[Discharge Time:] This paragraph covers the unit handling time (in seconds) per parcel at the port...
+  \item[Discharge Time:] The discharge time is the time needed to handle one parcel once the boat has docked. This thesis uses a fixed value of \qty{25}{\second} per parcel \parencite{toi_lockers}. The total discharge time at a port is then the number of parcels delivered there, multiplied by \qty{25}{\second} and divided by the crew size, since the employees on board discharge the parcels in parallel. Together with the travel and maneuvering times, this discharge time makes up the total duration of a route.
 \end{description}
 
 Other constraints, for example handling time at the depot or travel time from the port to the locker, are not considered in this thesis, as they would require specific definitions of operational processes as well as precise port-to-locker distances. The selected constraints still provide a broad enough basis to build the model upon.
