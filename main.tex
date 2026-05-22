@@ -21,6 +21,7 @@
 \usepackage{xurl}
 \usepackage{microtype}
 \usepackage{tabularx}
+\usepackage{csquotes}
 % biblio
 
 % --- Bibliography Setup ---
@@ -309,6 +310,48 @@ The first step consists of identifying the locations of the Port of Bergen and t
 
 The location that was chosen can be seen in Figure \ref{fig:depot_map}, as it is directly in a high density area, close to the port and relativly near the rail station. Additionally, it offers some empty space near the shore. As explained earlier, this space may not be actually usable for this project, but as for the candidate ports, it will be assumed that all locations offers enought space and could be used to build on.
 
+\subsection{Operational Constraints}
+\label{ssec:operational_constraints}
+
+The models presented later in this thesis are based on a set of constraints that must be defined and justified before they can be implemented. The following section details each constraint and explains the values assigned to them. Some operational constraints, such as handling time at the depot or travel time between ports and lockers, are excluded from the scope of this thesis. Including these constraints would require a more detailed specification of the operational process and more precise port-to-locker distance data. Despite these exclusions, the selected constraints provide an adequate foundation for the development of the models.
+
+\subsubsection{Maximum Capacity}
+\label{subsubsec:maximum_capacity}
+
+This thesis uses the Candela P-12 Shuttle, an electric hydrofoil ferry, as its reference boat \parencite{candela2026p12}. Since this boat is built to carry passengers and not parcels, its capacity first has to be converted into a parcel capacity. This is done by weight: the boat holds \num{29} passengers, and with an average weight of \qty{75}{\kilogram} per passenger \parencite{nordicboatstandard}, this gives a payload of \qty{2175}{\kilogram}. Dividing this payload by the average parcel weight of \qty{4.8}{\kilogram} \parencite{parcelweight} gives a baseline capacity of about \num{450} parcels. As the real usable capacity of such a service is uncertain, the capacity is treated as a parameter and tested from this baseline up to \num{3000} parcels, the larger values standing for a bigger conventional boat rather than the Candela P-12.
+
+\subsubsection{Service Speed}
+\label{subsubsec:service_speed}
+
+The service speed sets how fast the boat travels between ports. Being a hydrofoil, the Candela P-12 can reach around \num{20} knots, but it stays light and is therefore limited in capacity, while a larger conventional boat carries more parcels but is slower. Capacity and speed are therefore tested together as pairs: about \num{450} parcels at \num{20} knots, or \numrange{1500}{3000} parcels at \num{8} knots. In addition, Bergen's waterways have their own speed limits, and parts of every crossing fall inside zones restricted to \num{8} or \num{5} knots. The travel time between two ports is computed from the nautical distance of the crossing, with each stretch covered at its matching speed: \num{8} or \num{5} knots in the restricted zones, and the service speed in open water.
+
+\subsubsection{Crew Size}
+\label{subsubsec:crew_size}
+
+Each boat is operated by a crew. The crew is responsible for discharging the parcels at the ports, and since the employees discharge parcels in parallel, the discharge time at a port is divided by the number of employees on board. A larger crew therefore lowers the time spent at each port, but it also raises the number of employees the service needs. For this reason, the crew size is also treated as a parameter and tested with \num{3} and \num{4} employees per boat.
+
+\subsubsection{Maneuvering Time}
+\label{subsubsec:maneuvering_time}
+
+Every time the boat travels from one port to another, it needs time to dock and undock. This thesis accounts for it with a fixed maneuvering time, added to the travel time of every trip between two ports. The value used is a baseline of \qty{3.5}{\minute}, taken as the average of two estimates: a conservative one of about \qty{5}{\minute}, derived from a study of port operations on a passenger ferry \parencite{klovning2024efficiency}, and an optimistic one of \qty{2}{\minute}, based on the Candela P-12 \parencite{candela2026p12}.
+
+\subsubsection{Maximum Route Duration}
+\label{subsubsec:maximum_route_duration}
+
+A single boat route, from the moment it leaves the depot to the moment it returns, cannot last longer than \qty{8}{\hour}. This upper bound represents a normal working shift for the crew. The duration of a route is the sum of all its travel times, including the maneuvering time, and the discharge time at every port it visits. Every route built by the routing models has to respect this limit.
+
+\subsubsection{Discharge Time}
+\label{subsubsec:discharge_time}
+
+The discharge time is the time needed to handle one parcel once the boat has docked. This thesis uses a fixed value of \qty{25}{\second} per parcel \parencite{toiparcellockers}. The total discharge time at a port is then the number of parcels delivered there, multiplied by \qty{25}{\second} and divided by the crew size, since the employees on board discharge the parcels in parallel. Together with the travel and maneuvering times, this discharge time makes up the total duration of a route.
+
+\subsubsection{Operating hours}
+\label{operating_hours}
+
+To schedule the operations correctly, the operating hours must first be defined. Since this thesis focuses on Bergen, Norway, information from parcel service providers operating in the region, such as PostNord and Posten, can be used as a reference. Both providers offer parcel delivery services on weekdays, from Monday to Friday, with some exceptions made by Posten for certain types of parcels on Saturdays \parencite{posten_hours,portnord_hours}. Therefore, the operating days in this thesis are also set from Monday to Friday.
+
+In addition, the daily operating hours must be specified. In this case, the Norwegian Working Environment Act provides a useful reference point. According to the Act, \enquote{Ordinary working hours must not exceed nine hours in a 24-hour period} \cite{arbeidsmiljoloven_10_4}. However, since this represents the maximum legal limit, a standard maximum of \qty{8}{\hour} per employee is assumed in this thesis. The overall operation is nevertheless modeled over a \qty{24}{\hour} planning horizon, allowing several employees or shifts to cover the full day if required.
+
 \subsection{Data Limitations}
 \label{subsec:data-limitations}
 
@@ -397,7 +440,7 @@ Most of the model implementation comes directly from the \cite{psclp} paper, alt
     $J$             & \multicolumn{2}{l}{Set of reachable household nodes, indexed by $j$}                                                          \\
     $d_j$           & \multicolumn{2}{l}{Household population associated with node $j$}                                                             \\
     $I(j)$          & \multicolumn{2}{l}{Subset of ports $i \in I$ capable of reaching household node $j$ in $T_{\max}$}                            \\
-
+    $P$             & \multicolumn{2}{l}{Subset of preselected ports that must be opened, currently the depot}                                      \\
     \midrule
 
     \multicolumn{3}{l}{\textbf{\textit{Parameters}}}                                                                                                \\
@@ -422,14 +465,16 @@ Most of the model implementation comes directly from the \cite{psclp} paper, alt
 Building upon the established notation, the problem is formulated as an optimization model as follows:
 
 \begin{align}
-  \min \quad & \sum_{i \in I} f_i y_i \label{eq:psclp-objective}                                     \\
+  \min \quad & \sum_{i \in I} f_i y_i \label{eq:psclp-objective}                                        \\
   \text{s.t.} \quad
              & \sum_{i \in I(j)} y_i \geq z_j
-             &                                                   & j \in J \label{eq:psclp-coverage} \\
+             &                                                   & j \in J \label{eq:psclp-coverage}    \\
              & \sum_{j \in J} d_j z_j \geq D
-  \label{eq:psclp-demand}                                                                            \\
+  \label{eq:psclp-demand}                                                                               \\
+             & y_i = 1
+             &                                                   & i \in P \label{eq:psclp-preselected} \\
              & y_i \in \{0,1\}
-             &                                                   & i \in I \label{eq:psclp-y-binary} \\
+             &                                                   & i \in I \label{eq:psclp-y-binary}    \\
              & z_j \in \{0,1\}
              &                                                   & j \in J \label{eq:psclp-z-binary}
 \end{align}
@@ -439,6 +484,8 @@ The objective function~\eqref{eq:psclp-objective} traditionally minimizes the to
 Constraint~\eqref{eq:psclp-coverage} ensures that for a household node $j$ to be covered ($z_j = 1$), at least one port from its subset $I(j)$ must be opened. If no port able to reach $j$ within the walking threshold $T_{\max}$ is opened, $z_j$ is forced to bo not covered ($z_j = 0$).
 
 Constraint~\eqref{eq:psclp-demand} ensures that the covered set of household populations is greater or equal to our minum covered population $D$.
+
+Constraint~\eqref{eq:psclp-preselected} forces every preselected port to be opened. The depot is part of this set, as the boats operate out of it and it must therefore always be among the selected ports (Section~\ref{sub:depot_loc}).
 
 The last two constraints,~\eqref{eq:psclp-y-binary} and~\eqref{eq:psclp-z-binary}, keep the port and coverage variables binary.
 
@@ -459,26 +506,10 @@ The \ac{psclp} gives a set of selected ports, but it does not say the households
 
 It should be noted that this is done for every household, not only for the ones the \ac{psclp} counted as covered. A household that was left uncovered, meaning that no selected port can be reached within the walking threshold $T_{\max}$, is still assigned to its nearest selected port, only with a longer walk. The selected ports therefore receive the parcel demand of every household in the included districts, and the coverage threshold $\alpha$ only shapes which ports are selected and how far people have to walk, not the amount of demand the network has to carry.
 
-\subsubsection{Operational Constraints}
-\label{ssec:operational_constraints}
+\subsubsection{Ports Distance matrix}
+\label{ssec:ports_distance_matrix}
 
-Operating a waterway parcel delivery service has multiple logicsital and operations constrains, this thesis will only take into account the following:
-
-\begin{description}
-  \item[Maximum Capacity:] This thesis uses the Candela P-12 Shuttle, an electric hydrofoil ferry, as its reference boat \parencite{candela2026p12}. Since this boat is built to carry passengers and not parcels, its capacity first has to be converted into a parcel capacity. This is done by weight: the boat holds \num{29} passengers, and with an average weight of \qty{75}{\kilogram} per passenger \parencite{nordicboatstandard}, this gives a payload of \qty{2175}{\kilogram}. Dividing this payload by the average parcel weight of \qty{4.8}{\kilogram} \parencite{parcelweight} gives a baseline capacity of about \num{450} parcels. As the real usable capacity of such a service is uncertain, the capacity is treated as a parameter and tested from this baseline up to \num{3000} parcels, the larger values standing for a bigger conventional boat rather than the Candela P-12.
-
-  \item[Service Speed:] The service speed sets how fast the boat travels between ports. Being a hydrofoil, the Candela P-12 can reach around \num{20} knots, but it stays light and is therefore limited in capacity, while a larger conventional boat carries more parcels but is slower. Capacity and speed are therefore tested together as pairs: about \num{450} parcels at \num{20} knots, or \numrange{1500}{3000} parcels at \num{8} knots. In addition, Bergen's waterways have their own speed limits, and parts of every crossing fall inside zones restricted to \num{8} or \num{5} knots. The travel time between two ports is computed from the nautical distance of the crossing, with each stretch covered at its matching speed: \num{8} or \num{5} knots in the restricted zones, and the service speed in open water.
-
-  \item[Crew Size:] Each boat is operated by a crew. The crew is responsible for discharging the parcels at the ports, and since the employees discharge parcels in parallel, the discharge time at a port is divided by the number of employees on board. A larger crew therefore lowers the time spent at each port, but it also raises the number of employees the service needs. For this reason, the crew size is also treated as a parameter and tested with \num{3} and \num{4} employees per boat.
-
-  \item[Maneuvering Time:] Every time the boat travels from one port to another, it needs time to dock and undock. This thesis accounts for it with a fixed maneuvering time, added to the travel time of every trip between two ports. The value used is a baseline of \qty{3.5}{\minute}, taken as the average of two estimates: a conservative one of about \qty{5}{\minute}, derived from a study of port operations on a passenger ferry \parencite{klovning2024efficiency}, and an optimistic one of \qty{2}{\minute}, based on the Candela P-12 \parencite{candela2026p12}.
-
-  \item[Maximum Route Duration:] A single boat route, from the moment it leaves the depot to the moment it returns, cannot last longer than \qty{8}{\hour}. This upper bound represents a normal working shift for the crew. The duration of a route is the sum of all its travel times, including the maneuvering time, and the discharge time at every port it visits. Every route built by the routing models has to respect this limit.
-
-  \item[Discharge Time:] The discharge time is the time needed to handle one parcel once the boat has docked. This thesis uses a fixed value of \qty{25}{\second} per parcel \parencite{toiparcellockers}. The total discharge time at a port is then the number of parcels delivered there, multiplied by \qty{25}{\second} and divided by the crew size, since the employees on board discharge the parcels in parallel. Together with the travel and maneuvering times, this discharge time makes up the total duration of a route.
-\end{description}
-
-Other constraints, for example handling time at the depot or travel time from the port to the locker, are not considered in this thesis, as they would require specific definitions of operational processes as well as precise port-to-locker distances. The selected constraints still provide a broad enough basis to build the model upon.
+Although the computation differs from the household-to-port distance matrix, the same matrix-based logic is used here. A separate port-to-port distance matrix is constructed to represent the travel distances between each pair of selected ports.
 
 \subsubsection{Capacitated Vehicle Routing Problem}
 \label{ssec:cvrp}
