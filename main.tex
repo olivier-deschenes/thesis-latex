@@ -150,86 +150,15 @@
 
 \section{Acknowledgements}
 
+\section{Licenses and Attributions}
+
+Unless otherwise stated, all maps in this thesis were produced in QGIS using CARTO basemap tiles and OpenStreetMap map data. The required map attribution is: \textcopyright{} CARTO, \textcopyright{} OpenMapTiles and \textcopyright{} OpenStreetMap contributors.
+
 \section{Abstract}
 
 \clearpage
 \tableofcontents
 \clearpage
-
-\section{Test}
-
-This is a test \parencite{smith2023}.
-This is a test \parencite{smith2023, savelsbergh2016}.
-This is a test \parencite{pop_thesis}.
-
-Recent studies by \textcite{smith2023, savelsbergh2016} highlight the growing pressure of e-commerce on city infrastructure.
-
-As demonstrated in Figure \ref{fig:demand_variance}, the maritime last-mile network experiences highly concentrated delivery volumes on certain days.
-
-\Cref{sec:introduction}
-\cref{fig:demand_variance}
-\cref{tab:port_allocation_pro}
-
-\begin{table}[htbp]
-  \centering
-  \caption{Daily parcel allocation and walking-time thresholds for candidate ports.}
-  \label{tab:port_allocation_pro}
-
-  \begin{tabular}{l c r}
-    \toprule
-    \textbf{Port Location} & \textbf{Walking Time (min)} & \textbf{Daily Parcels} \\
-    \midrule
-    Nordnes                & 5                           & 450                    \\
-    Bryggen                & 8                           & 820                    \\
-    Puddefjorden           & 12                          & 310                    \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-this is a test for ref to As summarized in Table \ref{tab:port_allocation_pro}.
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{image.png}
-  \caption{Time-series visualization highlighting daily demand fluctuations across the network.}
-  \label{fig:demand_variance}
-\end{figure}
-
-The total cost of the maritime last-mile network is calculated as follows:
-
-\begin{equation}
-  C_{total} = \sum_{i=1}^{n} (d_i \cdot w_i)
-  \label{eq:total_cost}
-\end{equation}
-
-\begin{maxi!}
-{x}{ \sum_{t=1}^{T} v_t x_t }{}{}
-\addConstraint{d_t}{\le C_{max}, \quad \label{con:capacity}}{\text{(Daily Capacity Limit)}}
-\end{maxi!}
-
-As defined in \eqref{con:capacity}, the maritime network cannot exceed the daily threshold.
-
-\begin{align}
-  \sum_{j=1}^{n} x_{ij} & = 1 \label{eq:flow_out} \\
-  \intertext{This ensures that every small port is visited exactly once per day. Furthermore, we must ensure flow conservation:}
-  \sum_{i=1}^{n} x_{ij} & = 1 \label{eq:flow_in}
-\end{align}
-
-The objective function \eqref{eq:obj} minimizes the total routing costs across the network:
-\begin{equation}
-  \min Z = \sum_{i \in V} \sum_{j \in V} c_{ij} x_{ij} \label{eq:obj}
-\end{equation}
-
-Constraints \eqref{con:out} and \eqref{con:in} ensure that every small port is visited exactly once per day:
-\begin{align}
-  \sum_{j \in V} x_{ij} & = 1 &  & \forall i \in V \label{con:out} \\
-  \sum_{i \in V} x_{ij} & = 1 &  & \forall j \in V \label{con:in}
-\end{align}
-
-Because daily deliveries to small ports exhibit highly volatile, spiky demand patterns, constraint \eqref{con:capacity_limit} enforces a strict upper bound on the daily vessel capacity $C_{max}$:
-\begin{equation}
-  d_t \le C_{max} \quad \forall t \in T \label{con:capacity_limit}
-\end{equation}
 
 \section{Introduction}
 \label{sec:introduction}
@@ -296,7 +225,7 @@ To reduce the overall values of our data, the household coordinate were snapped 
 
 Since the goal of this data is to identify good port candidates based on population coverage rather than absolute population size, the data will not be updated to current figures. Only the spatial distribution will be taken into account, and it is assumed that the population growth has been geographically uniform.
 
-\subsection{Candidate Ports and depot Location}
+\subsection{Candidate Ports}
 \label{subsec:candidate-port-locations}
 
 To retrive potential ports location for the Thesis, \texttt{OSMnx} was again used. The \texttt{features\_from\_place()} function offers the positiblty to filters potential features by \ac{osm} tags. Table \ref{tab:osm_port_tags} shows the filter tags used to retrives ports candiates based on the \ac{osm} documentation \parencite{osm_map_features}.
@@ -357,6 +286,29 @@ Since daily scheduling for the boat network requires daily demand for each selec
 
 To correcly assinged demands to the nearest chosen ports, the demand of each Households must be known. However, the PostNord dataset is only by postal code. Nevertheless, the demand can still be allocated to each household based on its share of the population within its postal code. For example, if a postal code has a weekly demand of 100 parcels and contains two households, one with 1 resident ($a$) and the other with 2 ($b$), the demand is distributed as $\frac{1}{3}$ to $a$ and $\frac{2}{3}$ to $b$. In addition, each household demand was rounded to have integer demand, resulting in a loss of \num{15.69} total parcels or \qty{0.000263}{\percent} of total demand.
 
+\subsection{Depot Location}
+\label{sub:depot_loc}
+
+With the candidate ports and their demand defined, the depot location can now be chosen. The depot is where the incoming parcels are received, processed and loaded onto the boats, so it needs enough space for this work and for docking the boats. However, these processing and handling spaces will be taken into account as context, but not quantified in this thesis. Furthermore, a good depot location should be close to the Port of Bergen and its cargo rail station, as both are the second largest of their kind in Norway \parencite{bergenport,bergenrail}. Finally, the depot also acts as a port itself, so a location with a high population nearby is the most efficient choice, as it removes the most parcels from boat transport.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.4\textwidth]{density_focused.pdf}
+  \caption{Map of Bergen city center showing household density in 2020 and the locations of candidate ports relative to the (A) Port of Bergen and the (B) train station.}
+  \label{fig:full_density}
+\end{figure}
+
+The first step consists of identifying the locations of the Port of Bergen and the railway station, and overlaying them with household density. As shown in Figure~\ref{fig:full_density}, the two facilities are spatially separated. The port is located along the shoreline, whereas the railway station is situated further inland. Since the depot also needs to be close to the shore, the range of potential locations becomes considerably restricted. A full map density can be fun in Figure \ref{anx:map_density} of the \nameref{sec:appendix}.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.4\textwidth]{depot_map.pdf}
+  \caption{Map of the selected depot location.}
+  \label{fig:depot_map}
+\end{figure}
+
+The location that was chosen can be seen in Figure \ref{fig:depot_map}, as it is directly in a high density area, close to the port and relativly near the rail station. Additionally, it offers some empty space near the shore. As explained earlier, this space may not be actually usable for this project, but as for the candidate ports, it will be assumed that all locations offers enought space and could be used to build on.
+
 \subsection{Data Limitations}
 \label{subsec:data-limitations}
 
@@ -375,7 +327,7 @@ Furthermore, walking time is directly computed from the walking distance and doe
 \section{Methodology}
 \label{sec:methodology}
 
-In this section, the methodology of this thesis is explained in detail, in three separate parts. First, the model used to select a set of ports based on a desired walking distance is presented. Second, the two models used to generate a set of routes for these ports are described. Finally, it is explained how, given a set of ports and routes, a schedule can be constructed to measure the KPIs based on the yearly demand.
+In this section, the methodology of this thesis is explained in detail, in four separate parts. First, the model used to select a set of ports based on a desired walking distance is presented. Second, the two models used to generate a set of routes for these ports are described. Finally, it is explained how, given a set of ports and routes, a schedule can be constructed to measure the KPIs based on the yearly demand.
 
 \subsection{Port Selection Model}
 \label{subsec:port_selection_model}
@@ -635,6 +587,13 @@ Other constraints, for example handling time at the depot or travel time from th
   \vspace{1ex}
   {\raggedright \footnotesize * A node is classified as mixed when port locations of different tags were snaped to the same \ac{osm} node.\par}
 \end{table}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{graphs/walking_time_coverage.pdf}
+  \caption{City of Bergen population density in 2020.}
+  \label{anx:map_density}
+\end{figure}
 
 \subsection{Demand}
 
