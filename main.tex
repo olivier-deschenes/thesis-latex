@@ -509,7 +509,9 @@ It should be noted that this is done for every household, not only for the ones 
 \subsubsection{Ports Distance matrix}
 \label{ssec:ports_distance_matrix}
 
-Although the computation differs from the household-to-port distance matrix, the same matrix-based logic is used here. A separate port-to-port distance matrix is constructed to represent the travel distances between each pair of selected ports.
+Although the computation differs from the household-to-port distance matrix, the same matrix-based logic is used here. A separate port-to-port distance matrix is constructed to represent the travel distances between each pair of selected ports. However, in complex environments like the fjords in Bergen, calculating true maritime distances between close ports is difficult. Standard Euclidean distances are inadequate as linking two ports with a straight line will probobly go straight trought the montain, ignoring any complexe and small waterway of the real boat route.
+
+On the other hand, sophisticated algorithmic solutions exist to navigate around spatial these problems,  s
 
 \subsubsection{Capacitated Vehicle Routing Problem}
 \label{ssec:cvrp}
