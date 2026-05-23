@@ -57,14 +57,9 @@
   long  = Vehicle Routing Problem,
 }
 
-\DeclareAcronym{cvrp}{
-  short = CVRP,
-  long  = Capacitated Vehicle Routing Problem,
-}
-
-\DeclareAcronym{sdvrp}{
-  short = SDVRP,
-  long  = Split Delivery Vehicle Routing Problem,
+\DeclareAcronym{scvrp}{
+  short = SCVRP,
+  long  = Symmetric Capacitated Vehicle Routing Problem,
 }
 
 \DeclareAcronym{psclp}{
@@ -349,7 +344,7 @@ A single boat route, from the moment it leaves the depot to the moment it return
 The discharge time is the time needed to handle one parcel once the boat has docked. This thesis uses a fixed value of \qty{25}{\second} per parcel \parencite{toiparcellockers}. The total discharge time at a port is then the number of parcels delivered there, multiplied by \qty{25}{\second} and divided by the crew size, since the employees on board discharge the parcels in parallel. Together with the travel and maneuvering times, this discharge time makes up the total duration of a route.
 
 \subsubsection{Operating hours}
-\label{operating_hours}
+\label{subsubsec:operating_hours}
 
 To schedule the operations correctly, the operating hours must first be defined. Since this thesis focuses on Bergen, Norway, information from parcel service providers operating in the region, such as PostNord and Posten, can be used as a reference. Both providers offer parcel delivery services on weekdays, from Monday to Friday, with some exceptions made by Posten for certain types of parcels on Saturdays \parencite{posten_hours,portnord_hours}. Therefore, the operating days in this thesis are also set from Monday to Friday.
 
@@ -381,6 +376,7 @@ In this section, the methodology of this thesis is explained in detail, in four 
 The goal of this stage is to find the smallest set of ports that still covers a target share of the population within an acceptable walking time. The selection depends on two inputs: the walking threshold and the target coverage percentage. These two configurations are presented first, followed by the optimisation model chosen to perform the selection.
 
 \subsubsection{Walking Thresholds}
+
 \label{ssec:walking_time}
 
 \begin{figure}[httbp]
@@ -499,8 +495,17 @@ The \ac{psclp} is implemented with Google OR-Tools \parencite{ortools}, using it
 
 The model is kept as compact as possible by removing, before optimization, all households that cannot be covered by any candidate port within the walking threshold $T_{\max}$. These households are therefore excluded from the formulation, and no associated coverage variable $z_j$ is introduced.
 
+\subsubsection{Scenario Selection}
+\label{ssec:scenario_selection}
+
+Each pair $(T_{\max}, \alpha)$ produces one feasible \ac{psclp} solution, but carrying every combination through the routing and scheduling steps would be impractical. A subset is therefore selected using the \textit{utopia point} method: the coverage $\alpha$, the number of opened ports and the average weighted walking time are min-max normalised across the relevant set of runs, and the run with the shortest Euclidean distance to the ideal $(1, 0, 0)$ point (maximum coverage, minimum ports, minimum walking time) is retained.
+
+This rule is applied twice. First, for each walking threshold $T_{\max}$, the best run among the feasible $\alpha$ values is kept; the run at $T_{\max} = \qty{15}{\minute}$ is of particular interest as it matches the ``15-minute city'' reference discussed in the background section. Second, a single overall best run is identified across all $(T_{\max}, \alpha)$ pairs. These selected scenarios are then carried forward to the boat routing models presented in the next section.
+
 \subsection{Boat Routing Models}
 \label{subsec:boat_routing_models}
+
+With the selected ports and their daily demand scenarios in hand, the next step is to design the boat routes that serve them. The routing is formulated as a \ac{scvrp}, which is fast to solve and well studied in the literature. To handle the ports whose demand approaches or exceeds the capacity of a single boat, the formulation is paired with a service-node decomposition that emulates split deliveries while keeping the standard \ac{scvrp} structure.
 
 \subsubsection{Demand Allocation to Selected Ports}
 \label{ssec:demand_allocation}
@@ -514,15 +519,75 @@ It should be noted that this is done for every household, not only for the ones 
 
 Although the computation differs from the household-to-port distance matrix, the same matrix-based logic is used here. A separate port-to-port distance matrix is constructed to represent the travel distances between each pair of selected ports. However, in complex environments like the fjords in Bergen, calculating true maritime distances between close ports is difficult. Standard Euclidean distances are inadequate as linking two ports with a straight line will probobly go straight trought the montain, ignoring any complexe and small waterway of the real boat route.
 
-On the other hand, sophisticated algorithmic solutions exist to navigate around spatial these problems,  s
+Sophisticated algorithmic solutions exist to navigate around such spatial constraints, typically based on visibility graphs or shortest-path methods built on top of the coastline polygons. Building and maintaining such a graph for Bergen's full coastline is however non-trivial and falls outside the scope of this thesis, which does not aim to produce strict navigation guidelines or the exact best route between two ports, but rather a network-level estimate of boat travel time. Given the relatively small number of ports retained by the \ac{psclp}, a simpler manual approach is used instead and is precise enough for the routing models that follow.
 
-\subsubsection{Capacitated Vehicle Routing Problem}
-\label{ssec:cvrp}
+The construction is done in two steps. The first step is done manually in QGIS. The selected ports are first grouped into a small number of visual zones based on their geographic emplacement, with one zone per coherent area of the coastline (for example the inner fjord around the depot, the northern shore, etc.). The relevant distances are then drawn directly on top of the \ac{osm} basemap as polylines that follow a plausible boat path between two ports, and the length of each polyline is taken as the distance. Three families of arcs are drawn: every pair of ports within the same zone, a single edge-to-edge polyline between each pair of zone polygons, and the polyline between every port and the depot. The choice of restricting inter-zone measurements to the polygon edges comes from computational geometry: for two convex regions, the shortest path between them always touches a point on their boundary, never their interior, so the edge-to-edge polyline is enough to represent the inter-zone connection. The slow-speed segments at \qty{5}{knots} and \qty{8}{knots} introduced in the background section are also captured during this step, by tagging the portion of each polyline that crosses the corresponding restricted zones.
 
-\subsubsection{Split Delivery Vehicle Routing Problem}
-\label{ssec:sdvrp}
+The second step is done in code and fills in the arcs that were not drawn by hand. The directly measured arcs from the first step are loaded as the edges of a weighted graph over the selected ports, with edge weights equal to the polyline lengths. For every port pair that has no direct measurement, the shortest path through the graph is computed with Dijkstra's algorithm and used as an estimate of the missing distance. An overhead correction is applied to each intermediate stop on the path to account for the fact that a boat going directly between two ports would not have to detour through every port on the way. The output is a complete port-to-port distance matrix, combining the directly measured arcs from the first step and the graph-based estimates from the second one, which is the matrix consumed by the routing models.
 
-\subsubsection{Daily Scheduling}
+\subsubsection{Demand Scenarios}
+\label{ssec:demand_scenarios}
+
+The routing models do not run on the raw daily port demand, but on three representative daily demand scenarios per port: a Low, an Average and a Peak scenario. Working with discrete scenarios rather than the full daily series keeps the number of routing runs manageable while still covering a quiet, a typical and a busy day, which is enough to test whether the fleet sized for an average day can absorb seasonal swings.
+
+The three scenarios are anchored on three reference months. For every month of the year, the median of the network's total daily demand is computed, and the months are ranked by this median. The month with the lowest median is taken as the \textit{low month}, the one in the middle of the ranking as the \textit{average month}, and the one with the highest median as the \textit{peak month}. Using months instead of individual days smooths out single-day noise, like holidays or weather events, while keeping the seasonal signal.
+
+Once the three reference months are fixed, each scenario is built at the port level. The Low scenario takes, for each port, the median of its daily demand observed during the low month, which corresponds to a typical quiet day. The Average scenario does the same on the average month and represents a typical day on which the network should comfortably operate. The Peak scenario takes the 95\textsuperscript{th} percentile of the port's daily demand observed during the peak month. The 95\textsuperscript{th} percentile is preferred to the maximum to represent a realistically busy day without sizing the fleet on a single extreme outlier. Each scenario value is rounded up to the next integer so that the routing models treat demand as whole parcels.
+
+\subsubsection{Model implementation}
+\label{ssec:scvrp}
+
+The first routing model used is the \ac{scvrp} as it is a natural fit for this problem: the depot is fixed, each selected port has a known weekly parcel demand, and the fleet is composed of identical boats with a maximum parcel capacity and a maximum daily working time. The objective is to design a set of routes, each starting and ending at the depot, that together serve all port demands while minimising the total travel time of the fleet.
+
+Several configurations were tested for the \ac{scvrp}, each combining a boat capacity, a crew size and a weekly demand scenario, summarised in Table~\ref{tab:cvrp_configs}. The three boat scenarios and their parcel capacity are defined in Section~\ref{subsubsec:maximum_capacity}, the two crew sizes in Section~\ref{subsubsec:crew_size}, and the three demand scenarios in Section~\ref{subsec:port-demand-results}. The boat cruising speed is fixed across all configurations at \qty{25}{knots}, which is the common reachable speed of every vessel considered in Section~\ref{subsubsec:maximum_capacity}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Configurations tested for the \ac{scvrp}}
+  \label{tab:cvrp_configs}
+
+  \begin{tabularx}{\textwidth}{c X l}
+    \toprule
+    \textbf{Symbol} & \textbf{Description}   & \textbf{Values}                                   \\
+    \midrule
+    $Q$             & Boat parcel capacity   & $\{$Low-capacity, Mid-capacity, High-capacity$\}$ \\
+    $e$             & Employees per boat     & $\{3, 4\}$                                        \\
+    $s$             & Weekly demand scenario & $\{$Low, Average, Peak$\}$                        \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The classic \ac{scvrp} mathematical model is not defined in this thesis, as it was also not explicitly defined in the code. The OR-Tools routing library \parencite{ortools} handles a lot of the standard formulation under the hood, like the routing decision variables, the flow conservation and the sub-tour elimination. What follows first describes the objective and the constraints layered on top of the classic model, then the solver and search parameters used to solve it. Table~\ref{tab:scvrp_notation} summarises the additional notation used in the rest of this section.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Notation used in the \ac{scvrp} model}
+  \label{tab:scvrp_notation}
+
+  \begin{tabularx}{\textwidth}{c X l}
+    \toprule
+    \textbf{Symbol} & \textbf{Description}                       & \textbf{Value}                                                    \\
+    \midrule
+    $t_{ij}$        & Boat travel time between ports $i$ and $j$ & From port distance matrix                                         \\
+    $m$             & Manoeuvring time per arc                   & \qty{3.5}{\minute} (See Section \ref{subsubsec:maneuvering_time}) \\
+    $\tau$          & Discharge time per parcel                  & \qty{25}{\second}  (See Section \ref{subsubsec:discharge_time})   \\
+    $d_i$           & Parcel demand at port $i$                  & From demand matrix                                                \\
+    $T^{r}_{\max}$  & Maximum route duration                     & \qty{8}{\hour}  (See Section \ref{subsubsec:operating_hours})     \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The objective minimises the total travel time of the fleet, where the cost of every arc is the sum of the boat travel time $t_{ij}$ between the two ports and the manoeuvring time $m$. The parcel handling time is left out of the optimization function as it is a constant, all of the demand will be handled at the same speed regardless. To allow split deliveries while keeping the standard \ac{scvrp} structure, where each stop is visited by exactly one vehicle, the demand of every port is decomposed into multiple service nodes that share the port's coordinates, each one carrying at most \num{10} parcels. The routing model treats these service nodes as independent stops but with no travel cost in-between them (no distance), making possible it for the same port can be visited several times by different routes.
+
+The handling time at port $i$ is $d_i \tau / e$, with $d_i$ the parcel demand of the port for the run, $\tau$ the per-parcel discharge time from Section~\ref{subsubsec:discharge_time}, and $e$ the crew size of the configuration. It represents an estimation of the time it will take to put the parcels into the lockers at the port. As mentionned above, the travel time between the port and the locker will not be taken into account in this thesis.
+
+Two capacity constraints are added to the solver. The first corresponds to the maximum parcel capacity of the boat in the current configuration, denoted by $Q$. This constraint ensures that the total demand assigned to a route does not exceed the boat capacity. The total demand is calculated by summing the demand covered by the boat at each visited port and is calculated by summing all theses times categories for each ports visied in the current route.
+
+The second constraint corresponds to the maximum route duration, denoted by $T^{r}{\max}$. This constraint represents an operational restriction requiring employees to complete their route before the end of their shift. The total route duration includes travel time, maneuvering time, and handling time at each visited port.
+
+The search is configured with \texttt{PARALLEL\_CHEAPEST\_INSERTION} as the first-solution strategy and \texttt{GUIDED\_LOCAL\_SEARCH} as the local-search metaheuristic \parencite{ortools_routing}, with a time limit of \qty{15}{\minute} per run. This combination produces a feasible solution quickly and then iteratively improves it; the best solution found within the time limit is retained.
+
+\subsubsection{}
 \label{ssec:scheduling}
 
 \subsection{\ac{kpi} Evaluation}
