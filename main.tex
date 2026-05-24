@@ -142,7 +142,6 @@
   \end{minipage}
 \end{titlepage}
 
-\restoregeometry
 \onehalfspacing
 
 \section{Acknowledgements}
@@ -551,7 +550,7 @@ Several configurations were tested for the \ac{scvrp}, each combining a boat cap
     \textbf{Symbol} & \textbf{Description}   & \textbf{Values}                               \\
     \midrule
     \(Q\)           & Boat parcel capacity   & \{Low-capacity, Mid-capacity, High-capacity\} \\
-    \(e\)           & Employees per boat     & \{3, 4\}                                      \\
+    \(e\)           & Employees per boat     & \{2, 3, 4\}                                   \\
     \(s\)           & Weekly demand scenario & \{Low, Average, Peak\}                        \\
     \bottomrule
   \end{tabularx}
@@ -679,7 +678,7 @@ As discussed in the Methodology, the \ac{psclp} was ran with multiple combinatio
 
 
 %%%
-%%% Change this fucking graph to show the lines as the avg walking distance in minutes, not the fucking reyatd % populati
+%%% Change this fucking graph to show the lines as the avg walking distance in minutes, not the fucking reyatd % population covered
 %%%
 
 \begin{figure}[htbp]
@@ -701,7 +700,7 @@ The layout of the chosen ports for both selected runs can be found in Figure \re
   \includegraphics[width=0.48\textwidth]{maps/run_map_ports_15_a095.pdf}
   \hfill
   \includegraphics[width=0.48\textwidth]{maps/run_map_ports_28_a098.pdf}
-  \caption{Selected ports for chosen runs.}
+  \caption{Selected ports and depot for \ac{psclp} runs \texttt{t15} and \texttt{t28}.}
   \label{fig:run_port_maps}
 \end{figure}
 
@@ -713,8 +712,6 @@ The routes that were drawn to calculate the distances can also be seen in Figure
   \caption{Total Population coverage for chosen runs by walking thresholds.}
   \label{fig:coverage_threshold}
 \end{figure}
-
-% anx:coverage_cumulative
 
 To better understand the effect of adding ports on the population coverage, the Figure \ref{fig:coverage_threshold} can be observed. It cleary demonstrate that the addition of ports primarly increases the population coverage in the first \qtyrange{15}{20}{\min}, leaving the rest basibly unchanged. With \texttt{t28}, only \qty{36}{\percent} of the population was convered in \qty{15}{\min}, compared to only \qty{47}{\percent} with \texttt{t15}. However, overall, both runs have similay overall average population walking speed of \qty{19.68}{\min} for \texttt{t15} and \qty{20.73}{\min} for \texttt{t28}.
 
@@ -737,34 +734,20 @@ The low-demand scenario corresponds to a daily network demand of \qty{10732}{par
 \subsection{Port Demands}
 \label{subsec:port-demand-results}
 
-The full demand data for each scenarios of all the ports for both chosen run can be found in the \Nameref{sec:appendix} at Table \ref{anx:port_demand_scenarios_t15_a095} for the \(T_{\max}=15, \alpha=0.95\) and Table \ref{anx:port_demand_scenarios_t28_a098} for the \(T_{\max}=28, \alpha=0.98\). As discussed earlier, the depot itself will also served as a demand port for household, letting them come and pick up their parcls, therefore its demand will not have to be transported by boat.
-
-
-
-
-\begin{figure}[htbp]
-  \centering
-  % First image
-  \includegraphics[width=0.48\textwidth]{python/graphs/port_demands/t15_a095_demand_scenarios_per_port.pdf}
-  \hfill
-  % Second image
-  \includegraphics[width=0.48\textwidth]{python/graphs/port_demands/t28_a098_demand_scenarios_per_port.pdf}
-
-  % The single shared caption
-  \caption{Distribution of daily parcel demand across selected port nodes under the low, average, and peak demand scenarios.}
-  \label{fig:demand_per_port}
-\end{figure}
+The full demand data for each scenarios of all the ports can be found in the \nameref{sec:appendix} in Table \ref{anx:port_demand_scenarios_t15_a095} for \texttt{t15} and Table \ref{anx:port_demand_scenarios_t28_a098} for \texttt{t28}. The distribution can also be visualize in Table \ref{anx:demand_per_port}. As discussed earlier, the depot itself will also served as a demand port for household, letting them come and pick up their parcls, therefore its demand will not have to be transported by boat.
 
 \subsection{Boat Routings}
 \label{subsec:boat-routing-results}
 
+The \ac{scvrp} model returns a lof ot results to discuss. These will be grouped by the \ac{psclp} selected solutions that they ran with (\texttt{t15} or \texttt{t28}), and a set of configurations (See Table \ref{tab:cvrp_configs}). Each selected solutions having \num{27} results. All configurations were ran for \qty{1}{hour} to make sure that the solver has enought time to find a good solution. Each runs resulted in a succesful solution, altought none were proven optimal by the solver. Most of them found their best solution in a matter of seconds and the rest of the run duration accomplish nothing, aldought others, like in \texttt{t15} (\(Q=2500, e=4)\), (\(Q=1500, e=3)\) succesfully found betters at \qty{50}{\minute}. An interesting observation is that the configurations that were able to take advantage of the \qty{1}{\hour} run time are not the same in both   \texttt{t15} and \texttt{t28}. Indeed, in \texttt{t28}, the configurations with \(Q=500\) were the last one to found their best solutions.
+
 \begin{figure}[htbp]
   \centering
   % First image
-  \includegraphics[width=0.48\textwidth]{python/graphs/routing/t15_a095_routing_capacity_utilization.pdf}
+  \includegraphics[width=0.49\textwidth]{python/graphs/routing/t15_a095_routing_capacity_utilization.pdf}
   \hfill
   % Second image
-  \includegraphics[width=0.48\textwidth]{python/graphs/routing/t28_a098_routing_capacity_utilization.pdf}
+  \includegraphics[width=0.49\textwidth]{python/graphs/routing/t28_a098_routing_capacity_utilization.pdf}
 
   % The single shared caption
   \caption{Number of routes required under the low, average, and peak demand scenarios, and corresponding average capacity utilization, for each configuration and demand scenario.}
@@ -774,10 +757,10 @@ The full demand data for each scenarios of all the ports for both chosen run can
 \begin{figure}[htbp]
   \centering
   % First image
-  \includegraphics[width=0.48\textwidth]{python/graphs/routing/t15_a095_routing_travel_time.pdf}
+  \includegraphics[width=0.49\textwidth]{python/graphs/routing/t15_a095_routing_travel_time.pdf}
   \hfill
   % Second image
-  \includegraphics[width=0.48\textwidth]{python/graphs/routing/t28_a098_routing_travel_time.pdf}
+  \includegraphics[width=0.49\textwidth]{python/graphs/routing/t28_a098_routing_travel_time.pdf}
 
   % The single shared caption
   \caption{Total route time by configuration and demand scenario, separated into navigation time and parcel handling time.}
@@ -787,10 +770,10 @@ The full demand data for each scenarios of all the ports for both chosen run can
 \begin{figure}[htbp]
   \centering
   % First image
-  \includegraphics[width=0.48\textwidth]{python/graphs/routing/t15_a095_total_distance_per_run.pdf}
+  \includegraphics[width=0.49\textwidth]{python/graphs/routing/t15_a095_total_distance_per_run.pdf}
   \hfill
   % Second image
-  \includegraphics[width=0.48\textwidth]{python/graphs/routing/t28_a098_total_distance_per_run.pdf}
+  \includegraphics[width=0.49\textwidth]{python/graphs/routing/t28_a098_total_distance_per_run.pdf}
 
   % The single shared caption
   \caption{Total sailing distance and average distance per route for each configuration and demand scenario.}
@@ -798,15 +781,15 @@ The full demand data for each scenarios of all the ports for both chosen run can
 \end{figure}
 
 \subsection{Boat Scheduling}
-\label{subsec:fleet-feasibility}
+\label{subsec:boat-scheduling}
 
 \begin{figure}[htbp]
   \centering
   % First image
-  \includegraphics[width=0.48\textwidth]{python/graphs/routing/t15_a095_routing_routes_per_config.pdf}
+  \includegraphics[width=0.49\textwidth]{python/graphs/routing/t15_a095_routing_routes_per_config.pdf}
   \hfill
   % Second image
-  \includegraphics[width=0.48\textwidth]{python/graphs/routing/t28_a098_routing_routes_per_config.pdf}
+  \includegraphics[width=0.49\textwidth]{python/graphs/routing/t28_a098_routing_routes_per_config.pdf}
 
   % The single shared caption
   \caption{Number of routes and boats needed for each configuration and demand scenario.}
@@ -1033,6 +1016,19 @@ Equation~\ref{eq:postnord_cagr} outlines the \ac{cagr} formula for PostNord parc
     \bottomrule
   \end{tabular}
 \end{table}
+
+\begin{figure}[htbp]
+  \centering
+
+  \includegraphics[width=0.95\textwidth]{python/graphs/port_demands/t15_a095_demand_scenarios_per_port.pdf}
+
+  \vspace{0.6cm}
+
+  \includegraphics[width=0.95\textwidth]{python/graphs/port_demands/t28_a098_demand_scenarios_per_port.pdf}
+
+  \caption{Distribution of daily parcel demand across selected port and depot under the low, average, and peak demand scenarios. The upper graph corresponds to \(T_{\max}=15\) min and \(\alpha=0.95\), while the lower graph corresponds to \(T_{\max}=28\) min and \(\alpha=0.98\).}
+  \label{anx:demand_per_port}
+\end{figure}
 
 \begin{figure}[htbp]
   \centering
