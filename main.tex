@@ -669,10 +669,7 @@ The last three constraints,~\eqref{eq:sched-y-binary},~\eqref{eq:sched-u-binary}
 
 Once the model is solved, the optimised schedule can be rebuilt from the decision variables to form a route-to-boat-and-shift assignment, with a total working time and a shift count $\sum_s z_{ks}$ for each boat $k$. As with the \ac{psclp}, the model is implemented with Google OR-Tools \parencite{ortools} using its CP-SAT solver \parencite{cpsat}. Route durations $\delta_r$ are converted from hours to integer seconds before being passed to the solver, since CP-SAT only accepts integer coefficients. A solver time limit of \qty{2}{\minute} per run is set, which is well above what is needed as the number of routes per day stays low and an optimal solution is returned in under a second.
 
-\subsection{\ac{kpi} Evaluation}
-\label{subsec:kpi}
-
-\section{Analysis}
+\section{Results}
 \label{sec:analysis}
 
 \subsection{Port Location Results}
@@ -695,9 +692,6 @@ Once the model is solved, the optimised schedule can be rebuilt from the decisio
 
 \subsection{Sensitivity Analysis}
 \label{subsec:sensitivity-analysis}
-
-\section{temp}
-\label{subsec:temp}
 
 \section{Discussion}
 \label{sec:discussion}
