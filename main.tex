@@ -22,6 +22,7 @@
 \usepackage{microtype}
 \usepackage{tabularx}
 \usepackage{csquotes}
+\usepackage{makecell}
 % biblio
 
 % --- Bibliography Setup ---
@@ -671,62 +672,58 @@ Once the model is solved, the optimised schedule can be rebuilt from the decisio
 \section{Results and Discussion}
 \label{sec:analysis}
 
-\subsection{Port Locations}
-\label{subsec:port-location-results}
+\subsection{Walking thresholds}
+\label{subsec:walking_threshold}
+
+As discussed in the Methodology, the \ac{psclp} was ran with multiple combinations of walking time threshold (\(T_{\max}\)) and minimum population covered by this walking time (\(\alpha)\). The results of the best runs by uptopia ranking by \(T_{\max}\) can be found in Figure \ref{fig:utopia}, with also the best overall run. The two runs that were selected is (\(T_{\max}=15,\alpha=0.95\)) and (\(T_{\max}=28,\alpha=0.98\)) as the first is the best of its walking time group, and the second the best overall of all runs, again based on the utopia ranked described in Section \ref{ssec:scenario_selection}. The table also details who the relation between the ports needed to acheive a given walking time, as the smallest threshold forces the model to open a large amount of ports, but this amount reduces rapidly when reducing the threshold, going from \qtyrange{28}{17}{ports}. It can also be observed that the total population covered by \(T_{\max}\) stays low for the marority of the threshold even if the model optimized based on it. These results signify that the population is still largy far away by walk from a canditate port, in all runs. At \(T_{\max}=15\), only \qty{46}{\percent} of the population is withing this threshold, the next \qty{5}{\min} adds \qty{10}{\percent}, reaching \qty{60}{\percent} only at \(T_{\max}=22\). Relaxing the threshold by \qty{7}{\min} has dropped the port count needed by \num{8}, or around \qty{29}{\percent}. This is why the utopia method was used to select a run, as their is too much dimension to easily chose a good scenario. Moreover, without any financial value for a openned port, or study on how long a citizen in Bergen would be willing to walk for its parcel, basing the choice on anything else than pure quantificantion of the run is impossible.
+
+
+%%%
+%%% Change this fucking graph to show the lines as the avg walking distance in minutes, not the fucking reyatd % populati
+%%%
 
 \begin{figure}[htbp]
   \centering
-  % First image
-  \includegraphics[width=0.48\textwidth]{maps/run_map_ports_15_a095.pdf}
-  \hfill
-  % Second image
-  \includegraphics[width=0.48\textwidth]{maps/run_map_ports_28_a098.pdf}
-
-  % The single shared caption
-  \caption{Selected ports for chosen run with walking threshold of 15 (right) and 28 (left).}
-  \label{fig:run_port_maps}
-\end{figure}
-
-\subsection{Population Coverages}
-\label{subsec:population-coverage-results}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{python/graphs/port_locations/psclp_utopia_choices.pdf}
+  \includegraphics[width=1\textwidth]{python/graphs/port_locations/psclp_utopia_choices.pdf}
   \caption{Summary of \ac{psclp} uptopia runs per walking theshold \(T_{\max}\), with the overall uptopia run.}
   \label{fig:utopia}
 \end{figure}
 
+For the rest of the thesis, the two runs will refered as \texttt{t15} for the \ac{psclp} configuration (\(T_{\max}=15,\alpha=0.95\)) and \texttt{t28} for (\(T_{\max}=28,\alpha=0.98\)).
+
+\subsection{Port Locations}
+\label{subsec:port-location-results}
+
+The layout of the chosen ports for both selected runs can be found in Figure \ref{fig:run_port_maps}. It shows that the two runs have a lot of ports in common, and both shares the same map layout for the ports, with six clearly defined zones. This indicates that some candiate ports have good geographic position that can deserve a great portion of the population. The ports in \texttt{t28} are almost a subset of the ones in \texttt{t15}, with a few exceptions. This illustrate that a project like this could be implemented in different \(T_{\max}\), going from greater to smaller, by making a few changes to the model. Moreover, because we have clear geographic zones, some zones could be removed at the beginning and added later.
+
 \begin{figure}[htbp]
   \centering
-  % First image
-  \includegraphics[width=0.48\textwidth]{python/graphs/port_locations/t15_a095_coverage_cumulative.pdf}
+  \includegraphics[width=0.48\textwidth]{maps/run_map_ports_15_a095.pdf}
   \hfill
-  % Second image
-  \includegraphics[width=0.48\textwidth]{python/graphs/port_locations/t28_a098_coverage_cumulative.pdf}
-
-  % The single shared captions
-  \caption{Cummulative total population coverage, grouped by districts and all, by walking time.}
-  \label{fig:coverage_cumulative}
+  \includegraphics[width=0.48\textwidth]{maps/run_map_ports_28_a098.pdf}
+  \caption{Selected ports for chosen runs.}
+  \label{fig:run_port_maps}
 \end{figure}
 
+The routes that were drawn to calculate the distances can also be seen in Figure \ref{fig:run_port_maps} as the orange lines on the water. Again, these lines were only used to get relable distance between the ports, a real network would insure that they are actual optimal route between two ports, using advanced waterway knowledge.
+
 \begin{figure}[htbp]
   \centering
-  % First image
-  \includegraphics[width=0.48\textwidth]{python/graphs/port_locations/t15_a095_coverage_thresholds.pdf}
-  \hfill
-  % Second image
-  \includegraphics[width=0.48\textwidth]{python/graphs/port_locations/t28_a098_coverage_thresholds.pdf}
-
-  % The single shared caption
-  \caption{total Population coverage by walking thresholds.}
+  \includegraphics[width=0.8\textwidth]{python/graphs/port_locations/coverage_thresholds.pdf}
+  \caption{Total Population coverage for chosen runs by walking thresholds.}
   \label{fig:coverage_threshold}
 \end{figure}
+
+% anx:coverage_cumulative
+
+To better understand the effect of adding ports on the population coverage, the Figure \ref{fig:coverage_threshold} can be observed. It cleary demonstrate that the addition of ports primarly increases the population coverage in the first \qtyrange{15}{20}{\min}, leaving the rest basibly unchanged. With \texttt{t28}, only \qty{36}{\percent} of the population was convered in \qty{15}{\min}, compared to only \qty{47}{\percent} with \texttt{t15}. However, overall, both runs have similay overall average population walking speed of \qty{19.68}{\min} for \texttt{t15} and \qty{20.73}{\min} for \texttt{t28}.
 
 \subsection{Demand Scenarios}
 \label{subsec:demand_scenarios}
 
-As discussed, three demand scenarios were chosen to test the waterway network based on possible daily demands. The entire year daily demands and the scenarios can be observed in Figure \ref{fig:yearly_demand}, with each day's color being the color of the scenario that could handle its demand. The low-demand scenario corresponds to the lowest observed daily demand in the recorded year, with \qty{8402}{parcels}. In contrast, the peak demand scenario is more than six times that, with \qty{51696}{parcels}. Somewhate in between the two is the average scenario, with \qty{24698}{parcels}.
+As discussed, three demand scenarios were chosen to test the waterway network based on possible daily demands. The full year of daily demand and the three scenarios are shown in Figure~\ref{fig:yearly_demand}, where each day is coloured according to the scenario that could handle its demand.
+
+Two patterns stand out. First, a within-week variation is visible, with the highest demand on Monday, a dip in the middle of the week, and a partial recovery by Friday. This pattern is not observed in the raw data but comes from the daily demand shares introduced in Section~\ref{subsec:weekly-to_daily-demand}, which spread the weekly total unevenly across the five weekdays. Second, a clear seasonality can be seen across the year. Demand rises sharply in November and December, most likely driven by the Christmas period in Norway, while noticeable drops appear in April and May, and again in late July. January stands out the most, with very low demand compared to the rest of the year. This could be the result of missing data in the PostNord dataset, although the weekdays of January are indeed present for the entire month. A more plausible explanation is the post-Christmas slowdown, when consumer and retail activity tend to drop at the start of the new year.
 
 \begin{figure}[htbp]
   \centering
@@ -735,23 +732,15 @@ As discussed, three demand scenarios were chosen to test the waterway network ba
   \label{fig:yearly_demand}
 \end{figure}
 
+The low-demand scenario corresponds to a daily network demand of \qty{10732}{parcels}. The peak scenario is more than four times higher at \qty{44405}{parcels}, while the average scenario sits in between with \qty{21518}{parcels}. As shown in Figure~\ref{fig:yearly_demand}, very few days in the observed year fall within the low-demand range, with most of them concentrated at the very beginning of January. The low scenario therefore serves more as a reference for the quiet end of the demand range than as a typical operating day. By contrast, the average and peak scenarios bound the majority of the actual year, with most weekdays falling between the two thresholds.
+
 \subsection{Port Demands}
 \label{subsec:port-demand-results}
 
+The full demand data for each scenarios of all the ports for both chosen run can be found in the \Nameref{sec:appendix} at Table \ref{anx:port_demand_scenarios_t15_a095} for the \(T_{\max}=15, \alpha=0.95\) and Table \ref{anx:port_demand_scenarios_t28_a098} for the \(T_{\max}=28, \alpha=0.98\). As discussed earlier, the depot itself will also served as a demand port for household, letting them come and pick up their parcls, therefore its demand will not have to be transported by boat.
 
 
-\begin{figure}[htbp]
-  \centering
-  % First image
-  \includegraphics[width=0.48\textwidth]{python/graphs/port_demands/t15_a095_demand_per_zone.pdf}
-  \hfill
-  % Second image
-  \includegraphics[width=0.48\textwidth]{python/graphs/port_demands/t28_a098_demand_per_zone.pdf}
 
-  % The single shared caption
-  \caption{Yearly demand by port zones.}
-  \label{fig:demand_zones}
-\end{figure}
 
 \begin{figure}[htbp]
   \centering
@@ -968,6 +957,106 @@ Equation~\ref{eq:postnord_cagr} outlines the \ac{cagr} formula for PostNord parc
   \vspace{1ex}
   {\raggedright \footnotesize * The 7-Day Split' Saturday volume is given to Monday's allocation for the 5-day weekday operations.\par}
 \end{table}
+
+\subsection{Results}
+
+\subsubsection{Port Demands}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Port demand scenario data for run \(T_{max}=28\) and \(\alpha=0.98\) (in parcels).}
+  \label{anx:port_demand_scenarios_t28_a098}
+  \begin{tabular}{lrrr}
+    \toprule
+    \textbf{OSM Node} & \textbf{Low Scenario} & \textbf{Avg Scenario} & \textbf{Peak Scenario} \\
+    \midrule
+    17952828          & 104                   & 187                   & 400                    \\
+    113834140         & 41                    & 134                   & 285                    \\
+    863391850         & 705                   & 1,454                 & 3,279                  \\
+    3685706940        & 927                   & 1,539                 & 3,135                  \\
+    3689983240        & 40                    & 64                    & 189                    \\
+    3695357841        & 125                   & 194                   & 445                    \\
+    3977652985        & 2,356                 & 3,785                 & 7,627                  \\
+    4105134356        & 834                   & 1,837                 & 3,563                  \\
+    4118639614        & 961                   & 2,438                 & 5,180                  \\
+    4234389320        & 760                   & 1,454                 & 2,661                  \\
+    4872700891        & 600                   & 1,429                 & 2,739                  \\
+    4912219155        & 240                   & 424                   & 951                    \\
+    4933230383        & 607                   & 1,351                 & 3,410                  \\
+    4945276305        & 1,063                 & 2,291                 & 4,728                  \\
+    4973225641        & 124                   & 219                   & 523                    \\
+    6131737864        & 506                   & 1,054                 & 1,918                  \\
+    6508381749        & 103                   & 228                   & 540                    \\
+    9351325110        & 199                   & 507                   & 871                    \\
+    9763645545        & 118                   & 255                   & 578                    \\
+    11083764916       & 319                   & 674                   & 1,383                  \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Port demand scenario data for run \(T_{max}=15\) and \(\alpha=0.95\) (in parcels).}
+  \label{anx:port_demand_scenarios_t15_a095}
+  \begin{tabular}{lrrr}
+    \toprule
+    \textbf{OSM Node} & \textbf{Low Scenario} & \textbf{Avg Scenario} & \textbf{Peak Scenario} \\
+    \midrule
+    17952828          & 96                    & 167                   & 349                    \\
+    29600478          & 232                   & 366                   & 720                    \\
+    29926943          & 50                    & 95                    & 248                    \\
+    113834140         & 18                    & 59                    & 131                    \\
+    3685706940        & 696                   & 1,168                 & 2,417                  \\
+    3689983240        & 40                    & 64                    & 189                    \\
+    3902076021        & 16                    & 39                    & 117                    \\
+    3977652985        & 2,068                 & 3,259                 & 6,486                  \\
+    4086516345        & 421                   & 768                   & 1,598                  \\
+    4105134356        & 763                   & 1,687                 & 3,256                  \\
+    4118639614        & 1,076                 & 2,616                 & 5,571                  \\
+    4234389320        & 754                   & 1,439                 & 2,622                  \\
+    4268515208        & 101                   & 170                   & 409                    \\
+    4333918395        & 115                   & 248                   & 565                    \\
+    4743388682        & 688                   & 1,420                 & 3,214                  \\
+    4872700891        & 499                   & 1,191                 & 2,271                  \\
+    4933230383        & 634                   & 1,409                 & 3,519                  \\
+    4945276305        & 803                   & 1,813                 & 3,737                  \\
+    6015545311        & 274                   & 622                   & 1,267                  \\
+    6131737864        & 392                   & 725                   & 1,356                  \\
+    6508381749        & 94                    & 203                   & 480                    \\
+    10124360518       & 11                    & 23                    & 60                     \\
+    10696136475       & 75                    & 191                   & 360                    \\
+    10700534562       & 128                   & 223                   & 522                    \\
+    10876181717       & 296                   & 710                   & 1,253                  \\
+    11083764916       & 322                   & 681                   & 1,397                  \\
+    12273007575       & 21                    & 40                    & 106                    \\
+    12941923336       & 51                    & 111                   & 233                    \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+  \centering
+  % First image
+  \includegraphics[width=0.48\textwidth]{python/graphs/port_demands/t15_a095_demand_per_zone.pdf}
+  \hfill
+  % Second image
+  \includegraphics[width=0.48\textwidth]{python/graphs/port_demands/t28_a098_demand_per_zone.pdf}
+
+  % The single shared caption
+  \caption{Yearly demand by port zones.}
+  \label{anx:demand_zones}
+\end{figure}
+
+\subsubsection{Run Coverages}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.48\textwidth]{python/graphs/port_locations/t15_a095_coverage_cumulative.pdf}
+  \hfill
+  \includegraphics[width=0.48\textwidth]{python/graphs/port_locations/t28_a098_coverage_cumulative.pdf}
+  \caption{Cummulative total population coverage, grouped by districts and all, by walking time.}
+  \label{anx:coverage_cumulative}
+\end{figure}
 
 \end{document}
 

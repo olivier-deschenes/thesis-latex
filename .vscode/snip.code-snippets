@@ -1,0 +1,23 @@
+{
+	"t15 threshold": {
+		"prefix": "t15",
+		"body": [
+			"\\texttt{t15}"
+		],
+		"description": "15 minute threshold"
+	},
+	"t28 threshold": {
+		"prefix": "t28",
+		"body": [
+			"\\texttt{t28}"
+		],
+		"description": "15 minute threshold"
+	},
+	"qtyrange": {
+		"prefix": "qt",
+		"body": [
+			"\\qtyrange{}{}{}"
+		],
+		"description": "15 minute threshold"
+	}
+}
