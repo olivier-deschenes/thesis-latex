@@ -203,7 +203,7 @@ The data used in this thesis comes from three independent sources, each addressi
 \subsection{Walking network of Bergen}
 \label{subsec:walking_bergen}
 
-\ac{osm} is first used to retreive the walking graph of Bergen by using the Python package \texttt{OSMnx} \parencite{osmnx} using its \texttt{graph\_from\_place()} function. This package offers the ability to retreive the graph of a specific place (\texttt{place\_name="Bergen, Norway"}) and network type (\texttt{network\_type="walk"}). However, during stop checking of the walking distance, it was detected that the network type filter was too narrow as the Google Map dap distances were generally smaller than the calculated distance based on the graph. After investigation, the network filter exluded all bycible lanes, even if they were labed as walkable by \ac{osm}. The filter was therefore changed to allow byciable lanes if they are walkable.
+\ac{osm} is first used to retreive the walking graph of Bergen by using the Python package \texttt{OSMnx} \parencite{osmnx} using its \texttt{graph\_from\_place()} function. This package offers the ability to retreive the graph of a specific place (\texttt{place\_name=``Bergen, Norway''}) and network type (\texttt{network\_type=``walk''}). However, during stop checking of the walking distance, it was detected that the network type filter was too narrow as the Google Map dap distances were generally smaller than the calculated distance based on the graph. After investigation, the network filter exluded all bycible lanes, even if they were labed as walkable by \ac{osm}. The filter was therefore changed to allow byciable lanes if they are walkable.
 
 \subsection{Population and Household Data}
 \label{subsec:population-household-data}
@@ -248,7 +248,7 @@ The resulted data contains \num{746} port locations. The distribution of the por
 \subsection{Distance and Travel Time Data}
 \label{subsec:distance-travel-time-data}
 
-Having defined our household nodes and ports nodes datasets, we can now build our distance matrix. To acheive this, the Python package \texttt{networkx} \parencite{networkx} was used to calculate the shortes distance between all combination of port and household nodes using its \texttt{single\_source\_dijkstra\_path\_length()} function. Resulted in a $m \times n$ matrix $D$. With $d_{i,j}$ representing the Dijkstra shortest-path distance between the $i$-th port and the $j$-th household nodes\footnote{All pairs were reachable by walking due to the \ac{osm} node snapping and filtering of the port nodes.}. For this thesis, the distance between any $port_i$ and $household_j$ is assumed to be symmetric ($d_{i,j} = d_{j,i}$).
+Having defined our household nodes and ports nodes datasets, we can now build our distance matrix. To acheive this, the Python package \texttt{networkx} \parencite{networkx} was used to calculate the shortes distance between all combination of port and household nodes using its \texttt{single\_source\_dijkstra\_path\_length()} function. Resulted in a \(m \times n\) matrix \(D\). With \(d_{i,j}\) representing the Dijkstra shortest-path distance between the \(i\)-th port and the \(j\)-th household nodes\footnote{All pairs were reachable by walking due to the \ac{osm} node snapping and filtering of the port nodes.}. For this thesis, the distance between any \(port_i\) and \(household_j\) is assumed to be symmetric (\(d_{i,j} = d_{j,i}\)).
 
 To calculate walking time, an average walking speed first needed to be defined. Based on the work of \cite{walkingspeed}, which reviewed numerous walking speed studies worldwide, a walking speed of \qty{1.25}{m/s} was identified as an appropriate general assumption. However, in the absence of studies specifically focused on Bergen, walking speed may differ from this general assumption and could be significantly affected by seasonal, weather, and topographical conditions, particularly elevation changes along walking paths. As the impact of these factors on walking speed is difficult to quantify specifically, the general assumption will be retained for this thesis. The resulted population coverage by walking time can be seen in Figure \ref{fig:population_coverage} when all candidate port nodes are available.
 
@@ -280,7 +280,7 @@ Since daily scheduling for the boat network requires daily demand for each selec
 \subsection{Disaggregating Postcal Code Demand into Household Demand}
 \label{subsec:postal-code-to-household-demand}
 
-To correcly assinged demands to the nearest chosen ports, the demand of each Households must be known. However, the PostNord dataset is only by postal code. Nevertheless, the demand can still be allocated to each household based on its share of the population within its postal code. For example, if a postal code has a weekly demand of 100 parcels and contains two households, one with 1 resident ($a$) and the other with 2 ($b$), the demand is distributed as $\frac{1}{3}$ to $a$ and $\frac{2}{3}$ to $b$. In addition, each household demand was rounded to have integer demand, resulting in a loss of \num{15.69} total parcels or \qty{0.000263}{\percent} of total demand.
+To correcly assinged demands to the nearest chosen ports, the demand of each Households must be known. However, the PostNord dataset is only by postal code. Nevertheless, the demand can still be allocated to each household based on its share of the population within its postal code. For example, if a postal code has a weekly demand of 100 parcels and contains two households, one with 1 resident (\(a\)) and the other with 2 (\(b\)), the demand is distributed as \(\frac{1}{3}\) to \(a\) and \(\frac{2}{3}\) to \(b\). In addition, each household demand was rounded to have integer demand, resulting in a loss of \num{15.69} total parcels or \qty{0.000263}{\percent} of total demand.
 
 \subsection{Depot Location}
 \label{sub:depot_loc}
@@ -414,13 +414,13 @@ Table \ref{tab:pslcp_configs} presents the model configurations, all combination
     \toprule
     \textbf{Symbol} & \textbf{Description}                           & \textbf{Value}            \\
     \midrule
-    $\alpha$        & Target demand coverage threshold               & \{0.75, 0.76, \ldots, 1\} \\
-    $T_{\max}$      & Maximum allowable walking time limit (minutes) & \{15, 16, \ldots, 30\}    \\
+    \(\alpha\)      & Target demand coverage threshold               & \{0.75, 0.76, \ldots, 1\} \\
+    \(T_{\max}\)    & Maximum allowable walking time limit (minutes) & \{15, 16, \ldots, 30\}    \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-Most of the model implementation comes directly from the \cite{psclp} paper, altougt some changes were made to make it fit with this thesis. Table \ref{tab:psclp_notation} details the notation used in the model. The changes made in the notation were mostly done to contextualize it for the thesis, as we have household and port nodes instead of demand nodes and facilities, while using population instead of weight. The \textit{Data and Sets} section of the table describes what the model needs as input, with the set of port and household nodes and population for each households. The reachable household nodes $J$ is calculated using the previously defined distance matrix $M$, where every household nodes whitout a port node close enough is removed from considuration. The maximum distance used is derived from the walking speed and the current run $T_{max}$ resulted in a maximum amount of meters to given to reach a possible port.
+Most of the model implementation comes directly from the \cite{psclp} paper, altougt some changes were made to make it fit with this thesis. Table \ref{tab:psclp_notation} details the notation used in the model. The changes made in the notation were mostly done to contextualize it for the thesis, as we have household and port nodes instead of demand nodes and facilities, while using population instead of weight. The \textit{Data and Sets} section of the table describes what the model needs as input, with the set of port and household nodes and population for each households. The reachable household nodes \(J\) is calculated using the previously defined distance matrix \(M\), where every household nodes whitout a port node close enough is removed from considuration. The maximum distance used is derived from the walking speed and the current run \(T_{max}\) resulted in a maximum amount of meters to given to reach a possible port.
 
 \begin{table}[htbp]
   \centering
@@ -430,32 +430,32 @@ Most of the model implementation comes directly from the \cite{psclp} paper, alt
   \begin{tabularx}{\textwidth}{c X l}
     \toprule
 
-    \multicolumn{3}{l}{\textbf{\textit{Data and Sets}}}                                                                                             \\
+    \multicolumn{3}{l}{\textbf{\textit{Data and Sets}}}                                                                                                  \\
     \midrule
-    \textbf{Symbol} & \textbf{Description}                                                                                                          \\
+    \textbf{Symbol} & \textbf{Description}                                                                                                               \\
     \midrule
-    $I$             & \multicolumn{2}{l}{Set of candidate port nodes, indexed by $i$}                                                               \\
-    $J$             & \multicolumn{2}{l}{Set of reachable household nodes, indexed by $j$}                                                          \\
-    $d_j$           & \multicolumn{2}{l}{Household population associated with node $j$}                                                             \\
-    $I(j)$          & \multicolumn{2}{l}{Subset of ports $i \in I$ capable of reaching household node $j$ in $T_{\max}$}                            \\
-    $P$             & \multicolumn{2}{l}{Subset of preselected ports that must be opened, currently the depot}                                      \\
-    \midrule
-
-    \multicolumn{3}{l}{\textbf{\textit{Parameters}}}                                                                                                \\
-    \midrule
-    \textbf{Symbol} & \textbf{Description}                                                                                  & \textbf{Value}        \\
-    \midrule
-    $D$             & Minimum total household population to be covered                                                      & $\alpha \sum d_j$     \\
-    $f_i$           & Fixed cost of opening port $i$                                                                        & 1                     \\
+    \(I\)           & \multicolumn{2}{l}{Set of candidate port nodes, indexed by \(i\)}                                                                  \\
+    \(J\)           & \multicolumn{2}{l}{Set of reachable household nodes, indexed by \(j\)}                                                             \\
+    \(d_j\)         & \multicolumn{2}{l}{Household population associated with node \(j\)}                                                                \\
+    \(I(j)\)        & \multicolumn{2}{l}{Subset of ports \(i \in I\) capable of reaching household node \(j\) in \(T_{\max}\)}                           \\
+    \(P\)           & \multicolumn{2}{l}{Subset of preselected ports that must be opened, currently the depot}                                           \\
     \midrule
 
-    \multicolumn{3}{l}{\textbf{\textit{Decision Variables}}}                                                                                        \\
+    \multicolumn{3}{l}{\textbf{\textit{Parameters}}}                                                                                                     \\
     \midrule
-    \textbf{Symbol} & \textbf{Description}                                                                                  & \textbf{Value}        \\
+    \textbf{Symbol} & \textbf{Description}                                                                                     & \textbf{Value}          \\
     \midrule
-    $y_i$           & $\begin{cases} 1, & \text{if port } i \text{ is opened} \\ 0, & \text{otherwise} \end{cases}$         & Binary $\in \{0, 1\}$ \\
+    \(D\)           & Minimum total household population to be covered                                                         & \(\alpha \sum d_j\)     \\
+    \(f_i\)         & Fixed cost of opening port \(i\)                                                                         & 1                       \\
+    \midrule
+
+    \multicolumn{3}{l}{\textbf{\textit{Decision Variables}}}                                                                                             \\
+    \midrule
+    \textbf{Symbol} & \textbf{Description}                                                                                     & \textbf{Value}          \\
+    \midrule
+    \(y_i\)         & \(\begin{cases} 1, & \text{if port } i \text{ is opened} \\ 0, & \text{otherwise} \end{cases}\)          & Binary \(\in \{0, 1\}\) \\
     [3ex]
-    $z_j$           & $\begin{cases} 1, & \text{if demand node } j \text{ is covered} \\ 0, & \text{otherwise} \end{cases}$ & Binary $\in \{0, 1\}$ \\
+    \(z_j\)         & \(\begin{cases} 1, & \text{if demand node } j \text{ is covered} \\ 0, & \text{otherwise} \end{cases}\)  & Binary \(\in \{0, 1\}\) \\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -477,11 +477,11 @@ Building upon the established notation, the problem is formulated as an optimiza
              &                                                   & j \in J \label{eq:psclp-z-binary}
 \end{align}
 
-The objective function~\eqref{eq:psclp-objective} traditionally minimizes the total fixed cost of the opened ports. Since every candidate port is given the same opening cost ($f_i = 1$), this is the same as minimizing the number of ports selected for the network.
+The objective function~\eqref{eq:psclp-objective} traditionally minimizes the total fixed cost of the opened ports. Since every candidate port is given the same opening cost (\(f_i = 1\)), this is the same as minimizing the number of ports selected for the network.
 
-Constraint~\eqref{eq:psclp-coverage} ensures that for a household node $j$ to be covered ($z_j = 1$), at least one port from its subset $I(j)$ must be opened. If no port able to reach $j$ within the walking threshold $T_{\max}$ is opened, $z_j$ is forced to bo not covered ($z_j = 0$).
+Constraint~\eqref{eq:psclp-coverage} ensures that for a household node \(j\) to be covered (\(z_j = 1\)), at least one port from its subset \(I(j)\) must be opened. If no port able to reach \(j\) within the walking threshold \(T_{\max}\) is opened, \(z_j\) is forced to bo not covered (\(z_j = 0\)).
 
-Constraint~\eqref{eq:psclp-demand} ensures that the covered set of household populations is greater or equal to our minum covered population $D$.
+Constraint~\eqref{eq:psclp-demand} ensures that the covered set of household populations is greater or equal to our minum covered population \(D\).
 
 Constraint~\eqref{eq:psclp-preselected} forces every preselected port to be opened. The depot is part of this set, as the boats operate out of it and it must therefore always be among the selected ports (Section~\ref{sub:depot_loc}).
 
@@ -490,16 +490,16 @@ The last two constraints,~\eqref{eq:psclp-y-binary} and~\eqref{eq:psclp-z-binary
 \subsubsection{Model implementation}
 \label{ssec:psclp_implementation}
 
-The \ac{psclp} is implemented with Google OR-Tools \parencite{ortools}, using its constraint-programming solver CP-SAT \parencite{cpsat}. One adjustment was needed to fit the model to the solver. CP-SAT only works with integer coefficients, but the coverage target $D = \alpha \sum_{j \in J} d_j$ is usually not a whole number, since $\alpha$ is a fraction. To account for this, the population and the coverage target are multiplied by \num{1000} and rounded to integers before the demand constraint~\eqref{eq:psclp-demand} is built. This keeps three decimal places of precision, so the rounding has no real effect on the result.
+The \ac{psclp} is implemented with Google OR-Tools \parencite{ortools}, using its constraint-programming solver CP-SAT \parencite{cpsat}. One adjustment was needed to fit the model to the solver. CP-SAT only works with integer coefficients, but the coverage target \(D = \alpha \sum_{j \in J} d_j\) is usually not a whole number, since \(\alpha\) is a fraction. To account for this, the population and the coverage target are multiplied by \num{1000} and rounded to integers before the demand constraint~\eqref{eq:psclp-demand} is built. This keeps three decimal places of precision, so the rounding has no real effect on the result.
 
-The model is kept as compact as possible by removing, before optimization, all households that cannot be covered by any candidate port within the walking threshold $T_{\max}$. These households are therefore excluded from the formulation, and no associated coverage variable $z_j$ is introduced.
+The model is kept as compact as possible by removing, before optimization, all households that cannot be covered by any candidate port within the walking threshold \(T_{\max}\). These households are therefore excluded from the formulation, and no associated coverage variable \(z_j\) is introduced.
 
 \subsubsection{Scenario Selection}
 \label{ssec:scenario_selection}
 
-Each pair $(T_{\max}, \alpha)$ produces one feasible \ac{psclp} solution, but carrying every combination through the routing and scheduling steps would be impractical. A subset is therefore selected using the \textit{utopia point} method: the coverage $\alpha$, the number of opened ports and the average weighted walking time are min-max normalised across the relevant set of runs, and the run with the shortest Euclidean distance to the ideal $(1, 0, 0)$ point (maximum coverage, minimum ports, minimum walking time) is retained.
+Each pair \((T_{\max}, \alpha)\) produces one feasible \ac{psclp} solution, but carrying every combination through the routing and scheduling steps would be impractical. A subset is therefore selected using the \textit{utopia point} method: the coverage \(\alpha\), the number of opened ports and the average weighted walking time are min-max normalised across the relevant set of runs, and the run with the shortest Euclidean distance to the ideal \((1, 0, 0)\) point (maximum coverage, minimum ports, minimum walking time) is retained.
 
-This rule is applied twice. First, for each walking threshold $T_{\max}$, the best run among the feasible $\alpha$ values is kept; the run at $T_{\max} = \qty{15}{\minute}$ is of particular interest as it matches the ``15-minute city'' reference discussed in the background section. Second, a single overall best run is identified across all $(T_{\max}, \alpha)$ pairs. These selected scenarios are then carried forward to the boat routing models presented in the next section.
+This rule is applied twice. First, for each walking threshold \(T_{\max}\), the best run among the feasible \(\alpha\) values is kept; the run at \(T_{\max} = \qty{15}{\minute}\) is of particular interest as it matches the ``15-minute city'' reference discussed in the background section. Second, a single overall best run is identified across all \((T_{\max}, \alpha)\) pairs. These selected scenarios are then carried forward to the boat routing models presented in the next section.
 
 \subsection{Boat Routing Models}
 \label{subsec:boat_routing_models}
@@ -509,9 +509,9 @@ With the selected ports and their daily demand scenarios in hand, the next step 
 \subsubsection{Demand Allocation to Selected Ports}
 \label{ssec:demand_allocation}
 
-The \ac{psclp} gives a set of selected ports, but it does not say the households each port should serve. Each household is assigned to the nearest selected port based on the distance matrix $M$. The total household demands is then summed by ports to get a weekly demand for each ports.
+The \ac{psclp} gives a set of selected ports, but it does not say the households each port should serve. Each household is assigned to the nearest selected port based on the distance matrix \(M\). The total household demands is then summed by ports to get a weekly demand for each ports.
 
-It should be noted that this is done for every household, not only for the ones the \ac{psclp} counted as covered. A household that was left uncovered, meaning that no selected port can be reached within the walking threshold $T_{\max}$, is still assigned to its nearest selected port, only with a longer walk. The selected ports therefore receive the parcel demand of every household in the included districts, and the coverage threshold $\alpha$ only shapes which ports are selected and how far people have to walk, not the amount of demand the network has to carry.
+It should be noted that this is done for every household, not only for the ones the \ac{psclp} counted as covered. A household that was left uncovered, meaning that no selected port can be reached within the walking threshold \(T_{\max}\), is still assigned to its nearest selected port, only with a longer walk. The selected ports therefore receive the parcel demand of every household in the included districts, and the coverage threshold \(\alpha\) only shapes which ports are selected and how far people have to walk, not the amount of demand the network has to carry.
 
 \subsubsection{Ports Distance matrix}
 \label{ssec:ports_distance_matrix}
@@ -549,9 +549,9 @@ Several configurations were tested for the \ac{scvrp}, each combining a boat cap
     \toprule
     \textbf{Symbol} & \textbf{Description}   & \textbf{Values}                               \\
     \midrule
-    $Q$             & Boat parcel capacity   & \{Low-capacity, Mid-capacity, High-capacity\} \\
-    $e$             & Employees per boat     & \{3, 4\}                                      \\
-    $s$             & Weekly demand scenario & \{Low, Average, Peak\}                        \\
+    \(Q\)           & Boat parcel capacity   & \{Low-capacity, Mid-capacity, High-capacity\} \\
+    \(e\)           & Employees per boat     & \{3, 4\}                                      \\
+    \(s\)           & Weekly demand scenario & \{Low, Average, Peak\}                        \\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -565,24 +565,24 @@ The classic \ac{scvrp} mathematical model is not defined in this thesis, as it w
 
   \begin{tabularx}{\textwidth}{c X l}
     \toprule
-    \textbf{Symbol} & \textbf{Description}                       & \textbf{Value}                                                    \\
+    \textbf{Symbol}  & \textbf{Description}                           & \textbf{Value}                                                    \\
     \midrule
-    $t_{ij}$        & Boat travel time between ports $i$ and $j$ & From port distance matrix                                         \\
-    $m$             & Manoeuvring time per arc                   & \qty{3.5}{\minute} (See Section \ref{subsubsec:maneuvering_time}) \\
-    $\tau$          & Discharge time per parcel                  & \qty{25}{\second}  (See Section \ref{subsubsec:discharge_time})   \\
-    $d_i$           & Parcel demand at port $i$                  & From demand matrix                                                \\
-    $T^{r}_{\max}$  & Maximum route duration                     & \qty{8}{\hour}  (See Section \ref{subsubsec:operating_hours})     \\
+    \(t_{ij}\)       & Boat travel time between ports \(i\) and \(j\) & From port distance matrix                                         \\
+    \(m\)            & Manoeuvring time per arc                       & \qty{3.5}{\minute} (See Section \ref{subsubsec:maneuvering_time}) \\
+    \(\tau\)         & Discharge time per parcel                      & \qty{25}{\second}  (See Section \ref{subsubsec:discharge_time})   \\
+    \(d_i\)          & Parcel demand at port \(i\)                    & From demand matrix                                                \\
+    \(T^{r}_{\max}\) & Maximum route duration                         & \qty{8}{\hour}  (See Section \ref{subsubsec:operating_hours})     \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-The objective minimises the total travel time of the fleet, where the cost of every arc is the sum of the boat travel time $t_{ij}$ between the two ports and the manoeuvring time $m$. The parcel handling time is left out of the optimization function as it is a constant, all of the demand will be handled at the same speed regardless. To allow split deliveries while keeping the standard \ac{scvrp} structure, where each stop is visited by exactly one vehicle, the demand of every port is decomposed into multiple service nodes that share the port's coordinates, each one carrying at most \num{10} parcels. The routing model treats these service nodes as independent stops but with no travel cost in-between them (no distance), making possible it for the same port can be visited several times by different routes.
+The objective minimises the total travel time of the fleet, where the cost of every arc is the sum of the boat travel time \(t_{ij}\) between the two ports and the manoeuvring time \(m\). The parcel handling time is left out of the optimization function as it is a constant, all of the demand will be handled at the same speed regardless. To allow split deliveries while keeping the standard \ac{scvrp} structure, where each stop is visited by exactly one vehicle, the demand of every port is decomposed into multiple service nodes that share the port's coordinates, each one carrying at most \num{10} parcels. The routing model treats these service nodes as independent stops but with no travel cost in-between them (no distance), making possible it for the same port can be visited several times by different routes.
 
-The handling time at port $i$ is $d_i \tau / e$, with $d_i$ the parcel demand of the port for the run, $\tau$ the per-parcel discharge time from Section~\ref{subsubsec:discharge_time}, and $e$ the crew size of the configuration. It represents an estimation of the time it will take to put the parcels into the lockers at the port. As mentionned above, the travel time between the port and the locker will not be taken into account in this thesis.
+The handling time at port \(i\) is \(d_i \tau / e\), with \(d_i\) the parcel demand of the port for the run, \(\tau\) the per-parcel discharge time from Section~\ref{subsubsec:discharge_time}, and \(e\) the crew size of the configuration. It represents an estimation of the time it will take to put the parcels into the lockers at the port. As mentionned above, the travel time between the port and the locker will not be taken into account in this thesis.
 
-Two capacity constraints are added to the solver. The first corresponds to the maximum parcel capacity of the boat in the current configuration, denoted by $Q$. This constraint ensures that the total demand assigned to a route does not exceed the boat capacity. The total demand is calculated by summing the demand covered by the boat at each visited port and is calculated by summing all theses times categories for each ports visied in the current route.
+Two capacity constraints are added to the solver. The first corresponds to the maximum parcel capacity of the boat in the current configuration, denoted by \(Q\). This constraint ensures that the total demand assigned to a route does not exceed the boat capacity. The total demand is calculated by summing the demand covered by the boat at each visited port and is calculated by summing all theses times categories for each ports visied in the current route.
 
-The second constraint corresponds to the maximum route duration, denoted by $T^{r}{\max}$. This constraint represents an operational restriction requiring employees to complete their route before the end of their shift. The total route duration includes travel time, maneuvering time, and handling time at each visited port.
+The second constraint corresponds to the maximum route duration, denoted by \(T^{r}{\max}\). This constraint represents an operational restriction requiring employees to complete their route before the end of their shift. The total route duration includes travel time, maneuvering time, and handling time at each visited port.
 
 The search is configured with \texttt{PARALLEL\_CHEAPEST\_INSERTION} as the first-solution strategy and \texttt{GUIDED\_LOCAL\_SEARCH} as the local-search metaheuristic \parencite{ortools_routing}, with a time limit of \qty{15}{\minute} per run. This combination produces a feasible solution quickly and then iteratively improves it; the best solution found within the time limit is retained.
 
@@ -603,35 +603,35 @@ Each route is treated as a single fixed-duration, indivisible task equal to its 
   \begin{tabularx}{\textwidth}{c X l}
     \toprule
 
-    \multicolumn{3}{l}{\textbf{\textit{Data and Sets}}}                                                                                                                       \\
+    \multicolumn{3}{l}{\textbf{\textit{Data and Sets}}}                                                                                                                           \\
     \midrule
-    \textbf{Symbol} & \textbf{Description}                                                                                                                                    \\
+    \textbf{Symbol} & \textbf{Description}                                                                                                                                        \\
     \midrule
-    $R$             & \multicolumn{2}{l}{Set of routes returned by the \ac{scvrp}, indexed by $r$}                                                                            \\
-    $K$             & \multicolumn{2}{l}{Set of available boats, indexed by $k$, with $|K| = |R|$}                                                                            \\
-    $s$             & \multicolumn{2}{l}{Shift index within a boat, $s \in \{1, \ldots, \bar{n}\}$}                                                                           \\
-    $\delta_r$      & \multicolumn{2}{l}{Total duration of route $r$}                                                                                                         \\
-    \midrule
-
-    \multicolumn{3}{l}{\textbf{\textit{Parameters}}}                                                                                                                          \\
-    \midrule
-    \textbf{Symbol} & \textbf{Description}                                                                                                            & \textbf{Value}        \\
-    \midrule
-    $H$             & Operating day length                                                                                                            & \qty{24}{\hour}       \\
-    $S$             & Maximum shift length                                                                                                            & \qty{8}{\hour}        \\
-    $\bar{n}$       & Maximum number of shifts per boat ($\lceil H / S \rceil$)                                                                       & 3                     \\
-    $M$             & Large weight on the boat count in the objective                                                                                 & \num{10000}           \\
+    \(R\)           & \multicolumn{2}{l}{Set of routes returned by the \ac{scvrp}, indexed by \(r\)}                                                                              \\
+    \(K\)           & \multicolumn{2}{l}{Set of available boats, indexed by \(k\), with \(|K| = |R|\)}                                                                            \\
+    \(s\)           & \multicolumn{2}{l}{Shift index within a boat, \(s \in \{1, \ldots, \bar{n}\}\)}                                                                             \\
+    \(\delta_r\)    & \multicolumn{2}{l}{Total duration of route \(r\)}                                                                                                           \\
     \midrule
 
-    \multicolumn{3}{l}{\textbf{\textit{Decision Variables}}}                                                                                                                  \\
+    \multicolumn{3}{l}{\textbf{\textit{Parameters}}}                                                                                                                              \\
     \midrule
-    \textbf{Symbol} & \textbf{Description}                                                                                                            & \textbf{Value}        \\
+    \textbf{Symbol} & \textbf{Description}                                                                                                              & \textbf{Value}          \\
     \midrule
-    $y_{rks}$       & $\begin{cases} 1, & \text{if route } r \text{ is assigned to shift } s \text{ of boat } k \\ 0, & \text{otherwise} \end{cases}$ & Binary $\in \{0, 1\}$ \\
+    \(H\)           & Operating day length                                                                                                              & \qty{24}{\hour}         \\
+    \(S\)           & Maximum shift length                                                                                                              & \qty{8}{\hour}          \\
+    \(\bar{n}\)     & Maximum number of shifts per boat (\(\lceil H / S \rceil\))                                                                       & 3                       \\
+    \(M\)           & Large weight on the boat count in the objective                                                                                   & \num{10000}             \\
+    \midrule
+
+    \multicolumn{3}{l}{\textbf{\textit{Decision Variables}}}                                                                                                                      \\
+    \midrule
+    \textbf{Symbol} & \textbf{Description}                                                                                                              & \textbf{Value}          \\
+    \midrule
+    \(y_{rks}\)     & \(\begin{cases} 1, & \text{if route } r \text{ is assigned to shift } s \text{ of boat } k \\ 0, & \text{otherwise} \end{cases}\) & Binary \(\in \{0, 1\}\) \\
     [3ex]
-    $u_k$           & $\begin{cases} 1, & \text{if boat } k \text{ is used} \\ 0, & \text{otherwise} \end{cases}$                                     & Binary $\in \{0, 1\}$ \\
+    \(u_k\)         & \(\begin{cases} 1, & \text{if boat } k \text{ is used} \\ 0, & \text{otherwise} \end{cases}\)                                     & Binary \(\in \{0, 1\}\) \\
     [3ex]
-    $z_{ks}$        & $\begin{cases} 1, & \text{if shift } s \text{ of boat } k \text{ is used} \\ 0, & \text{otherwise} \end{cases}$                 & Binary $\in \{0, 1\}$ \\
+    \(z_{ks}\)      & \(\begin{cases} 1, & \text{if shift } s \text{ of boat } k \text{ is used} \\ 0, & \text{otherwise} \end{cases}\)                 & Binary \(\in \{0, 1\}\) \\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -652,21 +652,21 @@ The problem is formulated as follows:
              & z_{ks} \in \{0,1\}                                                                             &  & k \in K,\ s \in \{1, \ldots, \bar{n}\} \label{eq:sched-z-binary}
 \end{align}
 
-The objective function~\eqref{eq:sched-objective} minimises the number of boats used first and the total number of shifts second. The fleet size is prioritised because each additional boat is a capital investment, while a shift only adds a crew for the day. The weight $M$ on the boat count is set well above the maximum possible total shift count $|K| \cdot \bar{n}$, so the solver can never trade a shift saving for an extra boat.
+The objective function~\eqref{eq:sched-objective} minimises the number of boats used first and the total number of shifts second. The fleet size is prioritised because each additional boat is a capital investment, while a shift only adds a crew for the day. The weight \(M\) on the boat count is set well above the maximum possible total shift count \(|K| \cdot \bar{n}\), so the solver can never trade a shift saving for an extra boat.
 
 Constraint~\eqref{eq:sched-assign} forces every route to be assigned to exactly one (boat, shift) pair.
 
-Constraint~\eqref{eq:sched-day} caps the total workload of boat $k$ at the operating day length $H$ when the boat is used, and forces it to zero otherwise.
+Constraint~\eqref{eq:sched-day} caps the total workload of boat \(k\) at the operating day length \(H\) when the boat is used, and forces it to zero otherwise.
 
-Constraint~\eqref{eq:sched-shift} is the bin-packing constraint at the heart of the model: the sum of route durations placed in shift $s$ of boat $k$ must fit within the maximum shift length $S$, and the shift is marked as used ($z_{ks} = 1$) as soon as any route is assigned to it. This per-shift bound is what guarantees feasibility at the crew level, since routes are indivisible and cannot be split across shifts. A weaker aggregate bound of the form $\sum_{r, s} \delta_r \, y_{rks} \leq S \, \sum_s z_{ks}$ would for instance allow four \qty{6}{\hour} routes to share three nominal shifts on aggregate time, even though no two of them could ever fit in a single \qty{8}{\hour} shift.
+Constraint~\eqref{eq:sched-shift} is the bin-packing constraint at the heart of the model: the sum of route durations placed in shift \(s\) of boat \(k\) must fit within the maximum shift length \(S\), and the shift is marked as used (\(z_{ks} = 1\)) as soon as any route is assigned to it. This per-shift bound is what guarantees feasibility at the crew level, since routes are indivisible and cannot be split across shifts. A weaker aggregate bound of the form \(\sum_{r, s} \delta_r \, y_{rks} \leq S \, \sum_s z_{ks}\) would for instance allow four \qty{6}{\hour} routes to share three nominal shifts on aggregate time, even though no two of them could ever fit in a single \qty{8}{\hour} shift.
 
-Constraint~\eqref{eq:sched-link} prevents a shift from being used unless its boat is also marked as used, keeping the boat count $\sum_k u_k$ consistent with the shift assignment.
+Constraint~\eqref{eq:sched-link} prevents a shift from being used unless its boat is also marked as used, keeping the boat count \(\sum_k u_k\) consistent with the shift assignment.
 
 Constraints~\eqref{eq:sched-symmetry-boat} and~\eqref{eq:sched-symmetry-shift} break symmetry by forcing boats and the shifts within each boat to be used in increasing index order. Without them, the solver would explore equivalent permutations of the same assignment, which slows the search considerably.
 
 The last three constraints,~\eqref{eq:sched-y-binary},~\eqref{eq:sched-u-binary} and~\eqref{eq:sched-z-binary}, keep the decision variables in their respective domains.
 
-Once the model is solved, the optimised schedule can be rebuilt from the decision variables to form a route-to-boat-and-shift assignment, with a total working time and a shift count $\sum_s z_{ks}$ for each boat $k$. As with the \ac{psclp}, the model is implemented with Google OR-Tools \parencite{ortools} using its CP-SAT solver \parencite{cpsat}. Route durations $\delta_r$ are converted from hours to integer seconds before being passed to the solver, since CP-SAT only accepts integer coefficients. A solver time limit of \qty{2}{\minute} per run is set, which is well above what is needed as the number of routes per day stays low and an optimal solution is returned in under a second.
+Once the model is solved, the optimised schedule can be rebuilt from the decision variables to form a route-to-boat-and-shift assignment, with a total working time and a shift count \(\sum_s z_{ks}\) for each boat \(k\). As with the \ac{psclp}, the model is implemented with Google OR-Tools \parencite{ortools} using its CP-SAT solver \parencite{cpsat}. Route durations \(\delta_r\) are converted from hours to integer seconds before being passed to the solver, since CP-SAT only accepts integer coefficients. A solver time limit of \qty{2}{\minute} per run is set, which is well above what is needed as the number of routes per day stays low and an optimal solution is returned in under a second.
 
 \section{Results and Discussion}
 \label{sec:analysis}
@@ -690,17 +690,139 @@ Once the model is solved, the optimised schedule can be rebuilt from the decisio
 \subsection{Population Coverages}
 \label{subsec:population-coverage-results}
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{python/graphs/port_locations/psclp_utopia_choices.pdf}
+  \caption{Summary of \ac{psclp} uptopia runs per walking theshold \(T_{\max}\), with the overall uptopia run.}
+  \label{fig:utopia}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  % First image
+  \includegraphics[width=0.48\textwidth]{python/graphs/port_locations/t15_a095_coverage_cumulative.pdf}
+  \hfill
+  % Second image
+  \includegraphics[width=0.48\textwidth]{python/graphs/port_locations/t28_a098_coverage_cumulative.pdf}
+
+  % The single shared captions
+  \caption{Cummulative total population coverage, grouped by districts and all, by walking time.}
+  \label{fig:coverage_cumulative}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  % First image
+  \includegraphics[width=0.48\textwidth]{python/graphs/port_locations/t15_a095_coverage_thresholds.pdf}
+  \hfill
+  % Second image
+  \includegraphics[width=0.48\textwidth]{python/graphs/port_locations/t28_a098_coverage_thresholds.pdf}
+
+  % The single shared caption
+  \caption{total Population coverage by walking thresholds.}
+  \label{fig:coverage_threshold}
+\end{figure}
+
+\subsection{Demand Scenarios}
+\label{subsec:demand_scenarios}
+
+As discussed, three demand scenarios were chosen to test the waterway network based on possible daily demands. The entire year daily demands and the scenarios can be observed in Figure \ref{fig:yearly_demand}, with each day's color being the color of the scenario that could handle its demand. The low-demand scenario corresponds to the lowest observed daily demand in the recorded year, with \qty{8402}{parcels}. In contrast, the peak demand scenario is more than six times that, with \qty{51696}{parcels}. Somewhate in between the two is the average scenario, with \qty{24698}{parcels}.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1\textwidth]{python/graphs/demand_scenarios.pdf}
+  \caption{Daily network parcel demand over the observed period, with weekdays only, classified according to the low, average, and peak demand scenarios.}
+  \label{fig:yearly_demand}
+\end{figure}
+
 \subsection{Port Demands}
 \label{subsec:port-demand-results}
+
+
+
+\begin{figure}[htbp]
+  \centering
+  % First image
+  \includegraphics[width=0.48\textwidth]{python/graphs/port_demands/t15_a095_demand_per_zone.pdf}
+  \hfill
+  % Second image
+  \includegraphics[width=0.48\textwidth]{python/graphs/port_demands/t28_a098_demand_per_zone.pdf}
+
+  % The single shared caption
+  \caption{Yearly demand by port zones.}
+  \label{fig:demand_zones}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  % First image
+  \includegraphics[width=0.48\textwidth]{python/graphs/port_demands/t15_a095_demand_scenarios_per_port.pdf}
+  \hfill
+  % Second image
+  \includegraphics[width=0.48\textwidth]{python/graphs/port_demands/t28_a098_demand_scenarios_per_port.pdf}
+
+  % The single shared caption
+  \caption{Distribution of daily parcel demand across selected port nodes under the low, average, and peak demand scenarios.}
+  \label{fig:demand_per_port}
+\end{figure}
 
 \subsection{Boat Routings}
 \label{subsec:boat-routing-results}
 
+\begin{figure}[htbp]
+  \centering
+  % First image
+  \includegraphics[width=0.48\textwidth]{python/graphs/routing/t15_a095_routing_capacity_utilization.pdf}
+  \hfill
+  % Second image
+  \includegraphics[width=0.48\textwidth]{python/graphs/routing/t28_a098_routing_capacity_utilization.pdf}
+
+  % The single shared caption
+  \caption{Number of routes required under the low, average, and peak demand scenarios, and corresponding average capacity utilization, for each configuration and demand scenario.}
+  \label{fig:routing_capacity_utilization}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  % First image
+  \includegraphics[width=0.48\textwidth]{python/graphs/routing/t15_a095_routing_travel_time.pdf}
+  \hfill
+  % Second image
+  \includegraphics[width=0.48\textwidth]{python/graphs/routing/t28_a098_routing_travel_time.pdf}
+
+  % The single shared caption
+  \caption{Total route time by configuration and demand scenario, separated into navigation time and parcel handling time.}
+  \label{fig:routing_travel_time}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  % First image
+  \includegraphics[width=0.48\textwidth]{python/graphs/routing/t15_a095_total_distance_per_run.pdf}
+  \hfill
+  % Second image
+  \includegraphics[width=0.48\textwidth]{python/graphs/routing/t28_a098_total_distance_per_run.pdf}
+
+  % The single shared caption
+  \caption{Total sailing distance and average distance per route for each configuration and demand scenario.}
+  \label{fig:total_distance_per_run.pdf}
+\end{figure}
+
 \subsection{Boat Scheduling}
 \label{subsec:fleet-feasibility}
 
-\subsection{Scenario Comparison}
-\label{subsec:scenario-comparison}
+\begin{figure}[htbp]
+  \centering
+  % First image
+  \includegraphics[width=0.48\textwidth]{python/graphs/routing/t15_a095_routing_routes_per_config.pdf}
+  \hfill
+  % Second image
+  \includegraphics[width=0.48\textwidth]{python/graphs/routing/t28_a098_routing_routes_per_config.pdf}
+
+  % The single shared caption
+  \caption{Number of routes and boats needed for each configuration and demand scenario.}
+  \label{fig:routing_routes_per_config}
+\end{figure}
 
 \subsection{Operational Challenges}
 \label{subsec:operational-challenges}
@@ -805,7 +927,7 @@ Once the model is solved, the optimised schedule can be rebuilt from the decisio
 \begin{equation}\label{eq:postnord_cagr}
   \text{CAGR} = \left( \frac{D_{2025}}{D_{2022}} \right)^{\frac{1}{3}} - 1 \approx 4.68\%
 \end{equation}
-Equation~\ref{eq:postnord_cagr} outlines the \ac{cagr} formula for PostNord parcel volume, where $D_{2025}$ and $D_{2022}$ are the company yearly demand for those years. See Table \ref{anx:yearly_pn_demand} for all yearly demand.
+Equation~\ref{eq:postnord_cagr} outlines the \ac{cagr} formula for PostNord parcel volume, where \(D_{2025}\) and \(D_{2022}\) are the company yearly demand for those years. See Table \ref{anx:yearly_pn_demand} for all yearly demand.
 
 \begin{table}[htbp]
   \centering
@@ -816,10 +938,10 @@ Equation~\ref{eq:postnord_cagr} outlines the \ac{cagr} formula for PostNord parc
     \textbf{Data Cleaning / Scaling Step}    & \textbf{Parcel Volume} & \textbf{Delta Variance} \\
     \midrule
     PostNord 2020 Baseline                   & 1,628,441              & --                      \\
-    PostNord 2026 Projection                 & 2,419,134              & $+790,693$              \\
-    With Total Market Share (20\%)           & 12,336,226             & $+9,917,092$            \\
-    Only Households                          & 8,125,871              & $-4,210,355$            \\
-    Operational Dataset (Filtered Districts) & 5,977,449              & $-2,148,422$            \\
+    PostNord 2026 Projection                 & 2,419,134              & \(+790,693\)            \\
+    With Total Market Share (20\%)           & 12,336,226             & \(+9,917,092\)          \\
+    Only Households                          & 8,125,871              & \(-4,210,355\)          \\
+    Operational Dataset (Filtered Districts) & 5,977,449              & \(-2,148,422\)          \\
     \bottomrule
   \end{tabular}
 \end{table}
