@@ -210,7 +210,7 @@ The data used in this thesis comes from three independent sources, each addressi
 
 The household data was obtained from the Master' thesis of \cite{pop_thesis} and originaly comes from the Bergen municipality. The dataset, from 2020, has information about population of the city at the household level, only the coordinates, number of resident, postal code and district was kept from the original data. A total of \num{149308} household was contained in the dataset (\num{73393} being unique), with around \num{280491} total population. This demographic is splitted into Bergen' eight districts, and \num{142} unique postal codes.
 
-To reduce the overall values of our data, the household coordinate were snapped to the nearest \ac{osm} node from our walking network. This helped us reduced drasticly the amount of rows for our dataset to \num{29991} unique \ac{osm} nodes. During this aggregation, some \ac{osm} nodes were assigned population that were from multiple differents districts, representing around \num{418} people (\qty{0.15}{\percent} of the population) and \num{27} nodes (\qty{0.07}{\percent} of nodes). Due to some results being shown per district, these nodes were excluded. The population distribution by districts can be seen in \Cref{fig:district_population}. It should be noted that some districts will be filtered out of the population data in Section \ref{subsec:temp} (\nameref{subsec:temp}).
+To reduce the overall values of our data, the household coordinate were snapped to the nearest \ac{osm} node from our walking network. This helped us reduced drasticly the amount of rows for our dataset to \num{29991} unique \ac{osm} nodes. During this aggregation, some \ac{osm} nodes were assigned population that were from multiple differents districts, representing around \num{418} people (\qty{0.15}{\percent} of the population) and \num{27} nodes (\qty{0.07}{\percent} of nodes). Due to some results being shown per district, these nodes were excluded. The population distribution by districts can be seen in \Cref{fig:district_population}. It should be noted that some districts will be filtered out of the population data in Section \ref{ssec:walking_time} (\nameref{ssec:walking_time}).
 
 \begin{figure}[htbp]
   \centering
@@ -270,7 +270,7 @@ Second, as the dataset represents only PostNord' share of the market and the yea
 
 Third, this dataset represents parcel demand for both households and other types of clients. However, since this thesis focuses on populations, the non-household demand needs to be removed. To achieve this, the household postcode data was joined with the weekly demand, and postcodes not present in the household dataset were excluded.
 
-Finally, since some districts will be filtered out of the population data in Section \ref{subsec:temp} (\nameref{subsec:temp}), the demand associated with these excluded household districts will also be removed. The overall demand quantities and changes by step can be seen in Table \ref{anx:parcel_volumes} in the \nameref{sec:appendix}. The total parcel demand taken in considuration for this Thesis will be \num{5977449} parcel for the year 2026.
+Finally, since some districts will be filtered out of the population data in Section \ref{ssec:walking_time} (\nameref{ssec:walking_time}), the demand associated with these excluded household districts will also be removed. The overall demand quantities and changes by step can be seen in Table \ref{anx:parcel_volumes} in the \nameref{sec:appendix}. The total parcel demand taken in considuration for this Thesis will be \num{5977449} parcel for the year 2026.
 
 \subsection{Disaggregating Weekly Demand into Daily Demand}
 \label{subsec:weekly-to_daily-demand}
@@ -376,7 +376,6 @@ In this section, the methodology of this thesis is explained in detail, in four 
 The goal of this stage is to find the smallest set of ports that still covers a target share of the population within an acceptable walking time. The selection depends on two inputs: the walking threshold and the target coverage percentage. These two configurations are presented first, followed by the optimisation model chosen to perform the selection.
 
 \subsubsection{Walking Thresholds}
-
 \label{ssec:walking_time}
 
 \begin{figure}[httbp]
@@ -546,13 +545,13 @@ Several configurations were tested for the \ac{scvrp}, each combining a boat cap
   \caption{Configurations tested for the \ac{scvrp}}
   \label{tab:cvrp_configs}
 
-  \begin{tabularx}{\textwidth}{c X l}
+  \begin{tabularx}{\textwidth}{c >{\raggedright\arraybackslash}X l}
     \toprule
-    \textbf{Symbol} & \textbf{Description}   & \textbf{Values}                                   \\
+    \textbf{Symbol} & \textbf{Description}   & \textbf{Values}                               \\
     \midrule
-    $Q$             & Boat parcel capacity   & $\{$Low-capacity, Mid-capacity, High-capacity$\}$ \\
-    $e$             & Employees per boat     & $\{3, 4\}$                                        \\
-    $s$             & Weekly demand scenario & $\{$Low, Average, Peak$\}$                        \\
+    $Q$             & Boat parcel capacity   & \{Low-capacity, Mid-capacity, High-capacity\} \\
+    $e$             & Employees per boat     & \{3, 4\}                                      \\
+    $s$             & Weekly demand scenario & \{Low, Average, Peak\}                        \\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -669,73 +668,42 @@ The last three constraints,~\eqref{eq:sched-y-binary},~\eqref{eq:sched-u-binary}
 
 Once the model is solved, the optimised schedule can be rebuilt from the decision variables to form a route-to-boat-and-shift assignment, with a total working time and a shift count $\sum_s z_{ks}$ for each boat $k$. As with the \ac{psclp}, the model is implemented with Google OR-Tools \parencite{ortools} using its CP-SAT solver \parencite{cpsat}. Route durations $\delta_r$ are converted from hours to integer seconds before being passed to the solver, since CP-SAT only accepts integer coefficients. A solver time limit of \qty{2}{\minute} per run is set, which is well above what is needed as the number of routes per day stays low and an optimal solution is returned in under a second.
 
-\section{Results}
+\section{Results and Discussion}
 \label{sec:analysis}
 
-\subsection{Port Location Results}
+\subsection{Port Locations}
 \label{subsec:port-location-results}
-
-\begin{figure}[httbp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{maps/run_map_ports_28_a098.pdf}
-  \caption{Percentage of the population covered by walking time with all ports available by district.}
-  \label{fig:map_028_a098}
-\end{figure}
 
 \begin{figure}[htbp]
   \centering
   % First image
-  \includegraphics[width=0.48\textwidth]{maps/run_map_ports_28_a098.pdf}
+  \includegraphics[width=0.48\textwidth]{maps/run_map_ports_15_a095.pdf}
   \hfill
   % Second image
   \includegraphics[width=0.48\textwidth]{maps/run_map_ports_28_a098.pdf}
 
   % The single shared caption
-  \caption{Comparison of the Candela P-12 and Kewatec vessel profiles evaluated for the maritime logistics network.}
+  \caption{Selected ports for chosen run with walking threshold of 15 (right) and 28 (left).}
   \label{fig:run_port_maps}
 \end{figure}
 
-\subsection{Population Coverage Results}
+\subsection{Population Coverages}
 \label{subsec:population-coverage-results}
 
-\subsection{Port Demand Results}
+\subsection{Port Demands}
 \label{subsec:port-demand-results}
 
-\subsection{Boat Routing Results}
+\subsection{Boat Routings}
 \label{subsec:boat-routing-results}
 
-\subsection{Fleet Feasibility}
+\subsection{Boat Scheduling}
 \label{subsec:fleet-feasibility}
 
 \subsection{Scenario Comparison}
 \label{subsec:scenario-comparison}
 
-\subsection{Sensitivity Analysis}
-\label{subsec:sensitivity-analysis}
-
-\section{Discussion}
-\label{sec:discussion}
-
-\subsection{Interpretation of Results}
-\label{subsec:interpretation-of-results}
-
-\subsection{Feasibility of Waterborne Parcel Delivery in Bergen}
-\label{subsec:feasibility-waterborne-parcel-delivery-bergen}
-
 \subsection{Operational Challenges}
 \label{subsec:operational-challenges}
-
-\subsection{Demand and Capacity Limitations}
-\label{subsec:demand-capacity-limitations}
-
-\subsection{Model Limitations}
-\label{subsec:model-limitations}
-
-\subsection{Practical Implications}
-\label{subsec:practical-implications}
-
-\subsection{Further Research}
-\label{subsec:further-research}
 
 \section{Conclusion}
 \label{sec:conclusion}
@@ -745,6 +713,9 @@ Once the model is solved, the optimised schedule can be rebuilt from the decisio
 
 \subsection{Answer to the Research Question}
 \label{subsec:answer-to-the-research-question}
+
+\subsection{Further Research}
+\label{subsec:further-research}
 
 \subsection{Final Remarks}
 \label{subsec:final-remarks}
