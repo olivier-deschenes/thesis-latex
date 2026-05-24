@@ -594,7 +594,7 @@ The \ac{scvrp} gives the set of routes that the fleet needs to run on a given da
 
 A simple bin packing model is enough at this stage. The routes from the \ac{scvrp} already start and end at the depot and respect the maximum route duration, so two routes on the same boat can be run one after the other with no scheduling conflict. The network also does not commit to specific delivery times at the ports, so no time windows have to be enforced. The model therefore only has to decide which routes share a boat and how many shifts each boat needs. The boat count is minimised first and the total shift count second, since the boat count sets the capital cost of the network and the shift count sets the labour cost. A richer model with port time windows or crew rest rules would add more detail than the data of this thesis can support, without changing the fleet size it gives.
 
-Each route is treated as a single fixed-duration task, equal to its total route time. Boats are interchangeable, and a single boat can run several routes during the day, as long as the total work fits within the \qty{24}{\hour} planning horizon from Section~\ref{subsubsec:operating_hours}. A single crew is however limited to one shift of at most \qty{8}{\hour}, so a boat that works more than eight hours in the day must operate over several shifts, each shift covered by a new crew. Table~\ref{tab:scheduling_notation} summarises the notation used in the formulation.
+Each route is treated as a single fixed-duration, indivisible task equal to its total route time. Boats are interchangeable, and a single boat can run several routes during the day, as long as the total work fits within the \qty{24}{\hour} planning horizon from Section~\ref{subsubsec:operating_hours}. A single crew is however limited to one shift of at most \qty{8}{\hour}, so a boat that works more than eight hours in the day must operate over several shifts, each shift covered by a new crew. Because a route cannot be split across shifts, the model assigns every route to a specific shift of a specific boat, and not only to a boat. Table~\ref{tab:scheduling_notation} summarises the notation used in the formulation.
 
 \begin{table}[htbp]
   \centering
@@ -604,34 +604,35 @@ Each route is treated as a single fixed-duration task, equal to its total route 
   \begin{tabularx}{\textwidth}{c X l}
     \toprule
 
-    \multicolumn{3}{l}{\textbf{\textit{Data and Sets}}}                                                                                                        \\
+    \multicolumn{3}{l}{\textbf{\textit{Data and Sets}}}                                                                                                                       \\
     \midrule
-    \textbf{Symbol} & \textbf{Description}                                                                                                                     \\
+    \textbf{Symbol} & \textbf{Description}                                                                                                                                    \\
     \midrule
-    $R$             & \multicolumn{2}{l}{Set of routes returned by the \ac{scvrp}, indexed by $r$}                                                             \\
-    $K$             & \multicolumn{2}{l}{Set of available boats, indexed by $k$, with $|K| = |R|$}                                                             \\
-    $\delta_r$      & \multicolumn{2}{l}{Total duration of route $r$}                                                                                          \\
-    \midrule
-
-    \multicolumn{3}{l}{\textbf{\textit{Parameters}}}                                                                                                           \\
-    \midrule
-    \textbf{Symbol} & \textbf{Description}                                                                                        & \textbf{Value}             \\
-    \midrule
-    $H$             & Operating day length                                                                                        & \qty{24}{\hour}            \\
-    $S$             & Maximum shift length                                                                                        & \qty{8}{\hour}             \\
-    $\bar{n}$       & Maximum number of shifts per boat ($\lceil H / S \rceil$)                                                   & 3                          \\
-    $M$             & Large weight on the boat count in the objective                                                             & \num{10000}                \\
+    $R$             & \multicolumn{2}{l}{Set of routes returned by the \ac{scvrp}, indexed by $r$}                                                                            \\
+    $K$             & \multicolumn{2}{l}{Set of available boats, indexed by $k$, with $|K| = |R|$}                                                                            \\
+    $s$             & \multicolumn{2}{l}{Shift index within a boat, $s \in \{1, \ldots, \bar{n}\}$}                                                                           \\
+    $\delta_r$      & \multicolumn{2}{l}{Total duration of route $r$}                                                                                                         \\
     \midrule
 
-    \multicolumn{3}{l}{\textbf{\textit{Decision Variables}}}                                                                                                   \\
+    \multicolumn{3}{l}{\textbf{\textit{Parameters}}}                                                                                                                          \\
     \midrule
-    \textbf{Symbol} & \textbf{Description}                                                                                        & \textbf{Value}             \\
+    \textbf{Symbol} & \textbf{Description}                                                                                                            & \textbf{Value}        \\
     \midrule
-    $x_{rk}$        & $\begin{cases} 1, & \text{if route } r \text{ is assigned to boat } k \\ 0, & \text{otherwise} \end{cases}$ & Binary $\in \{0, 1\}$      \\
+    $H$             & Operating day length                                                                                                            & \qty{24}{\hour}       \\
+    $S$             & Maximum shift length                                                                                                            & \qty{8}{\hour}        \\
+    $\bar{n}$       & Maximum number of shifts per boat ($\lceil H / S \rceil$)                                                                       & 3                     \\
+    $M$             & Large weight on the boat count in the objective                                                                                 & \num{10000}           \\
+    \midrule
+
+    \multicolumn{3}{l}{\textbf{\textit{Decision Variables}}}                                                                                                                  \\
+    \midrule
+    \textbf{Symbol} & \textbf{Description}                                                                                                            & \textbf{Value}        \\
+    \midrule
+    $y_{rks}$       & $\begin{cases} 1, & \text{if route } r \text{ is assigned to shift } s \text{ of boat } k \\ 0, & \text{otherwise} \end{cases}$ & Binary $\in \{0, 1\}$ \\
     [3ex]
-    $u_k$           & $\begin{cases} 1, & \text{if boat } k \text{ is used} \\ 0, & \text{otherwise} \end{cases}$                 & Binary $\in \{0, 1\}$      \\
+    $u_k$           & $\begin{cases} 1, & \text{if boat } k \text{ is used} \\ 0, & \text{otherwise} \end{cases}$                                     & Binary $\in \{0, 1\}$ \\
     [3ex]
-    $n_k$           & Number of shifts run by boat $k$                                                                            & Integer $\in [0, \bar{n}]$ \\
+    $z_{ks}$        & $\begin{cases} 1, & \text{if shift } s \text{ of boat } k \text{ is used} \\ 0, & \text{otherwise} \end{cases}$                 & Binary $\in \{0, 1\}$ \\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -639,30 +640,34 @@ Each route is treated as a single fixed-duration task, equal to its total route 
 The problem is formulated as follows:
 
 \begin{align}
-  \min \quad & M \sum_{k \in K} u_k + \sum_{k \in K} n_k \label{eq:sched-objective}                                                          \\
+  \min \quad & M \sum_{k \in K} u_k + \sum_{k \in K} \sum_{s = 1}^{\bar{n}} z_{ks} \label{eq:sched-objective}                                                                                 \\
   \text{s.t.} \quad
-             & \sum_{k \in K} x_{rk} = 1                                            &  & r \in R \label{eq:sched-assign}                     \\
-             & \sum_{r \in R} \delta_r x_{rk} \leq H \, u_k                         &  & k \in K \label{eq:sched-day}                        \\
-             & \sum_{r \in R} \delta_r x_{rk} \leq S \, n_k                         &  & k \in K \label{eq:sched-shift}                      \\
-             & u_k \geq u_{k+1}                                                     &  & k \in K \setminus \{|K|\} \label{eq:sched-symmetry} \\
-             & x_{rk} \in \{0,1\}                                                   &  & r \in R,\ k \in K \label{eq:sched-x-binary}         \\
-             & u_k \in \{0,1\}                                                      &  & k \in K \label{eq:sched-u-binary}                   \\
-             & n_k \in \{0, 1, \ldots, \bar{n}\}                                    &  & k \in K \label{eq:sched-n-integer}
+             & \sum_{k \in K} \sum_{s = 1}^{\bar{n}} y_{rks} = 1                                              &  & r \in R \label{eq:sched-assign}                                            \\
+             & \sum_{r \in R} \sum_{s = 1}^{\bar{n}} \delta_r \, y_{rks} \leq H \, u_k                        &  & k \in K \label{eq:sched-day}                                               \\
+             & \sum_{r \in R} \delta_r \, y_{rks} \leq S \, z_{ks}                                            &  & k \in K,\ s \in \{1, \ldots, \bar{n}\} \label{eq:sched-shift}              \\
+             & z_{ks} \leq u_k                                                                                &  & k \in K,\ s \in \{1, \ldots, \bar{n}\} \label{eq:sched-link}               \\
+             & u_k \geq u_{k+1}                                                                               &  & k \in K \setminus \{|K|\} \label{eq:sched-symmetry-boat}                   \\
+             & z_{ks} \geq z_{k,\,s+1}                                                                        &  & k \in K,\ s \in \{1, \ldots, \bar{n} - 1\} \label{eq:sched-symmetry-shift} \\
+             & y_{rks} \in \{0,1\}                                                                            &  & r \in R,\ k \in K,\ s \in \{1, \ldots, \bar{n}\} \label{eq:sched-y-binary} \\
+             & u_k \in \{0,1\}                                                                                &  & k \in K \label{eq:sched-u-binary}                                          \\
+             & z_{ks} \in \{0,1\}                                                                             &  & k \in K,\ s \in \{1, \ldots, \bar{n}\} \label{eq:sched-z-binary}
 \end{align}
 
 The objective function~\eqref{eq:sched-objective} minimises the number of boats used first and the total number of shifts second. The fleet size is prioritised because each additional boat is a capital investment, while a shift only adds a crew for the day. The weight $M$ on the boat count is set well above the maximum possible total shift count $|K| \cdot \bar{n}$, so the solver can never trade a shift saving for an extra boat.
 
-Constraint~\eqref{eq:sched-assign} forces every route to be assigned to exactly one boat.
+Constraint~\eqref{eq:sched-assign} forces every route to be assigned to exactly one (boat, shift) pair.
 
-Constraint~\eqref{eq:sched-day} links the boat used variable $u_k$ to the workload of boat $k$. If $u_k = 0$, the right-hand side is zero and no route can be assigned to the boat; if $u_k = 1$, the workload is capped by the operating day length $H$.
+Constraint~\eqref{eq:sched-day} caps the total workload of boat $k$ at the operating day length $H$ when the boat is used, and forces it to zero otherwise.
 
-Constraint~\eqref{eq:sched-shift} bounds the workload of boat $k$ to the time made available by its shifts. Each shift covers up to $S$ hours, so a boat running $n_k$ shifts can take on at most $S \, n_k$ hours of work. This is what ties the shift count to the actual time worked, and combined with the domain of $n_k$ it implicitly caps the daily workload at $S \, \bar{n}$.
+Constraint~\eqref{eq:sched-shift} is the bin-packing constraint at the heart of the model: the sum of route durations placed in shift $s$ of boat $k$ must fit within the maximum shift length $S$, and the shift is marked as used ($z_{ks} = 1$) as soon as any route is assigned to it. This per-shift bound is what guarantees feasibility at the crew level, since routes are indivisible and cannot be split across shifts. A weaker aggregate bound of the form $\sum_{r, s} \delta_r \, y_{rks} \leq S \, \sum_s z_{ks}$ would for instance allow four \qty{6}{\hour} routes to share three nominal shifts on aggregate time, even though no two of them could ever fit in a single \qty{8}{\hour} shift.
 
-Constraint~\eqref{eq:sched-symmetry} breaks the symmetry between boats by forcing them to be used in increasing index order. Without it, the solver would explore equivalent permutations of the same assignment, which slows the search considerably.
+Constraint~\eqref{eq:sched-link} prevents a shift from being used unless its boat is also marked as used, keeping the boat count $\sum_k u_k$ consistent with the shift assignment.
 
-The last three constraints,~\eqref{eq:sched-x-binary},~\eqref{eq:sched-u-binary} and~\eqref{eq:sched-n-integer}, keep the decision variables in their respective domains.
+Constraints~\eqref{eq:sched-symmetry-boat} and~\eqref{eq:sched-symmetry-shift} break symmetry by forcing boats and the shifts within each boat to be used in increasing index order. Without them, the solver would explore equivalent permutations of the same assignment, which slows the search considerably.
 
-Once the model is solved, the optimize schedule can be rebuild from the decision variables to form a routes to boat assignation. With a total time and shift for each boat. As with the \ac{psclp}, the model is implemented with Google OR-Tools \parencite{ortools} using its CP-SAT solver \parencite{cpsat}. Route durations $\delta_r$ are converted from hours to integer seconds before being passed to the solver, since CP-SAT only accepts integer coefficients. A solver time limit of \qty{2}{\minute} per run is set, which is well above what it needed as the number of routes per day stays low and an optimal solution is returned in under a second.
+The last three constraints,~\eqref{eq:sched-y-binary},~\eqref{eq:sched-u-binary} and~\eqref{eq:sched-z-binary}, keep the decision variables in their respective domains.
+
+Once the model is solved, the optimised schedule can be rebuilt from the decision variables to form a route-to-boat-and-shift assignment, with a total working time and a shift count $\sum_s z_{ks}$ for each boat $k$. As with the \ac{psclp}, the model is implemented with Google OR-Tools \parencite{ortools} using its CP-SAT solver \parencite{cpsat}. Route durations $\delta_r$ are converted from hours to integer seconds before being passed to the solver, since CP-SAT only accepts integer coefficients. A solver time limit of \qty{2}{\minute} per run is set, which is well above what is needed as the number of routes per day stays low and an optimal solution is returned in under a second.
 
 \subsection{\ac{kpi} Evaluation}
 \label{subsec:kpi}
