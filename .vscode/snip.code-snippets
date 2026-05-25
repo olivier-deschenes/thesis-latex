@@ -19,5 +19,13 @@
 			"\\qtyrange{}{}{}"
 		],
 		"description": "15 minute threshold"
+	},
+	"acp": {
+		"prefix": "acp",
+		"body": [
+			"\\ac{psclp}"
+		],
+		"description": "15 minute threshold"
 	}
+	// 
 }
