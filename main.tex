@@ -739,7 +739,12 @@ The full demand data for each scenarios of all the ports can be found in the \na
 \subsection{Boat Routings}
 \label{subsec:boat-routing-results}
 
-The \ac{scvrp} model returns a lof ot results to discuss. These will be grouped by the \ac{psclp} selected solutions that they ran with (\texttt{t15} or \texttt{t28}), and a set of configurations (See Table \ref{tab:cvrp_configs}). Each selected solutions having \num{27} results. All configurations were ran for \qty{1}{hour} to make sure that the solver has enought time to find a good solution. Each runs resulted in a succesful solution, altought none were proven optimal by the solver. Most of them found their best solution in a matter of seconds and the rest of the run duration accomplish nothing, aldought others, like in \texttt{t15} (\(Q=2500, e=4)\), (\(Q=1500, e=3)\) succesfully found betters at \qty{50}{\minute}. An interesting observation is that the configurations that were able to take advantage of the \qty{1}{\hour} run time are not the same in both   \texttt{t15} and \texttt{t28}. Indeed, in \texttt{t28}, the configurations with \(Q=500\) were the last one to found their best solutions.
+The \ac{scvrp} model returns a lof ot results to discuss. These will be grouped by the \ac{psclp} selected solutions that they ran with (\texttt{t15} or \texttt{t28}), and a set of configurations (See Table \ref{tab:cvrp_configs}). Each selected solutions having \num{27} results. All configurations were ran for \qty{1}{hour} to make sure that the solver has enought time to find a good solution. Each runs resulted in a succesful solution, altought none were proven optimal by the solver. Most of them found their best solution in a matter of seconds and the rest of the run duration accomplish nothing, aldought others, like in \texttt{t15} (\(Q=2500, e=4)\), (\(Q=1500, e=3)\) succesfully found betters at \qty{50}{\minute}. An interesting observation is that the configurations that were able to take advantage of the \qty{1}{\hour} run time are not the same in both \texttt{t15} and \texttt{t28}. Indeed, in \texttt{t28}, the configurations with \(Q=500\) were the last one to found their best solutions.
+
+\subsection{Total Number of Routes}
+\label{ssec:total-number-routes}
+
+In Figure \ref{fig:routing_capacity_utilization}, the number of routes needed to handle the configurations can be seen, combined with the average percentage of the capacity used for all the routes.
 
 \begin{figure}[htbp]
   \centering
@@ -754,6 +759,19 @@ The \ac{scvrp} model returns a lof ot results to discuss. These will be grouped 
   \label{fig:routing_capacity_utilization}
 \end{figure}
 
+The first observation that can be made is obvious, the number of routes is directly inversly correlated with the boat parcel capacity. As expected, the less a boat can carry parcel for a given route, the more it will have to make route to carry the demand.
+
+The second observation is that the number of routes are not really affected by the number of employees (\(e\)), in both \texttt{t15} and \texttt{t28}, only with \(Q=2500\) made a difference, both resulting in \(e = {3,4}\) having \num{4} less routes than with \(e=2\). At first, this could look like an error, as more employees means faster parcel handling time, wich should result in shorter routes, therefore potential an different best solutions. However, the objective of the solver is not to minimise the amount of routes, but to minimize the total travel time for a given day. As a result, the parcel handling time are not taken into considuration by the objective function, wich in returns explain the number of routes that are mostly not affecred in these results. Only with the largest boat capacity of \(Q=2500\) that the reduction in handling time made such a difference that the solver found a more optimal routing network.
+
+The third observation is that the average capacity utilization in the routes varies a lot depdending on the boat capacity (\(Q\)). Looking at \(Q=2500\), a very low utilization percentage can be seen compared to other capacities, with below \qty{70}{\percent} for \(e=2\), going up to above \qty{75}{\percent} in the peak demand scenario. This suggest that with only two employees, the handling time is too large and forces more route to be added as the \qty{8}{\hour} route maximum time contrains the total duration. Adding more employees allow the solver fewer routes, wich result in a better overall capacity utilization in all demand scenarios. This amelioration is stopped at \(e=3\) however, as more employees does not allow the solver to reduce the number of routes.
+
+In general, it could be argued because \(Q=2500\) has worst capacity utilization, this sugests that this capacity is too big for the current demand and it should be prefered to prioritise lower boat capacities.
+
+\subsection{Total Route Durations}
+\label{ssec:total-route-duraton}
+
+The next specific data that can be discuess is the total travel time of the routes. In Figure \ref{fig:routing_travel_time}, these duration are shown by runs and configurations, with a visual split for the total navigation time and parcel handling time.
+
 \begin{figure}[htbp]
   \centering
   % First image
@@ -766,6 +784,19 @@ The \ac{scvrp} model returns a lof ot results to discuss. These will be grouped 
   \caption{Total route time by configuration and demand scenario, separated into navigation time and parcel handling time.}
   \label{fig:routing_travel_time}
 \end{figure}
+
+The first observation that can be made is clear, as for the total routes needed, the total route time doubles across all confugrations as the demand scnerios increase. This observation, pared with the scenonality seen in Figure \ref{fig:yearly_demand}, signify how much the system will have to expand to be able to handle the peek demands. However, in these periods, the number of employees per boat could be increased to help reduce the overall total route time.
+
+The second observation is that compared with the results from Table \ref{fig:routing_capacity_utilization}, where the total number of routes did not really change when \(e\) changed, the real affect can now be seen. For exemple, in \texttt{t15}, all employees count had the same amount of routes per demand scenario. However, here it can be seen here that even thought the amount of routes are equal, the total route duration are more smaller. Nevertheless, adding more employees to a route make it so that more employees are getting paid for nothing during the navigation time, algouth this portion of the time is much smaller than the handling time. In a real operations, the traveling time could be used for sorting the parcel on board of the boat, reducing the needs for precise sorting at the depot before departure, even if this time is not one long traveling route, but the combined traveling time of all routes.
+
+A third observation is that the reduction in total route time is not directly proportional to the number of employees added to the crew. For example, in \texttt{t28}, going from \(e=2\) to \(e=3\) reduced the average total route time by \qty{26}{\percent}, while going from \(e=3\) to \(e=4\) only achieved a reduction of \qty{17}{\percent}. This diminishing return follows directly from the model, since only the parcel handling portion of the total time scales with \(e\). The handling time at a port is \(d_i \tau / e\), while the navigation and manoeuvring times do not depend on \(e\) at all. The same pattern also explains why the reduction is stronger at higher boat capacities, where each route carries more parcels and the handling share of the total time is larger, leaving more work for the additional crew member to absorb.
+
+A final observation is that the reduction in total route time from increasing the boat capacity \(Q\) is also not linear. Going from \(Q=500\) to \(Q=1500\) reduced the average total route time by \qty{29}{\percent}, while going from \(Q=1500\) to \(Q=2500\) only achieved a reduction of \qty{7}{\percent}. This is consistent with the capacity utilisation results in Figure \ref{fig:routing_capacity_utilization}, which already showed that the largest boats were not filled to their full capacity. The extra space offered by \(Q=2500\) over \(Q=1500\) is therefore mostly unused and brings little additional benefit on the total route time.
+
+To summarise, the total route time follows a clear pattern of diminishing returns for both the crew size \(e\) and the boat capacity \(Q\). The parcel handling dominates the total time and is the only component that responds to a larger crew, while the navigation time stays fixed regardless of the configuration. Each new employee, or each step up in capacity, therefore contributes less than the previous one, and the largest boats remain partly empty. Combined with the strong seasonal variation of the demand, this suggests that the most efficient strategy is a balance rather than a maximum, with the crew size potentially adjusted between low and peak periods instead of permanently oversizing the fleet.
+
+\subsection{Total Route Distances}
+\label{ssec:total-route-distances}
 
 \begin{figure}[htbp]
   \centering
