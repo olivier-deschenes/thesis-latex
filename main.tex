@@ -674,13 +674,6 @@ Once the model is solved, the optimised schedule can be rebuilt from the decisio
 \subsection{Walking thresholds}
 \label{subsec:walking_threshold}
 
-As discussed in the Methodology, the \ac{psclp} was ran with multiple combinations of walking time threshold (\(T_{\max}\)) and minimum population covered by this walking time (\(\alpha)\). The results of the best runs by uptopia ranking by \(T_{\max}\) can be found in Figure~\ref{fig:utopia}, with also the best overall run. The two runs that were selected is (\(T_{\max}=15,\alpha=0.95\)) and (\(T_{\max}=28,\alpha=0.98\)) as the first is the best of its walking time group, and the second the best overall of all runs, again based on the utopia ranked described in Section~\ref{ssec:scenario_selection}. The table also details who the relation between the ports needed to acheive a given walking time, as the smallest threshold forces the model to open a large amount of ports, but this amount reduces rapidly when reducing the threshold, going from \qtyrange{28}{17}{ports}. It can also be observed that the total population covered by \(T_{\max}\) stays low for the marority of the threshold even if the model optimized based on it. These results signify that the population is still largy far away by walk from a canditate port, in all runs. At \(T_{\max}=15\), only \qty{46}{\percent} of the population is withing this threshold, the next \qty{5}{\min} adds \qty{10}{\percent}, reaching \qty{60}{\percent} only at \(T_{\max}=22\). Relaxing the threshold by \qty{7}{\min} has dropped the port count needed by \num{8}, or around \qty{29}{\percent}. This is why the utopia method was used to select a run, as their is too much dimension to easily chose a good scenario. Moreover, without any financial value for a openned port, or study on how long a citizen in Bergen would be willing to walk for its parcel, basing the choice on anything else than pure quantificantion of the run is impossible.
-
-
-%%%
-%%% Change this fucking graph to show the lines as the avg walking distance in minutes, not the fucking reyatd % population covered
-%%%
-
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=1\textwidth]{python/graphs/port_locations/psclp_utopia_choices.pdf}
@@ -688,7 +681,15 @@ As discussed in the Methodology, the \ac{psclp} was ran with multiple combinatio
   \label{fig:utopia}
 \end{figure}
 
-For the rest of the thesis, the two runs will refered as \texttt{t15} for the \ac{psclp} configuration (\(T_{\max}=15,\alpha=0.95\)) and \texttt{t28} for (\(T_{\max}=28,\alpha=0.98\)).
+As discussed in the Methodology, the \ac{psclp} was ran with multiple combinations of walking time threshold (\(T_{\max}\)) and minimum population covered by this walking time (\(\alpha)\). The results of the best runs by uptopia ranking by \(T_{\max}\) can be found in Figure~\ref{fig:utopia}, with also the best overall run. The two runs that were selected is (\(T_{\max}=15,\alpha=0.95\)) and (\(T_{\max}=28,\alpha=0.98\)) as the first is the best of its walking time group, and the second the best overall of all runs, again based on the utopia ranked described in Section~\ref{ssec:scenario_selection}.
+
+The table also details who the relation between the ports needed to acheive a given walking time, as the smallest threshold forces the model to open a large amount of ports, but this amount reduces rapidly when reducing the threshold, going from \qtyrange{28}{17}{ports}.
+
+It can also be observed that the total population covered by \(T_{\max}\) stays low for the marority of the threshold even if the model optimized based on it. These results signify that the population is still largy far away by walk from a canditate port, in all runs. At \(T_{\max}=15\), only \qty{46}{\percent} of the population is withing this threshold, the next \qty{5}{\min} adds \qty{10}{\percent}, reaching \qty{60}{\percent} only at \(T_{\max}=22\). Relaxing the threshold by \qty{7}{\min} has dropped the port count needed by \num{8}, or around \qty{29}{\percent}. This is why the utopia method was used to select a run, as their is too much dimension to easily chose a good scenario. Moreover, without any financial value for a openned port, or study on how long a citizen in Bergen would be willing to walk for its parcel, basing the choice on anything else than pure quantificantion of the run is impossible.
+
+Furthermore, the average total population walking time to the nearest selected port can be seen in Table~\ref{anx:psclp_runs_details} in the \nameref{sec:appendix}. It stays within a small range between 19.68 and \qty{21.92}{\minute} across the selected runs, with a standard deviation below one minute, even though \(T_{\max}\) doubles from \qtyrange{15}{30}{\minute} and the number of ports drops from 28 to 17. Reducing the amount of ports by \num{10} therefore costs the average citizen around two minutes of additional walking. This suggests that the floor of the average walking time is set by Bergen's geography rather than by the strictness of the model. Further analysis could be done to determine if new ports location could be added or contruct to help reduce this metric.
+
+For the rest of the thesis, the two runs will be refered as \texttt{t15} for the \ac{psclp} configuration (\(T_{\max}=15,\alpha=0.95\)) and \texttt{t28} for (\(T_{\max}=28,\alpha=0.98\)).
 
 \subsection{Port Locations}
 \label{subsec:port-location-results}
@@ -1152,7 +1153,7 @@ Equation~\ref{eq:postnord_cagr} outlines the \ac{cagr} formula for PostNord parc
   \label{anx:demand_zones}
 \end{figure}
 
-\subsubsection{Run Coverages}
+\subsubsection{\ac{psclp} Runs}
 
 \begin{figure}[htbp]
   \centering
@@ -1162,6 +1163,36 @@ Equation~\ref{eq:postnord_cagr} outlines the \ac{cagr} formula for PostNord parc
   \caption{Cummulative total population coverage, grouped by districts and all, by walking time.}
   \label{anx:coverage_cumulative}
 \end{figure}
+
+\begin{table}[htbp]
+  \centering
+  \caption{PSCLP Utopia Choices by Walking-Time Threshold.}
+  \label{anx:psclp_runs_details}
+
+  \begin{tabular}{lrrrr}
+    \toprule
+    \textbf{\(T_{\max}\)} & \textbf{\(\alpha\)} & \textbf{Ports Needed} & \textbf{Population Covered} & \textbf{Avg Walking Time (min)} \\
+    \midrule
+    15                    & 0.95                & 28                    & 46.45\%                     & 19.68                           \\
+    16                    & 0.94                & 25                    & 48.43\%                     & 19.97                           \\
+    17                    & 0.95                & 25                    & 51.53\%                     & 19.92                           \\
+    18                    & 0.95                & 24                    & 53.73\%                     & 20.09                           \\
+    19                    & 0.96                & 25                    & 56.08\%                     & 19.91                           \\
+    20                    & 0.94                & 21                    & 56.80\%                     & 20.29                           \\
+    21                    & 0.95                & 21                    & 59.46\%                     & 20.34                           \\
+    22                    & 0.96                & 21                    & 62.44\%                     & 20.51                           \\
+    23                    & 0.95                & 19                    & 63.67\%                     & 20.88                           \\
+    24                    & 0.96                & 20                    & 66.70\%                     & 20.71                           \\
+    25                    & 0.96                & 19                    & 68.68\%                     & 20.83                           \\
+    26                    & 0.96                & 18                    & 70.52\%                     & 21.09                           \\
+    27                    & 0.96                & 18                    & 72.65\%                     & 21.09                           \\
+    28                    & 0.96                & 18                    & 74.13\%                     & 21.19                           \\
+    28                    & 0.98                & 20                    & 75.78\%                     & 20.73                           \\
+    29                    & 0.97                & 18                    & 76.66\%                     & 21.44                           \\
+    30                    & 0.97                & 17                    & 78.42\%                     & 21.92                           \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 \end{document}
 
