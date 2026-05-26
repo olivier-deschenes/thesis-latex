@@ -108,6 +108,11 @@
   long  = Key Performance Indicator,
 }
 
+\DeclareAcronym{sdvrp}{
+  short = SDVRP,
+  long = Split Delivery Vehicle Routing Problem
+}
+
 \sisetup{range-units = single}
 
 % Header styles
@@ -348,7 +353,7 @@ No additional speed restrictions were included in the model. Norwegian maritime 
 \label{subsec:facility-location-problems}
 
 % TODO: add a general facility-location reference for the opening paragraph, before the specific classical formulations.
-\acp{flp} are a family of optimisation models that decide where to open facilities so that a set of demand points is served in the best possible way. The classical setup takes a set of candidate locations, a set of demand points, and a distance or cost for every demand-facility pair, and then asks which subset of locations should be opened. What counts as ``best'' depends on the objective, which usually balances the cost of opening facilities against the cost of serving demand from them.
+The \ac{flp} family covers optimisation models that decide where to open facilities so that a set of demand points is served in the best possible way. The classical setup takes a set of candidate locations, a set of demand points, and a distance or cost for every demand-facility pair, and then asks which subset of locations should be opened. What counts as ``best'' depends on the objective, which usually balances the cost of opening facilities against the cost of serving demand from them.
 
 The literature has converged on a small number of classical formulations. The \(p\)-median problem, introduced by \cite{hakimi1964optimum}, opens exactly \(p\) facilities and minimises the total weighted distance between demand points and their nearest facility. The \(p\)-center problem, also from \cite{hakimi1965optimum}, has the same structure but minimises the maximum distance instead of the total, which makes it useful when worst-case service matters. The \ac{sclp} of \cite{toregas1971location} takes a different angle. It fixes a coverage distance, considers a demand point covered if a facility is open within that distance, and minimises the number of open facilities under the constraint that every demand point is covered. The \ac{mclp} of \cite{church1974maximal} relaxes the requirement to cover everyone, fixes the number of facilities at \(p\), and maximises the demand covered within the distance threshold.
 
@@ -359,35 +364,33 @@ Covering models are common in last-mile logistics, where deciding where to put p
 \subsection{Vehicle Routing Problem}
 \label{subsec:vehicle-routing-problem}
 
-The \ac{vrp} family comes from a classic algorithmic problem, the \ac{tsp}. Its name already tells a lot about the challenge of solving it, as it consists of finding the minimum-distance route that reaches all nodes (customers) once while ending where it started.
+The \ac{vrp} family comes from a classic algorithmic problem, the \ac{tsp}. Its name already tells a lot about the challenge of solving it, as it consists of finding the minimum-distance route that reaches all nodes (customers) once while ending where it started \parencite{tps}.
 
-The \ac{vrp} was first formulated by \cite{dantzig1959truck} as a generalisation of the \ac{tsp} to the case where a fleet of vehicles, instead of a single one, must serve a set of customers from a central depot. The base version asks how to route the vehicles so that every customer is visited exactly once, every vehicle starts and ends at the depot, and the total travel cost is minimised. Since then the \ac{vrp} has grown into one of the most studied problems in combinatorial optimisation, with a large literature on both modelling and solution techniques \parencite{VIDAL2020401}.
+The \ac{vrp} was first formulated by \cite{dantzig1959truck} as a generalisation of the \ac{tsp} to the case where a fleet of vehicles, instead of a single one, must serve a set of customers from a central depot. Since then the \ac{vrp} has grown into one of the most studied problems in combinatorial optimisation, with a large literature on both modelling and solution techniques \parencite{VIDAL2020401}.
 
-Many variants of the \ac{vrp} have appeared over the years, each one adding the features that a specific application requires. The \ac{cvrp} gives each vehicle a maximum load and forces the total demand on a route to stay below that limit. The \ac{vrptw} requires every customer to be visited within a given interval. The multi-depot \ac{vrp} allows several depots, the pickup and delivery \ac{vrp} combines both directions of flow, and the heterogeneous fleet \ac{vrp} works with vehicles of different types and capacities. A second distinction that matters for this thesis is between symmetric and asymmetric travel cost matrices. The asymmetric case appears mostly in road networks with one-way streets, while in maritime and waterway settings the travel time between two points is usually the same in both directions, which makes the symmetric version the standard choice \parencite{BRAEKERS2016300}.
+Many variants of the \ac{vrp} have appeared over the years, each one adding the features as it was used in new applications. For exemple, \ac{cvrp} gives each vehicle a maximum load and forces the total demand on a route to stay below that limit. The \ac{vrptw} requires every customer to be visited within a given interval. The multi-depot \ac{vrp} allows several depots, the pickup and delivery \ac{vrp} combines both directions of flow, and the heterogeneous fleet \ac{vrp} works with vehicles of different types and capacities. A second distinction that matters for this thesis is between symmetric and asymmetric travel cost matrices. \ac{vrp} models may be formulated on either directed or undirected transportation networks \parencite{BRAEKERS2016300}. In this thesis, the waterway network is treated as symmetric, meaning that the travel time between two ports is assumed to be the same in both directions.
 
-Vehicle routing has been applied widely to urban freight, where the volume of last-mile deliveries has grown together with e-commerce and has put pressure on city traffic, emissions, and noise levels. \cite{cattaruzza2017vehicle} review the \ac{vrp} variants that come up most often in city logistics and stress the role of capacity, time windows, and limited delivery zones in shaping the models. \cite{crainic2009models} discuss how urban consolidation centres and dedicated fleets can be combined with routing models to reduce truck traffic in city centres. The use of alternative transport modes such as electric vans, cargo bikes, and inland waterway boats is part of the same line of research, since each mode brings its own constraints to the routing model \parencite{savelsbergh2016city}.
+Moreover, if the constraint requiring each customer to be visited only once is too restrictive for the context, two approaches can be considered. The first approach is to relax this constraint directly. This leads to the \ac{scvrp}, where vehicles keep the same capacity constraints as in the \ac{cvrp}, but customers may be visited more than once when their demand cannot be served by a single vehicle or route \parencite{ARCHETTI2011741}. The second approach is to keep the original \ac{cvrp} formulation and modify the input data instead, often called the \textit{priori split strategy} \parencite{a17090396}. In this case, a maximum demand limit is defined, and customers with demands above this limit are divided into several artificial customer nodes. Each clone represents part of the original customer demand and respects the imposed demand limit. These cloned customers keep the same distance values to all other customers, while the distance between clones of the same original customer is set to zero. This provides a practical simplification that allows a standard \ac{cvrp} model to approximate split deliveries without requiring a full \ac{scvrp} implementation. More specific splitting strategy can be used to optimize even more the model, as uniforly splitting the demand could result in less optimal scenarios \parencite{a17090396}.
 
-Solving the \ac{vrp} exactly is hard. The problem is NP-hard, and exact methods such as branch-and-cut or branch-and-price are limited to instances with at most a few hundred customers \parencite{BRAEKERS2016300}. In practice, most realistic instances are solved with heuristics and metaheuristics. Classical construction heuristics include the savings algorithm of \cite{clarke1964scheduling} and various insertion methods. Metaheuristics such as tabu search, large neighbourhood search, and hybrid genetic algorithms produce high quality solutions in reasonable time and are at the core of most modern \ac{vrp} solvers \parencite{vidal2013heuristics}. Open-source tools such as Google OR-Tools and VROOM make these techniques accessible without having to implement them from scratch.
+For this thesis, as the \ac{scvrp} can get more expensive computationally \parencite{a17090396} and a lot of different configurations will be tested, but with only a relativly small amount of ports and custumer nodes, the model chosen will be the \ac{cvrp} with the \textit{priori split strategy} strategy.
 
 \subsection{Vehicle Scheduling Problem}
 \label{subsec:vehicle-scheduling-problem}
 
-The \ac{vsp} takes a set of trips with fixed start and end times and asks how to assign them to vehicles so that every trip is covered and the total cost is minimised \parencite{freling2001models}. Each trip is described by a duration, a starting point, and an ending point, and a vehicle can do a sequence of trips only if it has enough time to move between the end of one trip and the start of the next. Costs typically combine a fixed cost for using a vehicle with a variable cost related to driving and idle time. The basic version is the single-depot \ac{vsp}, which can be solved in polynomial time, while the multi-depot version is NP-hard \parencite{bunte2009overview}.
-
 The \ac{vsp} usually appears after the routing decisions in transportation planning. In the standard planning hierarchy used in public transport and urban freight, decisions move from strategic choices about the network, to tactical choices about which routes to operate and how often, and finally to operational choices about which vehicle does which trip and when \parencite{ibarra2015planning}. Vehicle scheduling sits at the boundary between tactical and operational planning. Once the set of trips to run is known, the \ac{vsp} turns those trips into a usable schedule by matching them with the available fleet.
 
-When the trips are fixed loops of similar structure and the only question is how many loops each vehicle can perform within a working day, the \ac{vsp} reduces to a problem that is close to bin packing. Each vehicle is a bin with a capacity equal to the available working time, and each loop is an item with a size equal to its duration. The goal is to pack the loops into as few bins as possible, or to fit a target set of loops into a fixed number of bins. Classical bin packing and its many variants have been studied for decades and remain an active research area, for both exact methods and heuristics \parencite{delorme2016bin, munien2021metaheuristic}.
+When the trips are fixed loops from depot to depot and the only question is how many loops each a vehicle can do within a fixed duration, the \ac{vsp} becomes a simple bin packing problem. Each vehicle is a bin with a capacity equal to the available fixed duration, and each loop is an item with a size equal to its duration. The goal is to pack the loops into as few bins as possible, or to fit a target set of loops into a fixed number of bins.
+
+In the context of this thesis, with the hypothesis of a very few number of routes to pack into a even smaller number of boats, the model use could probobly be a simple try all combination solver. The model will be implemented fully to support potential cases where a big set of routes is present for a given day.
 
 \section{Data}
 \label{sec:data}
 
-% TODO: add citations already in this overview sentence for population data, PostNord demand, and OSM/OSMnx.
 The data used in this thesis come from three independent sources, each addressing a distinct aspect of the problem: the spatial distribution of Bergen's population, the parcel demand it generates, and the pedestrian network connecting households to possible candidate ports. Population data is provided at the household level by Bergen municipality for the year 2020. Parcel demand is based on PostNord's weekly volumes by postal code in 2020. Finally, the walking network of Bergen is extracted from \ac{osm}. The remainder of this chapter describes these sources in detail and the steps taken to prepare them for use in the models that follow.
 
 \subsection{Walking Network of Bergen}
 \label{subsec:walking-network-bergen}
 
-% TODO: document the Google Maps spot checks or add a reproducible example/source for why the OSMnx walk filter excluded walkable bicycle lanes.
 \ac{osm} is first used to retrieve the walking graph of Bergen with the Python package \texttt{OSMnx} \parencite{osmnx} and its \texttt{graph\_from\_place()} function. This package can retrieve the graph of a specific place (\texttt{place\_name=``Bergen, Norway''}) and network type (\texttt{network\_type=``walk''}). However, during spot checks of walking distances, the network type filter was found to be too narrow, as Google Maps walking distances were generally shorter than the distances calculated from the graph. After investigation, the network filter was found to exclude all bicycle lanes, even when they were labelled as walkable by \ac{osm}. The filter was therefore changed to allow bicycle lanes when they are walkable.
 
 \subsection{Population and Household Data}
@@ -404,13 +407,12 @@ To reduce the size of the data, the household coordinates were snapped to the ne
   \label{fig:populations}
 \end{figure}
 
-% TODO: justify or cite the assumption that population growth is geographically uniform enough not to affect port selection.
-Since the goal of this data is to identify good port candidates based on population coverage rather than absolute population size, the data will not be updated to current figures. Only the spatial distribution will be taken into account, and it is assumed that the population growth has been geographically uniform.
+Since the goal of this data is to identify good port candidates based on population coverage rather than absolute population size, the data will not be updated to current figures. Only the spatial distribution will be taken into account, and it is taken for granted that the population growth has been geographically uniform.
 
 \subsection{Candidate Ports}
 \label{subsec:candidate-ports}
 
-To retrieve potential port locations for the thesis, \texttt{OSMnx} was again used. The \texttt{features\_from\_place()} function can filter potential features by \ac{osm} tags. Table~\ref{tab:osm_port_tags} shows the filter tags used to retrieve port candidates based on the \ac{osm} documentation \parencite{osm_map_features}.
+To retrieve potential port locations, \texttt{OSMnx} was again used. The \texttt{features\_from\_place()} function can filter potential features by \ac{osm} tags. Table~\ref{tab:osm_port_tags} shows the filter tags used to retrieve port candidates based on the \ac{osm} documentation \parencite{osm_map_features}.
 
 \begin{table}[htbp]
   \centering
@@ -429,8 +431,7 @@ To retrieve potential port locations for the thesis, \texttt{OSMnx} was again us
 \end{table}
 
 % TODO: document the manual port filtering criteria more explicitly, since removing 80 nodes can affect the feasible locations.
-The resulting data contain \num{746} port locations. The distribution of the ports by the tags used in Table~\ref{tab:osm_port_tags} can be found in Table
-\ref{anx:port_nodes_by_tag} of the \nameref{sec:appendix}. As previously done with the household coordinates, the port locations were snapped to the nearest \ac{osm} node on the walking graph. This reduced the data to \num{390} candidate port nodes. These locations were then projected on a map and manually filtered to remove locations that were not suited for this thesis. For example, some nodes were in a body of water that was not accessible from the main waterways. A total of \num{80} nodes were removed, for a final total of \num{310} port nodes.
+The resulting data contain \num{746} port locations. The distribution of the ports by the tags used in Table~\ref{tab:osm_port_tags} can be found in Table~\ref{anx:port_nodes_by_tag} of the \nameref{sec:appendix}. As previously done with the household coordinates, the port locations were snapped to the nearest \ac{osm} node on the walking graph. This reduced the data to \num{390} candidate port nodes. These locations were then projected on a map and manually filtered to remove locations that were not suited for this thesis. For example, some nodes were in a body of water that was not accessible from the main waterways, or were extremily close to another node that was more suited. A total of \num{80} nodes were removed, for a final total of \num{310} port nodes.
 
 \subsection{Distance and Travel Time Data}
 \label{subsec:distance-travel-time-data}
