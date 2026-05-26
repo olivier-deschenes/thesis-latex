@@ -86,7 +86,7 @@
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{1\baselineskip}
 
-\title{Ports, Boats and Packages \\ \large A Two-Stage Optimisation of Urban Waterborne Logistics in Bergen}
+\title{Ports, Routes and Boats \\ \large A Three-Stage Optimisation of Urban Waterborne Parcel Logistics in Bergen}
 \author{Olivier Deschênes}
 
 \date{\today}
@@ -168,7 +168,7 @@ If trucks have less and less room to operate and the parcels still need to arriv
 
 Bergen, with a network of fjords and inlets that reaches into nearly every populated district, has the geography to be next.
 
-\subsection{Problem description}
+\subsection{Problem Description}
 \label{subsec:problem-description}
 
 Designing a waterborne parcel network for a city like Bergen is not a single decision but a chain of them. Three connected questions have to be answered together for the system to make sense as a whole.
@@ -181,7 +181,7 @@ The third question is how many boats and crews are actually needed. A set of rou
 
 These three problems are linked but not the same. Solving them in isolation would either produce an unrealistic fleet that ignores the city's geography, or a well-placed set of ports that no fleet can practically serve. This thesis treats them as a single chain where each stage takes the output of the previous one as its input.
 
-\subsection{Research question}
+\subsection{Research Question}
 \label{subsec:research-question}
 
 Building on the problem above, this thesis asks the following main research question:
@@ -215,7 +215,7 @@ On the operation side, the thesis covers port selection, boat routing and boat s
 
 Several aspects are explicitly out of scope. The environmental impact of replacing trucks with boats, although it is one of the main motivations for the topic, is not quantified. The financial cost of the network is not modelled either, as no reliable figures are available for boat operation in this specific context. Whether each candidate port location is actually buildable in practice (ownership, permits, available space) is also not checked. These topics are flagged as directions for future work where relevant.
 
-\subsection{Thesis structure}
+\subsection{Thesis Structure}
 \label{subsec:thesis-structure}
 
 The remainder of the thesis is organised as follows. Section~\ref{sec:background} reviews the relevant background for the thesis, covering urban parcel delivery and the pressure on last-mile logistics and the recent revival of waterborne transport as an alternative for city freight.
@@ -330,7 +330,7 @@ When the trips are fixed loops of similar structure and the only question is how
 
 The data used in this thesis come from three independent sources, each addressing a distinct aspect of the problem: the spatial distribution of Bergen's population, the parcel demand it generates, and the pedestrian network connecting households to possible candidate ports. Population data is provided at the household level by Bergen municipality for the year 2020. Parcel demand is based on PostNord's weekly volumes by postal code in 2020. Finally, the walking network of Bergen is extracted from \ac{osm}. The remainder of this chapter describes these sources in detail and the steps taken to prepare them for use in the models that follow.
 
-\subsection{Walking network of Bergen}
+\subsection{Walking Network of Bergen}
 \label{subsec:walking-network-bergen}
 
 \ac{osm} is first used to retrieve the walking graph of Bergen with the Python package \texttt{OSMnx} \parencite{osmnx} and its \texttt{graph\_from\_place()} function. This package can retrieve the graph of a specific place (\texttt{place\_name=``Bergen, Norway''}) and network type (\texttt{network\_type=``walk''}). However, during spot checks of walking distances, the network type filter was found to be too narrow, as Google Maps walking distances were generally shorter than the distances calculated from the graph. After investigation, the network filter was found to exclude all bicycle lanes, even when they were labelled as walkable by \ac{osm}. The filter was therefore changed to allow bicycle lanes when they are walkable.
@@ -358,7 +358,7 @@ To retrieve potential port locations for the thesis, \texttt{OSMnx} was again us
 
 \begin{table}[htbp]
   \centering
-  \caption{OpenStreetMap tags used to extract candidate ports}
+  \caption{OpenStreetMap tags used to extract candidate ports.}
   \label{tab:osm_port_tags}
 
   \begin{tabular}{l l p{8.5cm}}
@@ -473,7 +473,7 @@ A single boat route, from the moment it leaves the depot to the moment it return
 
 The discharge time is the time needed to handle one parcel once the boat has docked. This thesis uses a fixed value of \qty{25}{\second} per parcel \parencite{toiparcellockers}. The total discharge time at a port is then the number of parcels delivered there, multiplied by \qty{25}{\second} and divided by the crew size, since the employees on board discharge the parcels in parallel. Together with the travel and maneuvering times, this discharge time makes up the total duration of a route.
 
-\subsubsection{Operating hours}
+\subsubsection{Operating Hours}
 \label{subsubsec:operating-hours}
 
 To schedule the operations correctly, the operating hours must first be defined. Since this thesis focuses on Bergen, Norway, information from parcel service providers operating in the region, such as PostNord and Posten, can be used as a reference. Both providers offer parcel delivery services on weekdays, from Monday to Friday, with some exceptions made by Posten for certain types of parcels on Saturdays \parencite{posten_hours,portnord_hours}. Therefore, the operating days in this thesis are also set from Monday to Friday.
@@ -485,7 +485,7 @@ In addition, the daily operating hours must be specified. In this case, the Norw
 
 Although a substantial amount of data is available to address the thesis's research problem, some limitations remain: part of the required information is missing, and other elements must be approximated. The following subsections discuss each of these limitations in turn.
 
-\subsubsection{Lack of data}
+\subsubsection{Lack of Data}
 \label{subsubsec:lack-of-data}
 
 The first missing information concerns the weight and volume of the parcels; only demand is present. Even though average volume and weight values were chosen for demand, the boats transporting the packages do not have real volume or weight limits in the model; only a capacity was chosen. Therefore, these two variables are ignored. The second missing information concerns the candidate ports' real ability to be converted into port locations. Indeed, some ports may not be suitable for this operation, or they may be private and in no way suitable for building a locker system.
@@ -539,7 +539,7 @@ Table~\ref{tab:pslcp_configs} presents the model configurations, all combination
 
 \begin{table}[htbp]
   \centering
-  \caption{Configurations for the \ac{psclp}}
+  \caption{Configurations for the \ac{psclp}.}
   \label{tab:pslcp_configs}
 
   \begin{tabularx}{\textwidth}{c X l}
@@ -556,7 +556,7 @@ Most of the model implementation comes directly from the \cite{psclp} paper, alt
 
 \begin{table}[htbp]
   \centering
-  \caption{Notation for the \ac{psclp}}
+  \caption{Notation for the \ac{psclp}.}
   \label{tab:psclp_notation}
   \renewcommand{\arraystretch}{1.3}
   \begin{tabularx}{\textwidth}{c X l}
@@ -619,7 +619,7 @@ Constraint~\eqref{eq:psclp-preselected} forces every preselected port to be open
 
 The last two constraints,~\eqref{eq:psclp-y-binary} and~\eqref{eq:psclp-z-binary}, keep the port and coverage variables binary.
 
-\subsubsection{Model implementation}
+\subsubsection{Model Implementation}
 \label{subsubsec:psclp-implementation}
 
 The \ac{psclp} is implemented with Google OR-Tools \parencite{ortools}, using its constraint-programming solver CP-SAT \parencite{cpsat}. One adjustment was needed to fit the model to the solver. CP-SAT only works with integer coefficients, but the coverage target \(D = \alpha \sum_{j \in J} d_j\) is usually not a whole number, since \(\alpha\) is a fraction. To account for this, the population and the coverage target are multiplied by \num{1000} and rounded to integers before the demand constraint~\eqref{eq:psclp-demand} is built. This keeps three decimal places of precision, so the rounding has no meaningful effect on the result.
@@ -665,7 +665,7 @@ The three scenarios are anchored on three reference months. For every month of t
 
 Once the three reference months are fixed, each scenario is built at the port level. The Low scenario takes, for each port, the median of its daily demand observed during the low month, which corresponds to a typical quiet day. The Average scenario does the same on the average month and represents a typical day on which the network should comfortably operate. The Peak scenario takes the 95\textsuperscript{th} percentile of the port's daily demand observed during the peak month. The 95\textsuperscript{th} percentile is preferred to the maximum to represent a realistically busy day without sizing the fleet on a single extreme outlier. Each scenario value is rounded up to the next integer so that the routing models treat demand as whole parcels.
 
-\subsubsection{Model implementation}
+\subsubsection{Model Implementation}
 \label{subsubsec:scvrp-implementation}
 
 The first routing model used is the \ac{scvrp}, as it is a natural fit for this problem: the depot is fixed, each selected port has a known weekly parcel demand, and the fleet is composed of identical boats with a maximum parcel capacity and a maximum daily working time. The objective is to design a set of routes, each starting and ending at the depot, that together serve all port demands while minimising the total travel time of the fleet.
@@ -674,7 +674,7 @@ Several configurations were tested for the \ac{scvrp}, each combining a boat cap
 
 \begin{table}[htbp]
   \centering
-  \caption{Configurations tested for the \ac{scvrp}}
+  \caption{Configurations tested for the \ac{scvrp}.}
   \label{tab:cvrp_configs}
 
   \begin{tabularx}{\textwidth}{c >{\raggedright\arraybackslash}X l}
@@ -692,7 +692,7 @@ The classic \ac{scvrp} mathematical model is not defined in this thesis, as it w
 
 \begin{table}[htbp]
   \centering
-  \caption{Notation used in the \ac{scvrp} model}
+  \caption{Notation used in the \ac{scvrp} model.}
   \label{tab:scvrp_notation}
 
   \begin{tabularx}{\textwidth}{c X l}
@@ -729,7 +729,7 @@ Each route is treated as a single fixed-duration, indivisible task equal to its 
 
 \begin{table}[htbp]
   \centering
-  \caption{Notation for the boat scheduling model}
+  \caption{Notation for the boat scheduling model.}
   \label{tab:scheduling_notation}
   \renewcommand{\arraystretch}{1.3}
   \begin{tabularx}{\textwidth}{c X l}
@@ -803,7 +803,7 @@ Once the model is solved, the optimised schedule can be rebuilt from the decisio
 \section{Results and Discussion}
 \label{sec:results-and-discussion}
 
-\subsection{Walking thresholds}
+\subsection{Walking Thresholds}
 \label{subsec:walking-thresholds}
 
 \begin{figure}[htbp]
@@ -1145,7 +1145,7 @@ Finally, the environmental side of the project, which motivated this thesis but 
 
 \begin{table}[htbp]
   \centering
-  \caption{Private market consumer parcel courier usage \parencite{nkom_post_2025}}
+  \caption{Private market consumer parcel courier usage \parencite{nkom_post_2025}.}
   \label{anx:private_parcel_usage}
 
   \begin{tabular}{l r r}
@@ -1166,7 +1166,7 @@ Finally, the environmental side of the project, which motivated this thesis but 
 
 \begin{table}[htbp]
   \centering
-  \caption{PostNord annual parcel demand \parencite{pn_a_2020,pn_a_2021,pn_a_2022,pn_a_2023,pn_a_2024,pn_a_2025}}
+  \caption{PostNord annual parcel demand \parencite{pn_a_2020,pn_a_2021,pn_a_2022,pn_a_2023,pn_a_2024,pn_a_2025}.}
   \label{anx:yearly_pn_demand}
 
   \begin{tabular}{l r}
@@ -1207,7 +1207,7 @@ Equation~\ref{eq:postnord_cagr} outlines the \ac{cagr} formula for PostNord parc
 
 \begin{table}[htbp]
   \centering
-  \caption{7-Day Split Weekly demand \parencite{dailydemand} and new 5-Day Split.}
+  \caption{7-day weekly demand split \parencite{dailydemand} and new 5-day split.}
   \label{anx:day_shares}
 
   \begin{tabular}{lrr}
@@ -1233,7 +1233,7 @@ Equation~\ref{eq:postnord_cagr} outlines the \ac{cagr} formula for PostNord parc
 
 \begin{table}[htbp]
   \centering
-  \caption{Port demand scenario data for run \(T_{max}=28\) and \(\alpha=0.98\) (in parcels).}
+  \caption{Port demand scenario data for run \(T_{\max}=28\) and \(\alpha=0.98\) (in parcels).}
   \label{anx:port_demand_scenarios_t28_a098}
   \begin{tabular}{lrrr}
     \toprule
@@ -1265,7 +1265,7 @@ Equation~\ref{eq:postnord_cagr} outlines the \ac{cagr} formula for PostNord parc
 
 \begin{table}[htbp]
   \centering
-  \caption{Port demand scenario data for run \(T_{max}=15\) and \(\alpha=0.95\) (in parcels).}
+  \caption{Port demand scenario data for run \(T_{\max}=15\) and \(\alpha=0.95\) (in parcels).}
   \label{anx:port_demand_scenarios_t15_a095}
   \begin{tabular}{lrrr}
     \toprule
@@ -1340,7 +1340,7 @@ Equation~\ref{eq:postnord_cagr} outlines the \ac{cagr} formula for PostNord parc
 
 \begin{table}[htbp]
   \centering
-  \caption{PSCLP Utopia Choices by Walking-Time Threshold.}
+  \caption{\ac{psclp} utopia choices by walking-time threshold.}
   \label{anx:psclp_runs_details}
 
   \begin{tabular}{lrrrr}
