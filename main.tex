@@ -231,22 +231,22 @@ Bergen has the right combination to do the same, and in some ways an even strong
 \subsubsection{Facility Location Problems}
 \label{ssec:flp}
 
-% Chose 
+% Chose PSCLP : Partial Set Covering Location Problem
 
-What facility location problems are.
+Facility location problems (FLPs) are a family of optimisation models that decide where to open facilities so that a set of demand points is served in the best possible way. The classical setup takes a set of candidate locations, a set of demand points, and a distance or cost for every demand-facility pair, and then asks which subset of locations should be opened. What counts as ``best'' depends on the objective, which usually balances the cost of opening facilities against the cost of serving demand from them.
 
-The classical branches.
+The literature has converged on a small number of classical formulations. The \(p\)-median problem, introduced by \cite{hakimi1964optimum}, opens exactly \(p\) facilities and minimises the total weighted distance between demand points and their nearest facility. The \(p\)-center problem, also from \cite{hakimi1965optimum}, has the same structure but minimises the maximum distance instead of the total, which makes it useful when worst-case service matters. The set covering location problem (SCLP) of \cite{toregas1971location} takes a different angle. It fixes a coverage distance, considers a demand point covered if a facility is open within that distance, and minimises the number of open facilities under the constraint that every demand point is covered. The maximum covering location problem (MCLP) of \cite{church1974maximal} relaxes the requirement to cover everyone, fixes the number of facilities at \(p\), and maximises the demand covered within the distance threshold.
 
-The partial set covering variant.
+The partial set covering location problem (PSCLP) sits between the SCLP and the MCLP. Like the SCLP it minimises the number of open facilities and uses a coverage distance to define what counts as served. Like the MCLP it accepts that not every demand point will be covered. The constraint is instead that a target share, or absolute amount, of demand must be covered \parencite{psclp}. The PSCLP is therefore well suited to settings where full coverage is either too expensive or simply not realistic, and where the planner can specify a service level rather than a strict requirement.
 
-Applications in last-mile.
+Covering models are common in last-mile logistics, where deciding where to put pickup points, parcel lockers, or micro-depots is a central part of network design. \cite{schwerdfeger2020optimizing} use covering ideas to place mobile parcel lockers in urban areas, while \cite{deutsch2018parcel} study the location of pickup points under capacity constraints. The trade-off between the number of facilities and the share of customers within a comfortable walking distance is a recurring theme, which makes the partial covering family a natural fit \parencite{boyer2009last}.
 
-Why PSCLP for this thesis.
+The same trade-off appears in this thesis. Every port that is opened in Bergen comes with a cost, both monetary and operational, but residents need to be within a reasonable walking distance for the system to be useful. Requiring full coverage is unrealistic, because some parts of the city are far from the waterfront, and forcing one hundred percent coverage would push the number of ports well beyond what a small fleet of boats can serve. The PSCLP captures this directly. The walking time defines coverage, the share of the population to be covered acts as the service level, and the objective minimises the number of ports. This makes it the right model for the first stage of the analysis.
 
 \subsubsection{Vehicle Routing Problem}
 \label{ssec:vehicle-routing-urban-freight}
 
-% Chose SCVRP
+% Chose SCVRP : Symmetric Capacitated Vehicle Routing Problem
 
 
 The base problem.
@@ -261,6 +261,8 @@ Why this matches the problem.
 
 \subsubsection{Vehicle Scheduling Problem}
 \label{ssec:demand-uncertainty-scenarios}
+
+% Chose Bin packing problem.
 
 What VSP is.
 
