@@ -180,11 +180,47 @@ Unless otherwise stated, all maps in this thesis were produced in QGIS using CAR
 \subsubsection{Urban Parcel Delivery and Last-Mile Logistics}
 \label{ssec:urban-parcel-delivery}
 
-\subsection{Bergen as a Constrained Logistics Environment}
+With an expected \num{225} billion global parcels in 2028, up from \num{161} billion in 2022 \parencite{pitney_bowes_index_2023}, delivery companies will have to adapt fast to a world that keeps ordering more and more parcels every year. Over long distances, more container ships can still be used, more trains can still be used on land, and more trucks can still bring parcels to the distribution centres. But when it comes to city centres, at some point there is simply no space left for trucks to drive in. The supply chain is built to scale in response to demand that keeps rising, but the bottleneck is simple. As the chain does its job, the vehicles used to transport the goods to the next link get smaller and smaller.
+
+At the end of the chain, on what is called `Last-mile`, the jobs is now on medium to small trucs to do the job. Its their jobs to navigate in small cities environments, that were simetimes, mostly in Europe, not built for veihcule, therefore having narrow roads with sharp corners. This factors, combime with the repartition of the demand accross the cities, forces the trucks to be smaller, but to still have to do many deliveries to reach all the customers, forcing the needs of more trucks.
+
+At the end of the chain, on what is called the \textit{last mile}, the job falls on medium to small trucks. The last mile is widely recognised as the most expensive part of the supply chain, often accounting for more than half of the total delivery cost \parencite{savelsbergh2016}. It is also the most operationally complex. Routes have many short stops, vehicles are rarely full, and time windows are tight. The trucks also have to navigate dense city environments that, especially in Europe, were never designed for vehicles, with narrow roads and sharp corners. Combined with demand spread across the whole city, this forces the trucks to be smaller, but they still need to make many deliveries to reach all the customers, which in turn requires more trucks.
+
+In the meantime, cities that are often already experiencing higher than ever congestion from private car use are now also facing more and more delivery trucks on their roads. Delivery vehicles contribute disproportionately to urban congestion relative to their share of total traffic. They also cause the same environmental and material impacts as passenger cars, often more. They are harder to electrify than cars, so they continue to generate high levels of CO2 and noise pollution while operating close to where people live. Even when they are electric, trucks are much heavier than passenger cars, which means more wear and tear on the roads and higher levels of dust pollution. All of these costs are external to the carrier. The carrier pays for fuel and labour. The city and its inhabitants pay for the rest.
+
+Forced to act on it, some cities and governments are creating more and more projects and regulations to help combat this. The research field that groups these efforts together is known as \textit{city logistics} \parencite{savelsbergh2016}. The goal is simple. Replace one long polluting last leg of delivery with a shorter, cleaner and often shared one. They can do this in many ways. One option is to set up micro consolidation centres at the edge of dense areas, from which cargo bikes or other small electric vehicles can handle the last segment. If this is not feasible, truck traffic can be moved to off-hour times during the day, in order to spread it out. Another option is to restrict high-emission vehicles from entering certain parts of the city, often the dense and walkable city centre. Finally, a popular solution that can work for all parties is to consolidate household deliveries into small and shared pickup points across the city. This makes shipping companies more efficient since more demand is assigned to a single delivery spot, and it allows delivery trucks to serve only a few concentrated locations, which are often places of commerce. In Norway, both PostNord and Posten have already rolled out automated parcel lockers along these lines, and they are now used by a large share of the population \parencite{toiparcellockers, posten_hours, portnord_hours}.
+
+Many of these solutions involve the participation of both shipping companies and the population. The population plays a crucial role, because it often has to cover a portion of the delivery route itself. Even if a customer orders a package and would prefer to have it delivered to their address, the package may instead need to be picked up somewhere else, close to its original delivery point. In a perfect world, the customer would be able to make this pickup without causing any extra pollution. For this to work, the pickup points need to be reasonably close to where everyone lives. As more cities face the same challenge, a planning concept known as the \textit{15-minute city} has emerged \parencite{moreno2021}. The idea is simple. All essential services should be reachable within a \qty{15}{\minute} walk for every resident. This thesis adopts the same \qty{15}{\minute} threshold as the base walking time for its port selection model.
+
+\subsubsection{Bergen as a Constrained Logistics Environment}
 \label{ssec:bergen}
+
+Geography.
+
+What that means for roads.
+
+Hilly terrain.
+
+Weather.
+
+The water is right there.
+
+Existing infrastructure.
 
 \subsubsection{Waterborne Transport as an Urban Freight Alternative}
 \label{ssec:waterborne-urban-freight}
+
+Historic use.
+
+Current revival.
+
+Why it is attractive.
+
+What it does not do well.
+
+The natural fit for Bergen.
+
+Modern vessel tech.
 
 \subsection{Literature Review}
 \label{subsec:literature-review}
@@ -192,14 +228,54 @@ Unless otherwise stated, all maps in this thesis were produced in QGIS using CAR
 \subsubsection{Facility Location Problems}
 \label{ssec:flp}
 
+What facility location problems are.
+
+The classical branches.
+
+The partial set covering variant.
+
+Applications in last-mile.
+
+Why PSCLP for this thesis.
+
 \subsubsection{Vehicle Routing Problem}
 \label{ssec:vehicle-routing-urban-freight}
+
+The base problem.
+
+The variants that matter.
+
+Urban freight VRP context.
+
+Solving VRP in practice.
+
+Why this matches the problem.
 
 \subsubsection{Vehicle Scheduling Problem}
 \label{ssec:demand-uncertainty-scenarios}
 
+What VSP is.
+
+Where it sits in the planning hierarchy.
+
+The link with bin packing.
+
+Why this is enough for your thesis.
+
+Working hours context.
+
 \subsection{Positioning of This Thesis}
 \label{ssec:thesis-positioning}
+
+What is borrowed.
+
+What is the combination.
+
+What is novel for Bergen.
+
+What this thesis is not.
+
+What this thesis is.
 
 \section{Data}
 \label{sec:data}
