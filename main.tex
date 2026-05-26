@@ -231,8 +231,6 @@ Bergen has the right combination to do the same, and in some ways an even strong
 \subsubsection{Facility Location Problems}
 \label{ssec:flp}
 
-% Chose PSCLP : Partial Set Covering Location Problem
-
 Facility location problems (FLPs) are a family of optimisation models that decide where to open facilities so that a set of demand points is served in the best possible way. The classical setup takes a set of candidate locations, a set of demand points, and a distance or cost for every demand-facility pair, and then asks which subset of locations should be opened. What counts as ``best'' depends on the objective, which usually balances the cost of opening facilities against the cost of serving demand from them.
 
 The literature has converged on a small number of classical formulations. The \(p\)-median problem, introduced by \cite{hakimi1964optimum}, opens exactly \(p\) facilities and minimises the total weighted distance between demand points and their nearest facility. The \(p\)-center problem, also from \cite{hakimi1965optimum}, has the same structure but minimises the maximum distance instead of the total, which makes it useful when worst-case service matters. The set covering location problem (SCLP) of \cite{toregas1971location} takes a different angle. It fixes a coverage distance, considers a demand point covered if a facility is open within that distance, and minimises the number of open facilities under the constraint that every demand point is covered. The maximum covering location problem (MCLP) of \cite{church1974maximal} relaxes the requirement to cover everyone, fixes the number of facilities at \(p\), and maximises the demand covered within the distance threshold.
@@ -248,7 +246,6 @@ The same trade-off appears in this thesis. Every port that is opened in Bergen c
 
 % Chose SCVRP : Symmetric Capacitated Vehicle Routing Problem
 
-
 The base problem.
 
 The variants that matter.
@@ -258,6 +255,16 @@ Urban freight VRP context.
 Solving VRP in practice.
 
 Why this matches the problem.
+
+The vehicle routing problem (VRP) was first formulated by \cite{dantzig1959truck} as a generalisation of the travelling salesman problem to the case where a fleet of vehicles, instead of a single one, must serve a set of customers from a central depot. The base version asks how to route the vehicles so that every customer is visited exactly once, every vehicle starts and ends at the depot, and the total travel cost is minimised. Since then the VRP has grown into one of the most studied problems in combinatorial optimisation, with a large literature on both modelling and solution techniques \parencite{VIDAL2020401}.
+
+Many variants of the VRP have appeared over the years, each one adding the features that a specific application requires. The capacitated VRP (CVRP) gives each vehicle a maximum load and forces the total demand on a route to stay below that limit. The VRP with time windows (VRPTW) requires every customer to be visited within a given interval. The multi-depot VRP allows several depots, the pickup and delivery VRP combines both directions of flow, and the heterogeneous fleet VRP works with vehicles of different types and capacities. A second distinction that matters for this thesis is between symmetric and asymmetric travel cost matrices. The asymmetric case appears mostly in road networks with one-way streets, while in maritime and waterway settings the travel time between two points is usually the same in both directions, which makes the symmetric version the standard choice \parencite{BRAEKERS2016300}.
+
+Vehicle routing has been applied widely to urban freight, where the volume of last-mile deliveries has grown together with e-commerce and has put pressure on city traffic, emissions, and noise levels. \cite{cattaruzza2017vehicle} review the VRP variants that come up most often in city logistics and stress the role of capacity, time windows, and limited delivery zones in shaping the models. \cite{crainic2009models} discuss how urban consolidation centres and dedicated fleets can be combined with routing models to reduce truck traffic in city centres. The use of alternative transport modes such as electric vans, cargo bikes, and inland waterway boats is part of the same line of research, since each mode brings its own constraints to the routing model \parencite{savelsbergh2016city}.
+
+Solving the VRP exactly is hard. The problem is NP-hard, and exact methods such as branch-and-cut or branch-and-price are limited to instances with at most a few hundred customers \parencite{BRAEKERS2016300}. In practice, most realistic instances are solved with heuristics and metaheuristics. Classical construction heuristics include the savings algorithm of \cite{clarke1964scheduling} and various insertion methods. Metaheuristics such as tabu search, large neighbourhood search, and hybrid genetic algorithms produce high quality solutions in reasonable time and are at the core of most modern VRP solvers \parencite{vidal2013heuristics}. Open-source tools such as Google OR-Tools and VROOM make these techniques accessible without having to implement them from scratch.
+
+In the Bergen context, the second stage of the thesis is a routing problem between the main port and the smaller ports chosen in the first stage. Each boat starts at the main port, visits a sequence of smaller ports on a fixed loop, and returns to the main port to reload. The travel time matrix is symmetric, since boats face essentially the same conditions on the way out and on the way back. Each boat has a maximum number of packages it can carry per trip, which is a classical capacity constraint. There are no individual customer time windows, since packages are delivered to ports rather than to households. The natural model is therefore the symmetric capacitated VRP (SCVRP), and the resulting routes can be run as fixed milk runs, which keeps the schedule simple and matches the way a real boat service would be operated.
 
 \subsubsection{Vehicle Scheduling Problem}
 \label{ssec:demand-uncertainty-scenarios}
