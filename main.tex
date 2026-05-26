@@ -244,18 +244,6 @@ The same trade-off appears in this thesis. Every port that is opened in Bergen c
 \subsubsection{Vehicle Routing Problem}
 \label{ssec:vehicle-routing-urban-freight}
 
-% Chose SCVRP : Symmetric Capacitated Vehicle Routing Problem
-
-The base problem.
-
-The variants that matter.
-
-Urban freight VRP context.
-
-Solving VRP in practice.
-
-Why this matches the problem.
-
 The vehicle routing problem (VRP) was first formulated by \cite{dantzig1959truck} as a generalisation of the travelling salesman problem to the case where a fleet of vehicles, instead of a single one, must serve a set of customers from a central depot. The base version asks how to route the vehicles so that every customer is visited exactly once, every vehicle starts and ends at the depot, and the total travel cost is minimised. Since then the VRP has grown into one of the most studied problems in combinatorial optimisation, with a large literature on both modelling and solution techniques \parencite{VIDAL2020401}.
 
 Many variants of the VRP have appeared over the years, each one adding the features that a specific application requires. The capacitated VRP (CVRP) gives each vehicle a maximum load and forces the total demand on a route to stay below that limit. The VRP with time windows (VRPTW) requires every customer to be visited within a given interval. The multi-depot VRP allows several depots, the pickup and delivery VRP combines both directions of flow, and the heterogeneous fleet VRP works with vehicles of different types and capacities. A second distinction that matters for this thesis is between symmetric and asymmetric travel cost matrices. The asymmetric case appears mostly in road networks with one-way streets, while in maritime and waterway settings the travel time between two points is usually the same in both directions, which makes the symmetric version the standard choice \parencite{BRAEKERS2016300}.
