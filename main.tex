@@ -168,16 +168,16 @@ Unless otherwise stated, all maps in this thesis were produced in QGIS using CAR
 \subsection{Research question}
 \label{subsec:research-question}
 
+\subsection{Scope}
+\label{subsec:scope}
+
 \subsection{Thesis structure}
 \label{subsec:thesis-structure}
 
 \section{Background}
 \label{sec:background}
 
-\subsection{Context}
-\label{subsec:context}
-
-\subsubsection{Urban Parcel Delivery and Last-Mile Logistics}
+\subsection{Urban Parcel Delivery and Last-Mile Logistics}
 \label{ssec:urban-parcel-delivery}
 
 With an expected \num{225} billion global parcels in 2028, up from \num{161} billion in 2022 \parencite{pitney_bowes_index_2023}, delivery companies will have to adapt fast to a world that keeps ordering more and more parcels every year. Over long distances, more container ships can still be used, more trains can still be used on land, and more trucks can still bring parcels to the distribution centres. But when it comes to city centres, at some point there is simply no space left for trucks to drive in. The supply chain is built to scale in response to demand that keeps rising, but the bottleneck is simple. As the chain does its job, the vehicles used to transport the goods to the next link get smaller and smaller.
@@ -192,7 +192,7 @@ Forced to act on it, some cities and governments are creating more and more proj
 
 Many of these solutions involve the participation of both shipping companies and the population. The population plays a crucial role, because it often has to cover a portion of the delivery route itself. Even if a customer orders a package and would prefer to have it delivered to their address, the package may instead need to be picked up somewhere else, close to its original delivery point. In a perfect world, the customer would be able to make this pickup without causing any extra pollution. For this to work, the pickup points need to be reasonably close to where everyone lives. As more cities face the same challenge, a planning concept known as the \textit{15-minute city} has emerged \parencite{moreno2021}. The idea is simple. All essential services should be reachable within a \qty{15}{\minute} walk for every resident. This thesis adopts the same \qty{15}{\minute} threshold as the base walking time for its port selection model.
 
-\subsubsection{Bergen as a Constrained Logistics Environment}
+\subsection{Bergen as a Constrained Logistics Environment}
 \label{ssec:bergen}
 
 This thesis will be based on the city of Bergen in Norway. As it sits on Norway's west coats, the city is directly inbtween the North Sea and the mountains. As it one of many reaosns why tourists comes to visit the city, its seven iconic montains, combine with its many fjords, spread the city's population around them. The population thefore mostly leaves close to the coast, and farder in land rapidly becomes hight montrains valley. The city is also splitted into eight districts (\textit{bydeler}).
@@ -216,7 +216,7 @@ The same geography that constrains road delivery offers a natural alternative. B
 
 Bergen also has the existing infrastructure to support such a system. As the second largest city in Norway, it hosts both the second largest port \parencite{bergenport} and the second largest cargo rail station \parencite{bergenrail} in the country, both located in the central area of the city. In practice, this means that the heavy logistics needed to feed a waterborne parcel system is already in place, and would not need to be built from scratch.
 
-\subsubsection{Waterborne Transport as an Urban Freight Alternative}
+\subsection{Waterborne Transport as an Urban Freight Alternative}
 \label{ssec:waterborne-urban-freight}
 
 While the trucking industry today dominates urban freight to the point where it can seem impossible to imagine cities working without it, large urban centres had to organise their cargo flows for centuries before trucks existed. Amsterdam, Paris and London all relied on their canal networks to move goods into and out of the city until well into the 20th century, while Venice never moved away from water at all. The expansion of the road network during the 20th century changed this, as trucks offered a flexibility and reach that canal and river freight could not match.
@@ -225,10 +225,10 @@ In recent years, several companies have started to revive this more traditional 
 
 Bergen has the right combination to do the same, and in some ways an even stronger one. Where Paris works with a single river, Bergen has a network of fjords and inlets that already touches almost every populated district. Using these waterways to reach the population by boat would free the streets of the polluting trucks that currently handle this work. A boat network would not be subject to peak-hour traffic, to the road bottlenecks created by Bergen's terrain, or to the geographic constraints that make some parts of the city hard to reach by road in the first place. On top of this, the fjords cut deep into the city in several places, which allows boats to reach areas that sit well inland from the open coast.
 
-\subsection{Literature Review}
+\subsection{Theory}
 \label{subsec:literature-review}
 
-\subsubsection{Facility Location Problems}
+\subsection{Facility Location Problems}
 \label{ssec:flp}
 
 Facility location problems (FLPs) are a family of optimisation models that decide where to open facilities so that a set of demand points is served in the best possible way. The classical setup takes a set of candidate locations, a set of demand points, and a distance or cost for every demand-facility pair, and then asks which subset of locations should be opened. What counts as ``best'' depends on the objective, which usually balances the cost of opening facilities against the cost of serving demand from them.
@@ -239,7 +239,7 @@ The partial set covering location problem (PSCLP) sits between the SCLP and the 
 
 Covering models are common in last-mile logistics, where deciding where to put pickup points, parcel lockers, or micro-depots is a central part of network design. \cite{schwerdfeger2020optimizing} use covering ideas to place mobile parcel lockers in urban areas, while \cite{deutsch2018parcel} study the location of pickup points under capacity constraints. The trade-off between the number of facilities and the share of customers within a comfortable walking distance is a recurring theme, which makes the partial covering family a natural fit \parencite{boyer2009last}.
 
-\subsubsection{Vehicle Routing Problem}
+\subsection{Vehicle Routing Problem}
 \label{ssec:vehicle-routing-urban-freight}
 
 The vehicle routing problem (VRP) was first formulated by \cite{dantzig1959truck} as a generalisation of the travelling salesman problem to the case where a fleet of vehicles, instead of a single one, must serve a set of customers from a central depot. The base version asks how to route the vehicles so that every customer is visited exactly once, every vehicle starts and ends at the depot, and the total travel cost is minimised. Since then the VRP has grown into one of the most studied problems in combinatorial optimisation, with a large literature on both modelling and solution techniques \parencite{VIDAL2020401}.
@@ -250,7 +250,7 @@ Vehicle routing has been applied widely to urban freight, where the volume of la
 
 Solving the VRP exactly is hard. The problem is NP-hard, and exact methods such as branch-and-cut or branch-and-price are limited to instances with at most a few hundred customers \parencite{BRAEKERS2016300}. In practice, most realistic instances are solved with heuristics and metaheuristics. Classical construction heuristics include the savings algorithm of \cite{clarke1964scheduling} and various insertion methods. Metaheuristics such as tabu search, large neighbourhood search, and hybrid genetic algorithms produce high quality solutions in reasonable time and are at the core of most modern VRP solvers \parencite{vidal2013heuristics}. Open-source tools such as Google OR-Tools and VROOM make these techniques accessible without having to implement them from scratch.
 
-\subsubsection{Vehicle Scheduling Problem}
+\subsection{Vehicle Scheduling Problem}
 \label{ssec:demand-uncertainty-scenarios}
 
 The vehicle scheduling problem (VSP) takes a set of trips with fixed start and end times and asks how to assign them to vehicles so that every trip is covered and the total cost is minimised \parencite{freling2001models}. Each trip is described by a duration, a starting point, and an ending point, and a vehicle can do a sequence of trips only if it has enough time to move between the end of one trip and the start of the next. Costs typically combine a fixed cost for using a vehicle with a variable cost related to driving and idle time. The basic version is the single-depot VSP, which can be solved in polynomial time, while the multi-depot version is NP-hard \parencite{bunte2009overview}.
@@ -258,19 +258,6 @@ The vehicle scheduling problem (VSP) takes a set of trips with fixed start and e
 The VSP usually appears after the routing decisions in transportation planning. In the standard planning hierarchy used in public transport and urban freight, decisions move from strategic choices about the network, to tactical choices about which routes to operate and how often, and finally to operational choices about which vehicle does which trip and when \parencite{ibarra2015planning}. Vehicle scheduling sits at the boundary between tactical and operational planning. Once the set of trips to run is known, the VSP turns those trips into a usable schedule by matching them with the available fleet.
 
 When the trips are fixed loops of similar structure and the only question is how many loops each vehicle can perform within a working day, the VSP reduces to a problem that is close to bin packing. Each vehicle is a bin with a capacity equal to the available working time, and each loop is an item with a size equal to its duration. The goal is to pack the loops into as few bins as possible, or to fit a target set of loops into a fixed number of bins. Classical bin packing and its many variants have been studied for decades and remain an active research area, for both exact methods and heuristics \parencite{delorme2016bin, munien2021metaheuristic}.
-
-\subsection{Positioning of This Thesis}
-\label{ssec:thesis-positioning}
-
-What is borrowed.
-
-What is the combination.
-
-What is novel for Bergen.
-
-What this thesis is not.
-
-What this thesis is.
 
 \section{Data}
 \label{sec:data}
