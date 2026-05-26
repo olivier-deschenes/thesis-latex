@@ -53,9 +53,39 @@
   long  = Compound annual growth rate
 }
 
+\DeclareAcronym{flp}{
+  short = FLP,
+  long  = Facility Location Problem,
+}
+
+\DeclareAcronym{sclp}{
+  short = SCLP,
+  long  = Set Covering Location Problem,
+}
+
+\DeclareAcronym{mclp}{
+  short = MCLP,
+  long  = Maximum Covering Location Problem,
+}
+
+\DeclareAcronym{tsp}{
+  short = TSP,
+  long  = Travelling Salesman Problem,
+}
+
 \DeclareAcronym{vrp}{
   short = VRP,
   long  = Vehicle Routing Problem,
+}
+
+\DeclareAcronym{cvrp}{
+  short = CVRP,
+  long  = Capacitated Vehicle Routing Problem,
+}
+
+\DeclareAcronym{vrptw}{
+  short = VRPTW,
+  long  = Vehicle Routing Problem with Time Windows,
 }
 
 \DeclareAcronym{scvrp}{
@@ -66,6 +96,11 @@
 \DeclareAcronym{psclp}{
   short = PSCLP,
   long  = Partial Set Covering Location Problem,
+}
+
+\DeclareAcronym{vsp}{
+  short = VSP,
+  long  = Vehicle Scheduling Problem,
 }
 
 \DeclareAcronym{kpi}{
@@ -313,33 +348,35 @@ No additional speed restrictions were included in the model. Norwegian maritime 
 \label{subsec:facility-location-problems}
 
 % TODO: add a general facility-location reference for the opening paragraph, before the specific classical formulations.
-Facility location problems (FLPs) are a family of optimisation models that decide where to open facilities so that a set of demand points is served in the best possible way. The classical setup takes a set of candidate locations, a set of demand points, and a distance or cost for every demand-facility pair, and then asks which subset of locations should be opened. What counts as ``best'' depends on the objective, which usually balances the cost of opening facilities against the cost of serving demand from them.
+\acp{flp} are a family of optimisation models that decide where to open facilities so that a set of demand points is served in the best possible way. The classical setup takes a set of candidate locations, a set of demand points, and a distance or cost for every demand-facility pair, and then asks which subset of locations should be opened. What counts as ``best'' depends on the objective, which usually balances the cost of opening facilities against the cost of serving demand from them.
 
-The literature has converged on a small number of classical formulations. The \(p\)-median problem, introduced by \cite{hakimi1964optimum}, opens exactly \(p\) facilities and minimises the total weighted distance between demand points and their nearest facility. The \(p\)-center problem, also from \cite{hakimi1965optimum}, has the same structure but minimises the maximum distance instead of the total, which makes it useful when worst-case service matters. The set covering location problem (SCLP) of \cite{toregas1971location} takes a different angle. It fixes a coverage distance, considers a demand point covered if a facility is open within that distance, and minimises the number of open facilities under the constraint that every demand point is covered. The maximum covering location problem (MCLP) of \cite{church1974maximal} relaxes the requirement to cover everyone, fixes the number of facilities at \(p\), and maximises the demand covered within the distance threshold.
+The literature has converged on a small number of classical formulations. The \(p\)-median problem, introduced by \cite{hakimi1964optimum}, opens exactly \(p\) facilities and minimises the total weighted distance between demand points and their nearest facility. The \(p\)-center problem, also from \cite{hakimi1965optimum}, has the same structure but minimises the maximum distance instead of the total, which makes it useful when worst-case service matters. The \ac{sclp} of \cite{toregas1971location} takes a different angle. It fixes a coverage distance, considers a demand point covered if a facility is open within that distance, and minimises the number of open facilities under the constraint that every demand point is covered. The \ac{mclp} of \cite{church1974maximal} relaxes the requirement to cover everyone, fixes the number of facilities at \(p\), and maximises the demand covered within the distance threshold.
 
-The partial set covering location problem (PSCLP) sits between the SCLP and the MCLP. Like the SCLP it minimises the number of open facilities and uses a coverage distance to define what counts as served. Like the MCLP it accepts that not every demand point will be covered. The constraint is instead that a target share, or absolute amount, of demand must be covered \parencite{psclp}. The PSCLP is therefore well suited to settings where full coverage is either too expensive or simply not realistic, and where the planner can specify a service level rather than a strict requirement.
+The \ac{psclp} sits between the \ac{sclp} and the \ac{mclp}. Like the \ac{sclp} it minimises the number of open facilities and uses a coverage distance to define what counts as served. Like the \ac{mclp} it accepts that not every demand point will be covered. The constraint is instead that a target share, or absolute amount, of demand must be covered \parencite{psclp}. The \ac{psclp} is therefore well suited to settings where full coverage is either too expensive or simply not realistic, and where the planner can specify a service level rather than a strict requirement.
 
 Covering models are common in last-mile logistics, where deciding where to put pickup points, parcel lockers, or micro-depots is a central part of network design. \cite{schwerdfeger2020optimizing} use covering ideas to place mobile parcel lockers in urban areas, while \cite{deutsch2018parcel} study the location of pickup points under capacity constraints. The trade-off between the number of facilities and the share of customers within a comfortable walking distance is a recurring theme, which makes the partial covering family a natural fit \parencite{boyer2009last}.
 
 \subsection{Vehicle Routing Problem}
 \label{subsec:vehicle-routing-problem}
 
-The vehicle routing problem (VRP) was first formulated by \cite{dantzig1959truck} as a generalisation of the travelling salesman problem to the case where a fleet of vehicles, instead of a single one, must serve a set of customers from a central depot. The base version asks how to route the vehicles so that every customer is visited exactly once, every vehicle starts and ends at the depot, and the total travel cost is minimised. Since then the VRP has grown into one of the most studied problems in combinatorial optimisation, with a large literature on both modelling and solution techniques \parencite{VIDAL2020401}.
+The \ac{vrp} family comes from a classic algorithmic problem, the \ac{tsp}. Its name already tells a lot about the challenge of solving it, as it consists of finding the minimum-distance route that reaches all nodes (customers) once while ending where it started.
 
-Many variants of the VRP have appeared over the years, each one adding the features that a specific application requires. The capacitated VRP (CVRP) gives each vehicle a maximum load and forces the total demand on a route to stay below that limit. The VRP with time windows (VRPTW) requires every customer to be visited within a given interval. The multi-depot VRP allows several depots, the pickup and delivery VRP combines both directions of flow, and the heterogeneous fleet VRP works with vehicles of different types and capacities. A second distinction that matters for this thesis is between symmetric and asymmetric travel cost matrices. The asymmetric case appears mostly in road networks with one-way streets, while in maritime and waterway settings the travel time between two points is usually the same in both directions, which makes the symmetric version the standard choice \parencite{BRAEKERS2016300}.
+The \ac{vrp} was first formulated by \cite{dantzig1959truck} as a generalisation of the \ac{tsp} to the case where a fleet of vehicles, instead of a single one, must serve a set of customers from a central depot. The base version asks how to route the vehicles so that every customer is visited exactly once, every vehicle starts and ends at the depot, and the total travel cost is minimised. Since then the \ac{vrp} has grown into one of the most studied problems in combinatorial optimisation, with a large literature on both modelling and solution techniques \parencite{VIDAL2020401}.
 
-Vehicle routing has been applied widely to urban freight, where the volume of last-mile deliveries has grown together with e-commerce and has put pressure on city traffic, emissions, and noise levels. \cite{cattaruzza2017vehicle} review the VRP variants that come up most often in city logistics and stress the role of capacity, time windows, and limited delivery zones in shaping the models. \cite{crainic2009models} discuss how urban consolidation centres and dedicated fleets can be combined with routing models to reduce truck traffic in city centres. The use of alternative transport modes such as electric vans, cargo bikes, and inland waterway boats is part of the same line of research, since each mode brings its own constraints to the routing model \parencite{savelsbergh2016city}.
+Many variants of the \ac{vrp} have appeared over the years, each one adding the features that a specific application requires. The \ac{cvrp} gives each vehicle a maximum load and forces the total demand on a route to stay below that limit. The \ac{vrptw} requires every customer to be visited within a given interval. The multi-depot \ac{vrp} allows several depots, the pickup and delivery \ac{vrp} combines both directions of flow, and the heterogeneous fleet \ac{vrp} works with vehicles of different types and capacities. A second distinction that matters for this thesis is between symmetric and asymmetric travel cost matrices. The asymmetric case appears mostly in road networks with one-way streets, while in maritime and waterway settings the travel time between two points is usually the same in both directions, which makes the symmetric version the standard choice \parencite{BRAEKERS2016300}.
 
-Solving the VRP exactly is hard. The problem is NP-hard, and exact methods such as branch-and-cut or branch-and-price are limited to instances with at most a few hundred customers \parencite{BRAEKERS2016300}. In practice, most realistic instances are solved with heuristics and metaheuristics. Classical construction heuristics include the savings algorithm of \cite{clarke1964scheduling} and various insertion methods. Metaheuristics such as tabu search, large neighbourhood search, and hybrid genetic algorithms produce high quality solutions in reasonable time and are at the core of most modern VRP solvers \parencite{vidal2013heuristics}. Open-source tools such as Google OR-Tools and VROOM make these techniques accessible without having to implement them from scratch.
+Vehicle routing has been applied widely to urban freight, where the volume of last-mile deliveries has grown together with e-commerce and has put pressure on city traffic, emissions, and noise levels. \cite{cattaruzza2017vehicle} review the \ac{vrp} variants that come up most often in city logistics and stress the role of capacity, time windows, and limited delivery zones in shaping the models. \cite{crainic2009models} discuss how urban consolidation centres and dedicated fleets can be combined with routing models to reduce truck traffic in city centres. The use of alternative transport modes such as electric vans, cargo bikes, and inland waterway boats is part of the same line of research, since each mode brings its own constraints to the routing model \parencite{savelsbergh2016city}.
+
+Solving the \ac{vrp} exactly is hard. The problem is NP-hard, and exact methods such as branch-and-cut or branch-and-price are limited to instances with at most a few hundred customers \parencite{BRAEKERS2016300}. In practice, most realistic instances are solved with heuristics and metaheuristics. Classical construction heuristics include the savings algorithm of \cite{clarke1964scheduling} and various insertion methods. Metaheuristics such as tabu search, large neighbourhood search, and hybrid genetic algorithms produce high quality solutions in reasonable time and are at the core of most modern \ac{vrp} solvers \parencite{vidal2013heuristics}. Open-source tools such as Google OR-Tools and VROOM make these techniques accessible without having to implement them from scratch.
 
 \subsection{Vehicle Scheduling Problem}
 \label{subsec:vehicle-scheduling-problem}
 
-The vehicle scheduling problem (VSP) takes a set of trips with fixed start and end times and asks how to assign them to vehicles so that every trip is covered and the total cost is minimised \parencite{freling2001models}. Each trip is described by a duration, a starting point, and an ending point, and a vehicle can do a sequence of trips only if it has enough time to move between the end of one trip and the start of the next. Costs typically combine a fixed cost for using a vehicle with a variable cost related to driving and idle time. The basic version is the single-depot VSP, which can be solved in polynomial time, while the multi-depot version is NP-hard \parencite{bunte2009overview}.
+The \ac{vsp} takes a set of trips with fixed start and end times and asks how to assign them to vehicles so that every trip is covered and the total cost is minimised \parencite{freling2001models}. Each trip is described by a duration, a starting point, and an ending point, and a vehicle can do a sequence of trips only if it has enough time to move between the end of one trip and the start of the next. Costs typically combine a fixed cost for using a vehicle with a variable cost related to driving and idle time. The basic version is the single-depot \ac{vsp}, which can be solved in polynomial time, while the multi-depot version is NP-hard \parencite{bunte2009overview}.
 
-The VSP usually appears after the routing decisions in transportation planning. In the standard planning hierarchy used in public transport and urban freight, decisions move from strategic choices about the network, to tactical choices about which routes to operate and how often, and finally to operational choices about which vehicle does which trip and when \parencite{ibarra2015planning}. Vehicle scheduling sits at the boundary between tactical and operational planning. Once the set of trips to run is known, the VSP turns those trips into a usable schedule by matching them with the available fleet.
+The \ac{vsp} usually appears after the routing decisions in transportation planning. In the standard planning hierarchy used in public transport and urban freight, decisions move from strategic choices about the network, to tactical choices about which routes to operate and how often, and finally to operational choices about which vehicle does which trip and when \parencite{ibarra2015planning}. Vehicle scheduling sits at the boundary between tactical and operational planning. Once the set of trips to run is known, the \ac{vsp} turns those trips into a usable schedule by matching them with the available fleet.
 
-When the trips are fixed loops of similar structure and the only question is how many loops each vehicle can perform within a working day, the VSP reduces to a problem that is close to bin packing. Each vehicle is a bin with a capacity equal to the available working time, and each loop is an item with a size equal to its duration. The goal is to pack the loops into as few bins as possible, or to fit a target set of loops into a fixed number of bins. Classical bin packing and its many variants have been studied for decades and remain an active research area, for both exact methods and heuristics \parencite{delorme2016bin, munien2021metaheuristic}.
+When the trips are fixed loops of similar structure and the only question is how many loops each vehicle can perform within a working day, the \ac{vsp} reduces to a problem that is close to bin packing. Each vehicle is a bin with a capacity equal to the available working time, and each loop is an item with a size equal to its duration. The goal is to pack the loops into as few bins as possible, or to fit a target set of loops into a fixed number of bins. Classical bin packing and its many variants have been studied for decades and remain an active research area, for both exact methods and heuristics \parencite{delorme2016bin, munien2021metaheuristic}.
 
 \section{Data}
 \label{sec:data}
