@@ -195,48 +195,43 @@ Many of these solutions involve the participation of both shipping companies and
 \subsubsection{Bergen as a Constrained Logistics Environment}
 \label{ssec:bergen}
 
-Geography.
+This thesis will be based on the city of Bergen in Norway. As it sits on Norway's west coats, the city is directly inbtween the North Sea and the mountains. As it one of many reaosns why tourists comes to visit the city, its seven iconic montains, combine with its many fjords, spread the city's population around them. The population thefore mostly leaves close to the coast, and farder in land rapidly becomes hight montrains valley. The city is also splitted into eight districts (\textit{bydeler}).
 
-This thesis will be based on the city of Bergen in Norway. As it sits on Norway's west coats, the city is directly inbtween the North Sea and the mountains. As it one of many reaosns why tourists comes to visit the city, its seven iconic montains, combine with its many fjords, spread the city's population around them. The population thefore mostly leaves close to the coast, and farder in land rapidly becomes hight montrains valley. The city is also splitted into eight districts (\textit{bydeler})
-
+This thesis is based on the city of Bergen, located on the west coast of Norway. The city sits directly between the North Sea and the mountains that frame it. Bergen is famously known as the city of seven mountains, and these iconic peaks, combined with the fjords that cut deep into the urban area, leave only narrow strips of land where the population can live. People therefore live mostly close to the coast, while the land rises quickly into high mountain valleys further inland. The city is split into eight districts (\textit{bydeler}): Arna, Bergenhus, Fana, Fyllingsdalen, Laksevåg, Ytrebygda, Årstad and Åsane.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.8\textwidth]{maps/depot_map.pdf}
-  \caption{Bergen eight districts \parencite{districts}}
-  \label{fig:districts}
+  \includegraphics[width=0.5\textwidth]{maps/districts.pdf}
+  \caption{Total population of Bergen in 2020 aggregated by district.}
+  \label{fig:district_population}
 \end{figure}
 
-What that means for roads.
+These districts can be seen geographically in Figure~\ref{fig:district_population}, and the full population breakdown by district is shown in the \nameref{sec:appendix} in Figure~\ref{anx:population-distribution}. They can be grouped into two sets. The first group, made up of Bergenhus, Årstad, Fyllingsdalen, Laksevåg and Ytrebygda, sits in the central and coastal part of the city, around the main fjords, and accounts for about \qty{65}{\percent} of Bergen's total population. The second group, Åsane, Arna and Fana, lies on the outer edges of the municipality. Because this second group has a much larger area with lower population density and mostly mountainous terrain, its road network is also less dense than in the first group.
 
-Hilly terrain.
+Bergen also has significant elevation changes across its urban area, again caused by the surrounding mountains that force the population into limited coastal area. Because flat coastal land runs out quickly, a share the population lives at higher elevations on the slopes leading up from the shore. This makes walking distance in Bergen harder to evaluate, as slope strongly affects walking speed. According to Tobler's Hiking Function \parencite{walkingstats}, a walk that takes 15 minutes on flat ground stretches to 21 minutes at a \qty{10}{\percent} incline. Walking is fastest at a \qty{5}{\percent} decline, where the same walk takes only 12.5 minutes, but steeper declines of \qty{10}{\percent} bring the pace back down to 15 minutes. Standard pedestrian network analysis tends to ignore elevation \parencite{noslope}, even though it is known to have a real effect on walking time in hilly cities like Bergen \parencite{slopegood}. Since the goal of this thesis is to explore the feasibility of a waterway shipping system rather than to plan a real operational schedule, slope is ignored in the walking time calculations and identified as a direction for future work.
 
-Weather.
+Moreover, Bergen's weather is known for being one of the rainiest city in Europe. A lot of rain will cause the city to have wet pavements and infrastructures that could make it less favoralbe for long walking distance. However, as for the splop. this limitations will be ignored in this work, and the hypothesis that the population living there is accomodated to the weather. Nonetheless, in a real world scenario, it would be interesting to see the impact of weather in the walking compared to driving to this port locations.
 
-The water is right there.
+The same geography that constrains road delivery offers a natural alternative. Because the population lives mostly along the coast, residents are already close to potential waterways. Roads, on the other hand, have to fight the geography. They either go around mountains and fjords, cross them with bridges, or cut through them with tunnels. Every workaround adds distance and creates a chokepoint. For boats, those same fjords are direct, open corridors between districts. What slows down road delivery is exactly what makes water delivery efficient.
 
-Existing infrastructure.
+Bergen also has the existing infrastructure to support such a system. As the second largest city in Norway, it hosts both the second largest port \parencite{bergenport} and the second largest cargo rail station \parencite{bergenrail} in the country, both located in the central area of the city. In practice, this means that the heavy logistics needed to feed a waterborne parcel system is already in place, and would not need to be built from scratch.
 
 \subsubsection{Waterborne Transport as an Urban Freight Alternative}
 \label{ssec:waterborne-urban-freight}
 
-Historic use.
+While the trucking industry today dominates urban freight to the point where it can seem impossible to imagine cities working without it, large urban centres had to organise their cargo flows for centuries before trucks existed. Amsterdam, Paris and London all relied on their canal networks to move goods into and out of the city until well into the 20th century, while Venice never moved away from water at all. The expansion of the road network during the 20th century changed this, as trucks offered a flexibility and reach that canal and river freight could not match.
 
-Current revival.
+In recent years, several companies have started to revive this more traditional way of handling cargo. DHL is running waterway delivery trials in cities like Venice, Lagos and Berlin \parencite{dhlboats}, while Fludis is operating on the Seine in Paris \parencite{fludis}, both with the goal of reducing the number of trucks in city centres and the pollution that comes with them. The Paris case illustrates the approach well. The city is dense and difficult for trucks to navigate, which gave Fludis the opportunity to use the Seine as a backbone for its operations. The idea is simple. Parcels are first loaded onto small electric delivery bikes, the bikes are then loaded into a barge-like boat, and the boat carries them upriver to a drop-off point. From there, the bikes handle the last-mile delivery and then return to the boat for the trip back to the main warehouse. This setup removes the short-range constraint of the bikes while keeping trucks out of the city itself.
 
-Why it is attractive.
-
-What it does not do well.
-
-The natural fit for Bergen.
-
-Modern vessel tech.
+Bergen has the right combination to do the same, and in some ways an even stronger one. Where Paris works with a single river, Bergen has a network of fjords and inlets that already touches almost every populated district. Using these waterways to reach the population by boat would free the streets of the polluting trucks that currently handle this work. A boat network would not be subject to peak-hour traffic, to the road bottlenecks created by Bergen's terrain, or to the geographic constraints that make some parts of the city hard to reach by road in the first place. On top of this, the fjords cut deep into the city in several places, which allows boats to reach areas that sit well inland from the open coast.
 
 \subsection{Literature Review}
 \label{subsec:literature-review}
 
 \subsubsection{Facility Location Problems}
 \label{ssec:flp}
+
+% Chose 
 
 What facility location problems are.
 
@@ -250,6 +245,9 @@ Why PSCLP for this thesis.
 
 \subsubsection{Vehicle Routing Problem}
 \label{ssec:vehicle-routing-urban-freight}
+
+% Chose SCVRP
+
 
 The base problem.
 
@@ -302,13 +300,13 @@ The data used in this thesis comes from three independent sources, each addressi
 
 The household data was obtained from the Master' thesis of \cite{pop_thesis} and originaly comes from the Bergen municipality. The dataset, from 2020, has information about population of the city at the household level, only the coordinates, number of resident, postal code and district was kept from the original data. A total of \num{149308} household was contained in the dataset (\num{73393} being unique), with around \num{280491} total population. This demographic is splitted into Bergen' eight districts, and \num{142} unique postal codes.
 
-To reduce the overall values of our data, the household coordinate were snapped to the nearest \ac{osm} node from our walking network. This helped us reduced drasticly the amount of rows for our dataset to \num{29991} unique \ac{osm} nodes. During this aggregation, some \ac{osm} nodes were assigned population that were from multiple differents districts, representing around \num{418} people (\qty{0.15}{\percent} of the population) and \num{27} nodes (\qty{0.07}{\percent} of nodes). Due to some results being shown per district, these nodes were excluded. The population distribution by districts can be seen in \Cref{fig:district_population}. It should be noted that some districts will be filtered out of the population data in Section~\ref{ssec:walking_time} (\nameref{ssec:walking_time}).
+To reduce the overall values of our data, the household coordinate were snapped to the nearest \ac{osm} node from our walking network. This helped us reduced drasticly the amount of rows for our dataset to \num{29991} unique \ac{osm} nodes. During this aggregation, some \ac{osm} nodes were assigned population that were from multiple differents districts, representing around \num{418} people (\qty{0.15}{\percent} of the population) and \num{27} nodes (\qty{0.07}{\percent} of nodes). Due to some results being shown per district, these nodes were excluded. The population distribution by districts can be seen in \Cref{fig:populations}. It should be noted that some districts will be filtered out of the population data in Section~\ref{ssec:walking_time} (\nameref{ssec:walking_time}).
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{graphs/district_population.pdf}
   \caption{Total population of Bergen in 2020 aggregated by district.}
-  \label{fig:district_population}
+  \label{fig:populations}
 \end{figure}
 
 Since the goal of this data is to identify good port candidates based on population coverage rather than absolute population size, the data will not be updated to current figures. Only the spatial distribution will be taken into account, and it is assumed that the population growth has been geographically uniform.
@@ -390,7 +388,7 @@ The first step consists of identifying the locations of the Port of Bergen and t
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.4\textwidth]{depot_map.pdf}
+  \includegraphics[width=0.4\textwidth]{maps/depot_map.pdf}
   \caption{Map of the selected depot location.}
   \label{fig:depot_map}
 \end{figure}
@@ -1026,6 +1024,15 @@ In summary, as both \texttt{t15} and \texttt{t28} serves the same total amount o
 \counterwithin{figure}{section}
 \counterwithin{table}{section}
 \counterwithin{equation}{section}
+
+\subsection{Population}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{python/graphs/population_by_district.pdf}
+  \caption{City of Bergen population distribution by district in 2020.}
+  \label{anx:population-distribution}
+\end{figure}
 
 \subsection{Ports}
 
