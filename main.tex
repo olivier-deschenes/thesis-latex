@@ -218,13 +218,15 @@ Several aspects are explicitly out of scope. The environmental impact of replaci
 \subsection{Thesis structure}
 \label{subsec:thesis-structure}
 
-The remainder of the thesis is organised as follows. Section~\ref{sec:background} reviews the relevant literature, covering urban parcel delivery and the pressure on last-mile logistics, the recent revival of waterborne transport as an alternative for city freight, and the optimisation problems on which the methodology is built. It also gives a short overview of Bergen's geography and existing infrastructure.
+The remainder of the thesis is organised as follows. Section~\ref{sec:background} reviews the relevant background for the thesis, covering urban parcel delivery and the pressure on last-mile logistics and the recent revival of waterborne transport as an alternative for city freight.
+
+Section~\ref{sec:theory} does a literature review of the optimisation problems used to respond to the research question.
 
 The next section presents the data used in the thesis. It describes the parcel demand from PostNord, the demographic and household data, the candidate ports and the chosen depot location. It also explains the operational constraints, the steps taken to disaggregate the weekly demand into daily and household-level demand, and the known limitations of the data.
 
 Section~\ref{sec:methodology} explains the three optimisation models that form the core of the thesis. It first presents the port selection model based on the \ac{psclp}, then the boat routing model based on the \ac{scvrp} with its handling of large-demand ports, and finally the boat scheduling model based on bin packing. The construction of the demand scenarios used to test the network is also described.
 
-Section~\ref{sec:results-and-discussion} presents and discusses the results of running the three models. It covers the selected port layouts, the routes generated for each configuration, the fleet and crew needed for each demand scenario, and the way the main \ac{kpi}s react to different boat capacities and crew sizes.
+Section~\ref{sec:results-and-discussion} presents and discusses the results of running the three models. It covers the selected port layouts, the routes generated for each configuration, the fleet and crew needed for each demand scenario, and the way the main metrics react to different boat capacities and crew sizes.
 
 Finally, Section~\ref{sec:conclusion} summarises the findings, answers the research question and outlines directions for future work.
 
@@ -275,8 +277,8 @@ In recent years, several companies have started to revive this more traditional 
 
 Bergen has the right combination to do the same, and in some ways an even stronger one. Where Paris works with a single river, Bergen has a network of fjords and inlets that already touches almost every populated district. Using these waterways to reach the population by boat would free the streets of the polluting trucks that currently handle this work. A boat network would not be subject to peak-hour traffic, to the road bottlenecks created by Bergen's terrain, or to the geographic constraints that make some parts of the city hard to reach by road in the first place. On top of this, the fjords cut deep into the city in several places, which allows boats to reach areas that sit well inland from the open coast.
 
-\subsection{Theory}
-\label{subsec:theory}
+\section{Theory}
+\label{sec:theory}
 
 \subsection{Facility Location Problems}
 \label{subsec:facility-location-problems}
