@@ -168,14 +168,62 @@ Bergen, with a network of fjords and inlets that reaches into nearly every popul
 \subsection{Problem description}
 \label{subsec:problem-description}
 
+Designing a waterborne parcel network for a city like Bergen is not a single decision but a chain of them. Three connected questions have to be answered together for the system to make sense as a whole.
+
+The first question is where the boats should stop. Parcels arriving by water still need to reach the people who ordered them, and the last step happens on foot. The ports therefore have to be placed close enough to where people live so that walking to pick up a parcel stays reasonable. Opening a port in every coastal neighbourhood would solve coverage but waste resources, while keeping only a few central ports would push too much walking onto the residents. The first part of the problem is to find a set of port locations that balances population coverage against the number of ports.
+
+The second question is how the boats move between these ports. Once the ports are chosen, each one carries a share of the city's parcel demand that depends on the households assigned to it. The boats then have to leave the depot, visit the ports, drop the parcels and come back, all within a working day and within the load they can carry. The routes also have to respect realistic capacity and shift limits.
+
+The third question is how many boats and crews are actually needed. A set of routes is not yet a fleet. The routes have to be packed into boats and shifts so that the network can operate every day of the year, including peak days when demand spikes. The fleet size drives the capital investment of the network, the crew count drives its labour cost, and both depend on the routes coming out of the previous stage.
+
+These three problems are linked but not the same. Solving them in isolation would either produce an unrealistic fleet that ignores the city's geography, or a well-placed set of ports that no fleet can practically serve. This thesis treats them as a single chain where each stage takes the output of the previous one as its input.
+
 \subsection{Research question}
 \label{subsec:research-question}
+
+Building on the problem above, this thesis asks the following main research question:
+
+\begin{quote}
+  \textit{How can a waterborne parcel delivery network be designed for the city of Bergen, and what fleet and crew would such a network need to operate?}
+\end{quote}
+
+To make this question tractable, it is broken into three sub-questions, each one matching one stage of the methodology:
+
+\begin{enumerate}
+  \item How many ports are needed, and where should they be placed, to cover the population of Bergen within a reasonable walking time?
+  \item Given a set of selected ports and their parcel demand, what set of boat routes can serve them while respecting realistic capacity and shift limits?
+  \item Given these routes, how many boats and crews are required to operate the network across low, average and peak demand days?
+\end{enumerate}
+
+Together, the answers to these three sub-questions give a complete picture of what the network would look like and what it would cost in equipment and labour.
 
 \subsection{Scope}
 \label{subsec:scope}
 
+This thesis focuses on the design of the network and its operational requirements rather than on a full real-world implementation. Several boundaries are drawn to keep the problem tractable.
+
+Geographically, the study covers the city of Bergen. After looking at the walking-time coverage of each district, three of them (Arna, Fana and Åsane) are excluded, as no coastal location can serve them within an acceptable walking time. The five remaining districts are kept.
+
+On the demand side, the thesis uses the PostNord 2020 weekly parcel demand by postal code. The values are scaled to the current year and adjusted for PostNord's estimated market share so that the full residential parcel demand is represented. Non-household demand is removed. Only the number of parcels is considered, as parcel weight and volume are not available in the dataset.
+
+On the access side, only walking from the household to the nearest selected port is modelled. Driving to a port or any other mode of access is left out. The walking time is computed from the road network and does not take elevation or weather into account, even though both have a real effect in a hilly and rainy city like Bergen.
+
+On the operation side, the thesis covers port selection, boat routing and boat scheduling. The boats are assumed identical within a configuration, with a fixed cruising speed and a fixed parcel capacity. The depot location is chosen manually based on proximity to the existing port and rail infrastructure of Bergen. Port-to-port travel distances are drawn by hand on the map rather than computed from a maritime routing algorithm. No delivery time windows are imposed at the ports.
+
+Several aspects are explicitly out of scope. The environmental impact of replacing trucks with boats, although it is one of the main motivations for the topic, is not quantified. The financial cost of the network is not modelled either, as no reliable figures are available for boat operation in this specific context. Whether each candidate port location is actually buildable in practice (ownership, permits, available space) is also not checked. These topics are flagged as directions for future work where relevant.
+
 \subsection{Thesis structure}
 \label{subsec:thesis-structure}
+
+The remainder of the thesis is organised as follows. Section~\ref{sec:background} reviews the relevant literature, covering urban parcel delivery and the pressure on last-mile logistics, the recent revival of waterborne transport as an alternative for city freight, and the optimisation problems on which the methodology is built. It also gives a short overview of Bergen's geography and existing infrastructure.
+
+The next section presents the data used in the thesis. It describes the parcel demand from PostNord, the demographic and household data, the candidate ports and the chosen depot location. It also explains the operational constraints, the steps taken to disaggregate the weekly demand into daily and household-level demand, and the known limitations of the data.
+
+Section~\ref{sec:methodology} explains the three optimisation models that form the core of the thesis. It first presents the port selection model based on the \ac{psclp}, then the boat routing model based on the \ac{scvrp} with its handling of large-demand ports, and finally the boat scheduling model based on bin packing. The construction of the demand scenarios used to test the network is also described.
+
+Section~\ref{sec:analysis} presents and discusses the results of running the three models. It covers the selected port layouts, the routes generated for each configuration, the fleet and crew needed for each demand scenario, and the way the main \ac{kpi}s react to different boat capacities and crew sizes.
+
+Finally, Section~\ref{sec:conclusion} summarises the findings, answers the research question and outlines directions for future work.
 
 \section{Background}
 \label{sec:background}
