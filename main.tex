@@ -175,6 +175,16 @@
 \section{Acknowledgements}
 \label{sec:acknowledgements}
 
+This thesis was written as the final work of two distinct master's degrees. The first is an MSc in Operations and Supply Chain Management from HEC Montréal. The second is an MSc in Energy, Natural Resources and the Environment from the Norwegian School of Economics (NHH).
+
+I would first like to thank both institutions for the opportunity to take part in the Double Degree program. This program made it possible for me to study in a different country, in a different academic environment, and to learn a great deal from both experiences.
+
+I would also like to thank my supervisors, Jean-François Cordeau from HEC Montréal, Julio C. Góez from NHH, and Stein W. Wallace from NHH, for accepting to supervise my thesis. Their guidance, feedback, and willingness to answer my questions were very valuable throughout the writing process.
+
+Although completing this project alone was challenging, the learning experience was well worth it.
+
+Thank you.
+
 \section{Licences and Attributions}
 \label{sec:licenses-and-attributions}
 
@@ -182,6 +192,8 @@ Unless otherwise stated, all maps in this thesis were produced in QGIS using CAR
 
 \section{Abstract}
 \label{sec:abstract}
+
+As urban parcel demand is rising, trucks face growing limits in dense city centres. However, in Bergen, the same geography that constrains road delivery also creates another delivery channel: water. This thesis examines how a waterway parcel network could be designed for Bergen, with ports acting as parcel-locker locations. The network is designed through a three-stage optimisation framework. First, a partial set covering model selects port locations. Second, a symmetric capacitated boat routing model builds delivery routes under capacity and shift limits. Third, a scheduling model assigns the routes to boats and crews. Using household, parcel demand, OpenStreetMap and manually measured maritime-distance data, the thesis compares two port layouts and tests low, average and peak demand days across three boat capacities and three crew sizes. The results show that \numrange{20}{28} ports give similar walking outcomes, with average walking times around \qty{20}{\minute}. Operations, however, are mainly driven by demand. The network requires \numrange{1}{10} boats and \numrange{10}{76} employees depending on the demand scenario, with peak days forcing the system to scale significantly. A \num{1500}-parcel boat offers the best capacity compromise, while larger crews are most useful during peak periods. The thesis shows that waterborne parcel logistics in Bergen could be possible in principle.
 
 \clearpage
 \tableofcontents
@@ -430,11 +442,11 @@ Finally, since some districts are filtered out of the population data in Section
     \toprule
     \textbf{Data Cleaning / Scaling Step}    & \textbf{Parcel Volume} & \textbf{Change} \\
     \midrule
-    PostNord 2020 Baseline                   & 1,628,441              & --                      \\
-    PostNord 2026 Projection                 & 2,419,134              & \(+790,693\)            \\
-    With Total Market Share (20\%)           & 12,336,226             & \(+9,917,092\)          \\
-    Only Households                          & 8,125,871              & \(-4,210,355\)          \\
-    Operational Dataset (Filtered Districts) & 5,977,449              & \(-2,148,422\)          \\
+    PostNord 2020 Baseline                   & 1,628,441              & --              \\
+    PostNord 2026 Projection                 & 2,419,134              & \(+790,693\)    \\
+    With Total Market Share (20\%)           & 12,336,226             & \(+9,917,092\)  \\
+    Only Households                          & 8,125,871              & \(-4,210,355\)  \\
+    Operational Dataset (Filtered Districts) & 5,977,449              & \(-2,148,422\)  \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -692,11 +704,11 @@ Several configurations were tested for the \ac{scvrp}, each combining a boat cap
 
   \begin{tabularx}{\textwidth}{c >{\raggedright\arraybackslash}X l}
     \toprule
-    \textbf{Symbol} & \textbf{Description}   & \textbf{Values}                               \\
+    \textbf{Symbol} & \textbf{Description}  & \textbf{Values}                               \\
     \midrule
-    \(Q\)           & Boat parcel capacity   & \{Low-capacity, Mid-capacity, High-capacity\} \\
-    \(e\)           & Employees per boat     & \{2, 3, 4\}                                   \\
-    \(s\)           & Daily demand scenario  & \{Low, Average, Peak\}                        \\
+    \(Q\)           & Boat parcel capacity  & \{Low-capacity, Mid-capacity, High-capacity\} \\
+    \(e\)           & Employees per boat    & \{2, 3, 4\}                                   \\
+    \(s\)           & Daily demand scenario & \{Low, Average, Peak\}                        \\
     \bottomrule
   \end{tabularx}
 \end{table}
