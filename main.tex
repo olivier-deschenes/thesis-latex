@@ -23,6 +23,7 @@
 \usepackage{tabularx}
 \usepackage{csquotes}
 \usepackage{makecell}
+\usepackage{enumitem}
 % biblio
 
 % --- Bibliography Setup ---
@@ -270,13 +271,14 @@ Section~\ref{sec:theory} does a literature review of the optimisation problems u
 
 The next section presents the data used in the thesis. It describes the parcel demand from PostNord, the demographic and household data, the candidate ports and the chosen depot location. It also explains the operational constraints, the steps taken to disaggregate the weekly demand into daily and household-level demand, and the known limitations of the data.
 
-Section~\ref{sec:methodology} explains the three optimisation models that form the core of the thesis. It first presents the port selection model based on the \ac{psclp}, then the boat routing model based on the \ac{scvrp} with its handling of large-demand ports, and finally the boat scheduling model based on bin packing. The construction of the demand scenarios used to test the network is also described.
+Section~\ref{sec:methodology} explains the three optimisation models that form the core of the thesis. It first presents the port selection model, then the boat routing model based with its handling of large-demand ports, and finally the boat scheduling model. The construction of the demand scenarios used to test the network is also described.
 
 Section~\ref{sec:results-and-discussion} presents and discusses the results of running the three models. It covers the selected port layouts, the routes generated for each configuration, the fleet and crew needed for each demand scenario, and the way the main metrics react to different boat capacities and crew sizes.
 
 Finally, Section~\ref{sec:conclusion} summarises the findings, answers the research question and outlines directions for future work.
 
 \section{Background}
+
 \label{sec:background}
 
 \subsection{Urban Parcel Delivery and Last-Mile Logistics}
@@ -364,24 +366,24 @@ Covering models are common in last-mile logistics, where deciding where to put p
 \subsection{Vehicle Routing Problem}
 \label{subsec:vehicle-routing-problem}
 
-The \ac{vrp} family comes from a classic algorithmic problem, the \ac{tsp}. Its name already tells a lot about the challenge of solving it, as it consists of finding the minimum-distance route that reaches all nodes (customers) once while ending where it started \parencite{tps}.
+The \acf{vrp} family comes from a classic algorithmic problem, the \acf{tsp}. Its name already tells a lot about the challenge of solving it, as it consists of finding the minimum-distance route that reaches all nodes (customers) once while ending where it started \parencite{tps}.
 
 The \ac{vrp} was first formulated by \cite{dantzig1959truck} as a generalisation of the \ac{tsp} to the case where a fleet of vehicles, instead of a single one, must serve a set of customers from a central depot. Since then the \ac{vrp} has grown into one of the most studied problems in combinatorial optimisation, with a large literature on both modelling and solution techniques \parencite{VIDAL2020401}.
 
-Many variants of the \ac{vrp} have appeared over the years, each one adding the features as it was used in new applications. For exemple, \ac{cvrp} gives each vehicle a maximum load and forces the total demand on a route to stay below that limit. The \ac{vrptw} requires every customer to be visited within a given interval. The multi-depot \ac{vrp} allows several depots, the pickup and delivery \ac{vrp} combines both directions of flow, and the heterogeneous fleet \ac{vrp} works with vehicles of different types and capacities. A second distinction that matters for this thesis is between symmetric and asymmetric travel cost matrices. \ac{vrp} models may be formulated on either directed or undirected transportation networks \parencite{BRAEKERS2016300}. In this thesis, the waterway network is treated as symmetric, meaning that the travel time between two ports is assumed to be the same in both directions.
+Many variants of the \ac{vrp} have appeared over the years, each one adding the features as it was used in new applications. For exemple, \acf{cvrp} gives each vehicle a maximum load and forces the total demand on a route to stay below that limit. The \ac{vrptw} requires every customer to be visited within a given interval. The multi-depot \ac{vrp} allows several depots, the pickup and delivery \ac{vrp} combines both directions of flow, and the heterogeneous fleet \ac{vrp} works with vehicles of different types and capacities. A second distinction that matters for this thesis is between symmetric and asymmetric travel cost matrices. \ac{vrp} models may be formulated on either directed or undirected transportation networks \parencite{BRAEKERS2016300}. In this thesis, the waterway network is treated as symmetric, meaning that the travel time between two ports is assumed to be the same in both directions.
 
-Moreover, if the constraint requiring each customer to be visited only once is too restrictive for the context, two approaches can be considered. The first approach is to relax this constraint directly. This leads to the \ac{scvrp}, where vehicles keep the same capacity constraints as in the \ac{cvrp}, but customers may be visited more than once when their demand cannot be served by a single vehicle or route \parencite{ARCHETTI2011741}. The second approach is to keep the original \ac{cvrp} formulation and modify the input data instead, often called the \textit{priori split strategy} \parencite{a17090396}. In this case, a maximum demand limit is defined, and customers with demands above this limit are divided into several artificial customer nodes. Each clone represents part of the original customer demand and respects the imposed demand limit. These cloned customers keep the same distance values to all other customers, while the distance between clones of the same original customer is set to zero. This provides a practical simplification that allows a standard \ac{cvrp} model to approximate split deliveries without requiring a full \ac{scvrp} implementation. More specific splitting strategy can be used to optimize even more the model, as uniforly splitting the demand could result in less optimal scenarios \parencite{a17090396}.
+Moreover, if the constraint requiring each customer to be visited only once is too restrictive for the context, two approaches can be considered. The first approach is to relax this constraint directly. This leads to the \acf{sdvrp}, where vehicles keep the same capacity constraints as in the \ac{cvrp}, but customers may be visited more than once when their demand cannot be served by a single vehicle or route \parencite{ARCHETTI2011741}. The second approach is to keep the original \ac{cvrp} formulation and modify the input data instead, often called the \textit{priori split strategy} \parencite{a17090396}. In this case, a maximum demand limit is defined, and customers with demands above this limit are divided into several artificial customer nodes. Each clone represents part of the original customer demand and respects the imposed demand limit. These cloned customers keep the same distance values to all other customers, while the distance between clones of the same original customer is set to zero. This provides a practical simplification that allows a standard \ac{cvrp} model to approximate split deliveries without requiring a full \ac{scvrp} implementation. More specific splitting strategy can be used to optimize even more the model, as uniforly splitting the demand could result in less optimal scenarios \parencite{a17090396}.
 
-For this thesis, as the \ac{scvrp} can get more expensive computationally \parencite{a17090396} and a lot of different configurations will be tested, but with only a relativly small amount of ports and custumer nodes, the model chosen will be the \ac{cvrp} with the \textit{priori split strategy} strategy.
+For this thesis, as the \ac{scvrp} can get more expensive computationally \parencite{a17090396} and a lot of different configurations will be tested, but with only a relativly small amount of ports and custumer demands, the model chosen will be the \ac{cvrp} with the \textit{priori split strategy} strategy.
 
 \subsection{Vehicle Scheduling Problem}
 \label{subsec:vehicle-scheduling-problem}
 
 The \ac{vsp} usually appears after the routing decisions in transportation planning. In the standard planning hierarchy used in public transport and urban freight, decisions move from strategic choices about the network, to tactical choices about which routes to operate and how often, and finally to operational choices about which vehicle does which trip and when \parencite{ibarra2015planning}. Vehicle scheduling sits at the boundary between tactical and operational planning. Once the set of trips to run is known, the \ac{vsp} turns those trips into a usable schedule by matching them with the available fleet.
 
-When the trips are fixed loops from depot to depot and the only question is how many loops each a vehicle can do within a fixed duration, the \ac{vsp} becomes a simple bin packing problem. Each vehicle is a bin with a capacity equal to the available fixed duration, and each loop is an item with a size equal to its duration. The goal is to pack the loops into as few bins as possible, or to fit a target set of loops into a fixed number of bins.
+When the trips are fixed loops from depot to depot and the only question is how to assign these loops to vehicles within a fixed duration, the \ac{vsp} can be formulated as a bin packing problem. Each vehicle is represented as a bin with a capacity equal to the available working duration, and each loop is represented as an item with a size equal to its duration. The objective is to use the minimum number of vehicles needed to operate all loops.
 
-In the context of this thesis, with the hypothesis of a very few number of routes to pack into a even smaller number of boats, the model use could probobly be a simple try all combination solver. The model will be implemented fully to support potential cases where a big set of routes is present for a given day.
+In the context of this thesis, the number of routes to assign on a given day is expected to be small, while the number of available boats is not fixed in advance. The objective is therefore to determine the minimum number of boats required to operate all planned loops within the maximum working duration of each boat. For the main case study, a complete enumeration of all possible route-to-boat assignments would probably be sufficient. However, this approach does not scale well as the number of routes increases. Therefore, the problem is implemented as a bin packing optimization model, so that the same formulation can also be used in potential cases where a larger set of daily routes must be scheduled.
 
 \section{Data}
 \label{sec:data}
@@ -459,7 +461,24 @@ Second, because the dataset represents only PostNord's share of the market in 20
 % TODO: justify the assumption that postcodes missing from the household dataset are a good proxy for non-household demand.
 Third, this dataset represents parcel demand for both households and other types of clients. However, since this thesis focuses on populations, the non-household demand needs to be removed. To achieve this, the household postcode data was joined with the weekly demand, and postcodes not present in the household dataset were excluded.
 
-Finally, since some districts will be filtered out of the population data in Section~\ref{subsubsec:walking-thresholds} (\nameref{subsubsec:walking-thresholds}), the demand associated with these excluded household districts will also be removed. The overall demand quantities and changes by step can be seen in Table~\ref{anx:parcel_volumes} in the \nameref{sec:appendix}. The total parcel demand considered in this thesis is \num{5977449} parcels for the year 2026.
+Finally, since some districts will be filtered out of the population data in Section~\ref{subsubsec:walking-thresholds} (\nameref{subsubsec:walking-thresholds}), the demand associated with these excluded household districts will also be removed. The overall demand quantities and changes by step can be seen in Table~\ref{tab:parcel_volumes}. The total parcel demand considered in this thesis is \num{5977449} parcels for the year 2026.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Sequential adjustments and dataset filtration of parcel demand volumes.}
+  \label{tab:parcel_volumes}
+  \begin{tabular}{lrr}
+    \toprule
+    \textbf{Data Cleaning / Scaling Step}    & \textbf{Parcel Volume} & \textbf{Delta Variance} \\
+    \midrule
+    PostNord 2020 Baseline                   & 1,628,441              & --                      \\
+    PostNord 2026 Projection                 & 2,419,134              & \(+790,693\)            \\
+    With Total Market Share (20\%)           & 12,336,226             & \(+9,917,092\)          \\
+    Only Households                          & 8,125,871              & \(-4,210,355\)          \\
+    Operational Dataset (Filtered Districts) & 5,977,449              & \(-2,148,422\)          \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 \subsection{Disaggregating Weekly Demand into Daily Demand}
 \label{subsec:weekly-to-daily-demand}
@@ -511,10 +530,9 @@ This thesis uses three scenarios to simulate different types of boats in the net
 % TODO: add a source for the average parcel weight of 4.5 kg, or cite the existing parcelweight entry if it supports this value.
 The low-capacity scenario is based on the Candela P-12 Business boat \parencite{candela2026p12}. Even if this boat is not meant for cargo transportation, it is used as a representative vessel class to provide realistic characteristics for the models. Its service speed of \qty{25}{knots}, \num{30}-passenger capacity, and total payload limit of \qty{3000}{\kilogram} are taken directly from the manufacturer's specifications \parencite{candela2026p12}. To determine the parcel capacity, the passenger weight limit is used as a baseline. Assuming a standard passenger weight of \qty{75}{\kilogram} \parencite{passengerkg}, the payload dedicated strictly to parcels is \qty{2250}{\kilogram}. With an average parcel weight of \qty{4.5}{\kilogram}, this yields a total capacity of \num{500} parcels. The remaining \qty{750}{\kilogram} of the boat's total \qty{3000}{\kilogram} limit is then allocated to the handling materials required for these parcels. Dividing this remaining capacity by the \num{500} parcels yields a handling material weight of exactly \qty{1.5}{\kilogram} per parcel. This \qty{1.5}{\kilogram} per parcel ratio is used across the other scenarios to maintain a consistent proportion of handling weight to loading capacity.
 
-The mid-capacity scenario is based on the Kewatec Work 1920 \parencite{kewatec_work_1920}, a larger vessel that more closely resembles a barge and is made to transport cargo of many types. The total load capacity can therefore be taken directly as \qty{15000}{\kilogram}, with a cruising speed of \qtyrange{25}{35}{knots}. With this capacity, the same average parcel weight of \qty{4.5}{\kilogram} per parcel, and \qty{1.5}{\kilogram} per parcel for handling, the total parcel capacity is exactly \num{2500} parcels.
+The high-capacity scenario is based on the Kewatec Work 1920 \parencite{kewatec_work_1920}, a larger vessel that more closely resembles a barge and is made to transport cargo of many types. The total load capacity can therefore be taken directly as \qty{15000}{\kilogram}, with a cruising speed of \qtyrange{25}{35}{knots}. With this capacity, the same average parcel weight of \qty{4.5}{\kilogram} per parcel, and \qty{1.5}{\kilogram} per parcel for handling, the total parcel capacity is exactly \num{2500} parcels.
 
-% TODO: justify the assumed 9000 kg payload for the high-capacity scenario, since it is not manufacturer data.
-The high-capacity scenario is based on the Kewatec Work 1500 \parencite{kewatec_work_1500}, a vessel whose physical size sits directly between the small and large boat choices. Because specific payload data is not published by the manufacturer, a capacity of \qty{9000}{\kilogram} is assumed to create a clean middle ground between the other two scenarios. When applying the established parcel unit weight of \qty{6.0}{\kilogram}, this payload capacity yields a total limit of exactly \num{1500} parcels, again with a speed of \qtyrange{25}{35}{knots}.
+The mid-capacity scenario is based on the Kewatec Work 1500 \parencite{kewatec_work_1500}, a vessel whose physical size sits directly between the small and large boat choices. Because specific payload data is not published by the manufacturer, a capacity of \num{1500} parcels is assumed to create a clean middle ground between the other two scenarios. However, as for the same capacity scenarios, the boat speed was specified by the manufacturer and is also \qtyrange{25}{35}{knots}.
 
 % TODO: either source the feasibility of port/depot refuelling or charging, or state more explicitly that this is only a simplifying assumption.
 For all scenarios, boat range is not taken into consideration in this thesis, as the routes are not real waterway-optimised routes. It is also assumed that boats could stop to refuel or use strategically placed electric chargers at high-demand ports and the depot while unloading.
@@ -523,18 +541,12 @@ For all scenarios, boat range is not taken into consideration in this thesis, as
 \label{subsubsec:crew-size}
 
 % TODO: add a source or operational justification for the tested crew sizes and the assumption that parcel discharge scales linearly with crew size.
-Each boat is operated by a crew. The crew is responsible for discharging the parcels at the ports, and since the employees discharge parcels in parallel, the discharge time at a port is divided by the number of employees on board. A larger crew therefore lowers the time spent at each port, but it also raises the number of employees the service needs. For this reason, the crew size is also treated as a parameter and tested with \num{2}, \num{3}, and \num{4} employees per boat.
+Each boat is operated by a crew. The crew is responsible for discharging the parcels at the ports, and since the employees discharge parcels in parallel, the discharge time at a port is divided by the number of employees on board. A larger crew therefore lowers the time spent at each port, but it also raises the number of employees the service needs. For this reason, the crew size will be tested with \num{2}, \num{3}, and \num{4} employees per boat.
 
 \subsubsection{Maneuvering Time}
 \label{subsubsec:maneuvering-time}
 
 Every time the boat travels from one port to another, it needs time to dock and undock. This thesis accounts for it with a fixed maneuvering time, added to the travel time of every trip between two ports. The value used is a baseline of \qty{3.5}{\minute}, taken as the average of two estimates: a conservative one of about \qty{5}{\minute}, derived from a study of port operations on a passenger ferry \parencite{klovning2024efficiency}, and an optimistic one of \qty{2}{\minute}, based on the Candela P-12 \parencite{candela2026p12}.
-
-\subsubsection{Maximum Route Duration}
-\label{subsubsec:maximum-route-duration}
-
-% TODO: cite or cross-reference the working-hours section for the 8-hour route-duration limit.
-A single boat route, from the moment it leaves the depot to the moment it returns, cannot last longer than \qty{8}{\hour}. This upper bound represents a normal working shift for the crew. The duration of a route is the sum of all its travel times, including the maneuvering time, and the discharge time at every port it visits. Every route built by the routing models has to respect this limit.
 
 \subsubsection{Discharge Time}
 \label{subsubsec:discharge-time}
@@ -547,7 +559,7 @@ The discharge time is the time needed to handle one parcel once the boat has doc
 To schedule the operations correctly, the operating hours must first be defined. Since this thesis focuses on Bergen, Norway, information from parcel service providers operating in the region, such as PostNord and Posten, can be used as a reference. Both providers offer parcel delivery services on weekdays, from Monday to Friday, with some exceptions made by Posten for certain types of parcels on Saturdays \parencite{posten_hours,portnord_hours}. Therefore, the operating days in this thesis are also set from Monday to Friday.
 
 % TODO: justify the 24-hour operating horizon; parcel providers' delivery days do not automatically imply round-the-clock boat operation.
-In addition, the daily operating hours must be specified. In this case, the Norwegian Working Environment Act provides a useful reference point. According to the Act, \enquote{Ordinary working hours must not exceed nine hours in a 24-hour period} \cite{arbeidsmiljoloven_10_4}. However, since this represents the maximum legal limit, a standard maximum of \qty{8}{\hour} per employee is assumed in this thesis. The overall operation is nevertheless modeled over a \qty{24}{\hour} planning horizon, allowing several employees or shifts to cover the full day if required.
+In addition, the daily operating hours must be specified. In this case, the Norwegian Working Environment Act provides a useful reference point. According to the Act, \enquote{Ordinary working hours must not exceed nine hours in a 24-hour period} \cite{arbeidsmiljoloven_10_4}. However, since this represents the maximum legal limit, a standard maximum of \qty{8}{\hour} per employee is assumed in this thesis. Therefore, for all given boat route, from the moment it leaves the depot to the moment it returns, cannot last longer than \qty{8}{\hour}. This upper bound represents a normal working shift for the crew. The overall operation is nevertheless modeled over a \qty{24}{\hour} planning horizon, allowing several employees or shifts to cover the full day if required.
 
 \subsection{Data Limitations}
 \label{subsec:data-limitations}
@@ -571,7 +583,7 @@ Furthermore, walking time is directly computed from the walking distance and doe
 \section{Methodology}
 \label{sec:methodology}
 
-In this section, the methodology of this thesis is explained in detail, in four separate parts. First, the model used to select a set of ports based on a desired walking distance is presented. Second, the two models used to generate a set of routes for these ports are described. Finally, it is explained how, given a set of ports and routes, a schedule can be constructed to measure the KPIs based on the yearly demand.
+In this section, the methodology of this thesis is explained in detail, in three separate parts. First, the model used to select a set of ports based on a desired walking distance is presented. Second, the model used to generate a set of routes for these ports is described. Finally, it is explained how, given a set of ports and routes, a schedule can be constructed to measure the KPIs based on the yearly demand.
 
 \subsection{Port Selection Model}
 \label{subsec:port-selection-model}
@@ -697,7 +709,7 @@ The last two constraints,~\eqref{eq:psclp-y-binary} and~\eqref{eq:psclp-z-binary
 
 The \ac{psclp} is implemented with Google OR-Tools \parencite{ortools}, using its constraint-programming solver CP-SAT \parencite{cpsat}. One adjustment was needed to fit the model to the solver. CP-SAT only works with integer coefficients, but the coverage target \(D = \alpha \sum_{j \in J} d_j\) is usually not a whole number, since \(\alpha\) is a fraction. To account for this, the population and the coverage target are multiplied by \num{1000} and rounded to integers before the demand constraint~\eqref{eq:psclp-demand} is built. This keeps three decimal places of precision, so the rounding has no meaningful effect on the result.
 
-The model is kept as compact as possible by removing, before optimization, all households that cannot be covered by any candidate port within the walking threshold \(T_{\max}\). These households are therefore excluded from the formulation, and no associated coverage variable \(z_j\) is introduced.
+The model is kept as compact as possible by removing before the optimization all households that cannot be covered by any candidate port within the walking threshold \(T_{\max}\). These households are therefore excluded from the formulation, and no associated coverage variable \(z_j\) is introduced.
 
 \subsubsection{Scenario Selection}
 \label{subsubsec:scenario-selection}
@@ -718,7 +730,7 @@ With the selected ports and their daily demand scenarios in hand, the next step 
 
 The \ac{psclp} gives a set of selected ports, but it does not specify which households each port should serve. Each household is assigned to the nearest selected port based on the distance matrix \(M\). The total household demand is then summed by port to obtain weekly demand for each port.
 
-It should be noted that this is done for every household, not only for the ones the \ac{psclp} counted as covered. A household that was left uncovered, meaning that no selected port can be reached within the walking threshold \(T_{\max}\), is still assigned to its nearest selected port, only with a longer walk. The selected ports therefore receive the parcel demand of every household in the included districts, and the coverage threshold \(\alpha\) only shapes which ports are selected and how far people have to walk, not the amount of demand the network has to carry.
+It should be noted that this is done for every household, not only for the ones the \ac{psclp} counted as covered. A household that was left uncovered, meaning that no selected port can be reached within the walking threshold \(T_{\max}\), is still assigned to its nearest selected port, only with a longer walk. The selected ports therefore receive the parcel demand of every household in the included districts, and the coverage threshold \(\alpha\) only shapes which ports are selected and how far people have to walk, not the amount of demand the network has to carry. This decision was made to keep all households demand because a project like this would require a assummed large amount of capaital and cooporation between shipping compagnies and the city of Bergen. Therefore, keeping as much demand as possible was assumed to be the best option.
 
 \subsubsection{Port Distance Matrix}
 \label{subsubsec:port-distance-matrix}
@@ -796,12 +808,12 @@ Two capacity constraints are added to the solver. The first corresponds to the m
 
 The second constraint corresponds to the maximum route duration, denoted by \(T^{r}_{\max}\). This constraint represents an operational restriction requiring employees to complete their route before the end of their shift. The total route duration includes travel time, manoeuvring time, and handling time at each visited port.
 
-The search is configured with \texttt{PARALLEL\_CHEAPEST\_INSERTION} as the first-solution strategy and \texttt{GUIDED\_LOCAL\_SEARCH} as the local-search metaheuristic \parencite{ortools_routing}, with a time limit of \qty{15}{\minute} per run. This combination produces a feasible solution quickly and then iteratively improves it; the best solution found within the time limit is retained.
+The search is configured with \texttt{PARALLEL\_CHEAPEST\_INSERTION} as the first-solution strategy and \texttt{GUIDED\_LOCAL\_SEARCH} as the local-search metaheuristic \parencite{ortools_routing}, with a time limit of \qty{1}{\hour} per run. This combination produces a feasible solution quickly and then iteratively improves it; the best solution found within the time limit is retained.
 
-\subsubsection{Boat Scheduling Optimization Model}
+\subsection{Boat Scheduling Model}
 \label{subsubsec:boat-scheduling-optimization-model}
 
-The \ac{scvrp} gives the set of routes that the fleet needs to run on a given day, but not how many boats and crews are needed to run them. The boat scheduling model fills this gap by assigning each route to a boat and deciding how many crew shifts each boat has to run. The fleet size and the total shift count are what fall out of the solution, and they directly drive the \ac{kpi}s computed in the next section.
+The \ac{scvrp} gives the set of routes that the fleet needs to run on a given day, but not how many boats and crews are needed to run them. The boat scheduling model fills this gap by assigning each route to a boat and deciding how many crew shifts each boat has to run.
 
 % TODO: soften or justify the claim that adding time windows or crew rest rules would not change the fleet size.
 A simple bin packing model is enough at this stage. The routes from the \ac{scvrp} already start and end at the depot and respect the maximum route duration, so two routes on the same boat can be run one after the other with no scheduling conflict. The network also does not commit to specific delivery times at the ports, so no time windows have to be enforced. The model therefore only has to decide which routes share a boat and how many shifts each boat needs. The boat count is minimised first and the total shift count second, since the boat count sets the capital cost of the network and the shift count sets the labour cost. A richer model with port time windows or crew rest rules would add more detail than the data of this thesis can support, without changing the fleet size it gives.
@@ -869,9 +881,9 @@ The objective function~\eqref{eq:sched-objective} minimises the number of boats 
 
 Constraint~\eqref{eq:sched-assign} forces every route to be assigned to exactly one (boat, shift) pair.
 
-Constraint~\eqref{eq:sched-day} caps the total workload of boat \(k\) at the operating day length \(H\) when the boat is used, and forces it to zero otherwise.
+Constraint~\eqref{eq:sched-day} limits the total workload of boat \(k\) at the operating day length \(H\) when the boat is used, and forces it to zero otherwise.
 
-Constraint~\eqref{eq:sched-shift} is the bin-packing constraint at the heart of the model: the sum of route durations placed in shift \(s\) of boat \(k\) must fit within the maximum shift length \(S\), and the shift is marked as used (\(z_{ks} = 1\)) as soon as any route is assigned to it. This per-shift bound is what guarantees feasibility at the crew level, since routes are indivisible and cannot be split across shifts. A weaker aggregate bound of the form \(\sum_{r, s} \delta_r \, y_{rks} \leq S \, \sum_s z_{ks}\) would for instance allow four \qty{6}{\hour} routes to share three nominal shifts on aggregate time, even though no two of them could ever fit in a single \qty{8}{\hour} shift.
+Constraint~\eqref{eq:sched-shift} ensure that the sum of route durations placed in shift \(s\) of boat \(k\) must fit within the maximum shift length \(S\). This per-shift constraint is what guarantees feasibility at the crew level, since routes are indivisible and cannot be split across shifts.
 
 Constraint~\eqref{eq:sched-link} prevents a shift from being used unless its boat is also marked as used, keeping the boat count \(\sum_k u_k\) consistent with the shift assignment.
 
@@ -894,11 +906,11 @@ Once the model is solved, the optimised schedule can be rebuilt from the decisio
   \label{fig:utopia}
 \end{figure}
 
-As discussed in the Methodology, the \ac{psclp} was run with multiple combinations of walking time threshold (\(T_{\max}\)) and minimum population covered within that walking time (\(\alpha)\). The best runs by utopia ranking for each \(T_{\max}\) can be found in Figure~\ref{fig:utopia}, together with the best overall run. The two selected runs are (\(T_{\max}=15,\alpha=0.95\)) and (\(T_{\max}=28,\alpha=0.98\)), as the first is the best of its walking time group and the second is the best overall run, again based on the utopia ranking described in Section~\ref{subsubsec:scenario-selection}.
+As discussed in the Methodology, the \ac{psclp} was run with multiple combinations of walking time threshold (\(T_{\max}\)) and minimum population covered within that walking time (\(\alpha)\). The best runs by utopia ranking for each \(T_{\max}\) can be found in Figure~\ref{fig:utopia}, together with the best overall run. The two selected runs are (\(T_{\max}=15,\alpha=0.95\)) and (\(T_{\max}=28,\alpha=0.98\)), as the first is the best for \(T_{\max}=15\) and the second is the best overall run, again based on the utopia ranking described in Section~\ref{subsubsec:scenario-selection}.
 
 The figure also details the relation between the number of ports needed and the walking time threshold. The smallest threshold forces the model to open many ports, but this amount decreases rapidly as the threshold is relaxed, going from \qtyrange{28}{17}{ports}.
 
-It can also be observed that the total population covered by \(T_{\max}\) stays low for the majority of thresholds, even though the model optimizes for it. These results indicate that a large share of the population remains far from a candidate port by walking distance in all runs. At \(T_{\max}=15\), only \qty{46}{\percent} of the population is within this threshold; the next \qty{5}{\minute} add \qty{10}{\percent}, reaching \qty{60}{\percent} only at \(T_{\max}=22\). Relaxing the threshold by \qty{7}{\minute} reduces the required port count by \num{8}, or around \qty{29}{\percent}. This is why the utopia method was used to select a run, as there are too many dimensions to easily choose a good scenario. Moreover, without any financial value for an opened port, or a study on how long a citizen in Bergen would be willing to walk for a parcel, basing the choice on anything other than quantitative run metrics is difficult.
+It can also be observed that the total population covered by \(T_{\max}\) stays low for the majority of thresholds. These results indicate that a large share of the population remains far from a candidate port by walking distance in all runs. At \(T_{\max}=15\), only \qty{46}{\percent} of the population is within this threshold; the next \qty{5}{\minute} add \qty{10}{\percent}, reaching \qty{60}{\percent} only at \(T_{\max}=22\). Relaxing the threshold by \qty{7}{\minute} reduces the required port count by \num{8}, or around \qty{29}{\percent}. This is why the utopia method was used to select a run, as there are too many dimensions to easily choose a good scenario. Moreover, without any financial value for an opened port, or a study on how long a citizen in Bergen would be willing to walk for a parcel, basing the choice on anything other than quantitative run metrics is difficult.
 
 Furthermore, the average population walking time to the nearest selected port can be seen in Table~\ref{anx:psclp_runs_details} in the \nameref{sec:appendix}. It stays within a small range between 19.68 and \qty{21.92}{\minute} across the selected runs, with a standard deviation below one minute, even though \(T_{\max}\) doubles from \qtyrange{15}{30}{\minute} and the number of ports drops from 28 to 17. Reducing the number of ports by \num{10} therefore costs the average citizen around two minutes of additional walking. This suggests that the floor of the average walking time is set by Bergen's geography rather than by the strictness of the model. Further analysis could determine whether new port locations could be added or constructed to help reduce this metric.
 
@@ -928,7 +940,7 @@ The routes that were drawn to calculate the distances can also be seen in Figure
   \label{fig:coverage_threshold}
 \end{figure}
 
-To better understand the effect of adding ports on population coverage, Figure~\ref{fig:coverage_threshold} can be observed. It clearly demonstrates that adding ports primarily increases population coverage in the first \qtyrange{15}{20}{\minute}, leaving the rest basically unchanged. With \texttt{t28}, only \qty{36}{\percent} of the population was covered within \qty{15}{\minute}, compared to \qty{47}{\percent} with \texttt{t15}. Overall, however, both runs have similar average population walking times of \qty{19.68}{\minute} for \texttt{t15} and \qty{20.73}{\minute} for \texttt{t28}.
+To better understand the effect of adding ports on population coverage, Figure~\ref{fig:coverage_threshold} can be observed. It clearly demonstrates that adding ports primarily increases population coverage in the first \qtyrange{15}{20}{\minute}, leaving the rest basically unchanged. However, even tought the percentage does not change, the actual household covered changes as they are shifted  With \texttt{t28}, only \qty{36}{\percent} of the population was covered within \qty{15}{\minute}, compared to \qty{47}{\percent} with \texttt{t15}. Overall, however, both runs have similar average population walking times of \qty{19.68}{\minute} for \texttt{t15} and \qty{20.73}{\minute} for \texttt{t28}.
 
 \subsection{Demand Scenarios}
 \label{subsec:demand-scenarios}
@@ -957,7 +969,7 @@ The full demand data for each scenario and all ports can be found in the \namere
 \label{subsec:boat-routing-results}
 
 % TODO: resolve the inconsistency with the methodology section, which says the routing solver used a 15-minute time limit.
-The \ac{scvrp} model returns many results to discuss. These are grouped by the selected \ac{psclp} solution they use (\texttt{t15} or \texttt{t28}) and by configuration (see Table~\ref{tab:cvrp_configs}). Each selected solution has \num{27} results. All configurations were run for \qty{1}{hour} to make sure that the solver had enough time to find a good solution. Each run resulted in a successful solution, although none were proven optimal by the solver. Most runs found their best solution in a matter of seconds, after which the rest of the run duration achieved nothing. Others, such as \texttt{t15} with (\(Q=2500, e=4)\) and (\(Q=1500, e=3)\), successfully found better solutions after around \qty{50}{\minute}. An interesting observation is that the configurations able to take advantage of the \qty{1}{\hour} run time are not the same in both \texttt{t15} and \texttt{t28}. In \texttt{t28}, the configurations with \(Q=500\) were the last to find their best solutions.
+The \ac{scvrp} model returns many results to discuss. These are grouped by the selected \ac{psclp} solution they use (\texttt{t15} or \texttt{t28}) and by configuration (see Table~\ref{tab:cvrp_configs}). Each selected solution has \num{27} results. All configurations were run for \qty{1}{hour} to make sure that the solver had enough time to find a good solution. Each run resulted in a successful solution, although none were proven optimal by the solver. Most runs found their best solution in a matter of seconds, after which the rest of the run duration achieved nothing. Others, such as \texttt{t15} with (\(Q=2500, e=4)\) and (\(Q=1500, e=3)\), successfully found better solutions after around \qty{50}{\minute}. An interesting observation is that the configurations able to take advantage of the \qty{1}{\hour} run time are not the same in both \texttt{t15} and \texttt{t28}. In \texttt{t28}, the configurations with \(Q=500\) were the last to find their best solutions. In hindsight, the fact that some scenarios took this amount of time could be a clear indication that the \ac{sdvrp} could have been worth modeling instead of the simplier \ac{scvrp} because the model clearly took a lot of time to find better solutions.
 
 \subsubsection{Total Number of Routes}
 \label{subsubsec:total-number-routes}
@@ -979,11 +991,11 @@ Figure~\ref{fig:total_routes_and_median_capacity} shows the number of routes nee
 
 The first observation is straightforward: the number of routes is inversely correlated with boat parcel capacity. As expected, the less a boat can carry on a given route, the more routes it has to make to serve the demand.
 
-The second observation is that the number of routes is not strongly affected by the number of employees (\(e\)) in either \texttt{t15} or \texttt{t28}. Only \(Q=2500\) makes a difference, with both \(e = \{3,4\}\) requiring \num{4} fewer routes than \(e=2\). At first, this could look like an error, as more employees mean faster parcel handling, which should result in shorter routes and potentially different best solutions. However, the solver's objective is not to minimise the number of routes, but to minimize the total travel time for a given day. As a result, parcel handling time is not taken into consideration by the objective function, which explains why the number of routes is mostly unaffected in these results. Only with the largest boat capacity, \(Q=2500\), does the reduction in handling time make enough of a difference for the solver to find a different routing network.
+The second observation is that the number of routes is not strongly affected by the number of employees (\(e\)) in either \texttt{t15} or \texttt{t28}. Only \(Q=2500\) makes a difference, with both \(e = \{3,4\}\) requiring fewer routes than \(e=2\). At first, this could look like an error, as more employees mean faster parcel handling, which should result in shorter routes and potentially different best solutions. However, the solver's objective is not to minimise the number of routes, but to minimize the total travel time for a given day. As a result, parcel handling time is not taken into consideration by the objective function, which explains why the number of routes is mostly unaffected in these results. Only with the largest boat capacity, \(Q=2500\), does the reduction in handling time make enough of a difference for the solver to find a different routing network.
 
-The third observation is that median capacity utilization varies considerably depending on boat capacity (\(Q\)). For \(Q=2500\), in both \texttt{t15} and \texttt{t28}, median utilization is lower than for the other capacities. The lowest median, at \(e=2\), suggests that with only two employees, demand has to be split into more routes because handling time is too large. Route capacity is therefore limited not by the boat capacity, but by the speed of parcel handling. Adding one more employee (\(e=3\)) greatly improves the median, bringing it above \qty{90}{\percent} for all demand scenarios. However, the improvement stops at \(e=3\): with \(e=4\), the median is the same per demand scenario as with the previous \(e\) for \texttt{t28} and stays around \qty{95}{\percent} for \texttt{t15}. This may indicate that \(Q=2500\) is too large for this context, as adding more employees has little impact on median capacity utilization. The exact opposite can be seen with \(Q=500\), where median capacity utilization sits around \qtyrange{95}{100}{\percent} in all configurations and scenarios, signalling that capacity is a clear constraint because the routes are often almost full.
+The third observation is that median capacity utilization varies considerably depending on boat capacity (\(Q\)). For \(Q=2500\), in both \texttt{t15} and \texttt{t28}, median utilization is lower than for the other capacities. The lowest median, at \(e=2\), suggests that with only two employees, demand has to be split into more routes because handling time is too large. Route capacity is therefore limited not by the boat capacity, but by the speed of parcel handling. Adding one more employee (\(e=3\)) greatly improves the median, bringing it above \qty{90}{\percent} for all demand scenarios. However, the improvement stops at \(e=3\), with \(e=4\), the median is the same per demand scenario as with the previous \(e\) for \texttt{t28} and stays around \qty{95}{\percent} for \texttt{t15}. This may indicate that \(Q=2500\) is too large for this context, as adding more employees has little impact on median capacity utilization. The exact opposite can be seen with \(Q=500\), where median capacity utilization sits around \qtyrange{95}{100}{\percent} in all configurations and scenarios, signalling that capacity is a clear constraint because the routes are often almost full. Although a \qty{100}{\percent} capacity utilization rate may appear optimal in theory, it reduces operational flexibility and limits the system's ability to respond to variations in demand.
 
-In general, it could be argued that because \(Q=2500\) has the worst capacity utilization, its capacity is too large and the routes are mostly limited by the total route duration constraint of \qty{8}{\hour}, not by the boat's capacity. The same logic can be applied in reverse to \(Q=500\). Since its median capacity utilization is always very high, and the number of routes needed is very large compared to the other capacities, this capacity may be too small for the demand. However, because \(Q=2500\) has few routes, its medians need to be interpreted with caution; \(Q=500\), with many more routes, is more reliable.
+In general, it could be argued that because \(Q=2500\) has the worst capacity utilization, its capacity is too large and the routes are mostly limited by the total route duration constraint of \qty{8}{\hour}, not by the boat's capacity. The same logic can be applied in reverse to \(Q=500\). Since its median capacity utilization is always very high, and the number of routes needed is very large compared to the other capacities, this capacity may be too small for the demand. However, because \(Q=2500\) has few routes, its medians need to be interpreted with caution, however \(Q=500\) with many more routes, is more reliable.
 
 \subsubsection{Total Route Duration}
 \label{subsubsec:total-route-duration}
@@ -1005,7 +1017,7 @@ The next metric is the total travel time of the routes. In Figure~\ref{fig:total
 
 The first observation is clear: as with the total number of routes needed, total route time increases across all configurations as demand scenarios rise. This observation, paired with the seasonality seen in Figure~\ref{fig:yearly_demand}, shows how much the system would have to expand to handle peak demand. However, in these periods, the number of employees per boat could be increased to help reduce overall route time.
 
-The second observation is that, compared with the results from Figure~\ref{fig:total_routes_and_median_capacity}, where the total number of routes did not really change when \(e\) changed, the real effect can now be seen. For example, in \texttt{t15}, all employee counts had the same number of routes per demand scenario. However, it can be seen here that even though the number of routes is equal, total route duration is smaller.
+The second observation is that, compared with the results from Figure~\ref{fig:total_routes_and_median_capacity}, where the total number of routes did not really change when \(e\) changed, the real effect can now be seen. For example, as seen in \texttt{t15}, all employee counts had the same number of routes per demand scenario. However, it can be seen here that even though the number of routes is equal, total route duration is smaller.
 
 A third observation is that the reduction in total route time is not directly proportional to the number of employees added to the crew. For example, in \texttt{t28}, going from \(e=2\) to \(e=3\) reduced the average total route time by \qty{26}{\percent}, while going from \(e=3\) to \(e=4\) only achieved a reduction of \qty{17}{\percent}. This diminishing return follows directly from the model, since only the parcel handling portion of the total time scales with \(e\). The handling time at a port is \(d_i \tau / e\), while the navigation and manoeuvring times do not depend on \(e\) at all. The same pattern also explains why the reduction is stronger at higher boat capacities, where each route carries more parcels and the handling share of the total time is larger, leaving more work for the additional crew member to absorb.
 
@@ -1035,14 +1047,14 @@ The next metric is total route distance in nautical miles. This is important bec
 
 The first observation is that total distance drops drastically between \(Q=500\) and \(Q=1500\). This is explained by the decrease in the total number of routes, as seen in Figure~\ref{fig:total_routes_and_median_capacity}. More routes for the same total demand mean more navigation to and from the depot, which serves no demand and rapidly increases distance. Having more capacity therefore reduces the number of routes, which tends to reduce total travelled distance. In contrast, as with the other metrics discussed previously, the changes from \(e=2\) to \(e=3\) are much larger than those from \(e=3\) to \(e=4\). This reinforces the assumption that \(Q=500\) may be too small, while \(Q=2500\) may be too large.
 
-The second observation is that the median distance per route behaves differently across scenarios. For average and peak demand, it stays close to \qty{22}{nmi} up to \(Q=1500\) in both runs. At \(Q=2500\), the average climbs fast while the peak keeps a slow and steady rise. The low demand scenario is less predictable. At \(Q=1500\) its median stays flat across all values of \(e\), around \qty{26}{nmi} in \texttt{t15} and \qty{24}{nmi} in \texttt{t28}. This suggests the same routes are kept regardless of \(e\). At \(Q=2500\), \texttt{t15} and \texttt{t28} diverge. For low demand, \texttt{t15} drops to about \qty{23}{nmi}, while \texttt{t28} climbs to a peak of \qty{28}{nmi} at \(e=2\) before falling back to around \qty{25}{nmi}. The average scenario also splits. In \texttt{t15} it peaks at \qty{25.7}{nmi} at \(e=3\) and drops slightly at \(e=4\), while in \texttt{t28} it keeps climbing steadily. Most of this variation comes from the small number of routes at \(Q=2500\). With only around \qty{5}{routes}, removing a single one of \qty{27}{nmi} between \(e=2\) and \(e=3\) is enough to shift the median by several nautical miles.
+The second observation is that the median distance per route behaves differently across scenarios. For average and peak demand, it stays between to \qtyrange{21}{22}{nmi} for \(Q \in \{500, 1500\}\) in both runs. At \(Q=2500\), the average climbs fast while the peak keeps a slow and steady rise. In contrast, the low demand scenario is less predictable. At \(Q=1500\) its median stays flat across all values of \(e\), around \qty{26}{nmi} in \texttt{t15} and \qty{24}{nmi} in \texttt{t28}. This suggests that the typical route distance is relatively stable regardless of \(e\). At \(Q=2500\), \texttt{t15} and \texttt{t28} diverge. For low demand, \texttt{t15} drops to about \qty{23}{nmi}, while \texttt{t28} climbs to a peak of more than \qty{28}{nmi} at \(e=2\) before falling back to around \qty{26}{nmi}. The average scenario also splits. In \texttt{t15} it peaks at \qty{25.7}{nmi} at \(e=3\) and drops slightly at \(e=4\), while in \texttt{t28} it peaks at a much lower \qty{25}{nmi} for \(e=3\) and stays mostly untunched for \(e=4\). Most of this variation comes from the small number of routes at \(Q=2500\). With only around \qty{5}{routes}, removing a single one of \qty{27}{nmi} between \(e=2\) and \(e=3\) is enough to shift the median by several nautical miles.
 
 To summarise, capacity is the main driver of total distance. The biggest drop happens between \(Q=500\) and \(Q=1500\), while pushing further to \(Q=2500\) brings smaller gains. The number of employees \(e\) barely changes anything at \(Q=500\) and \(Q=1500\) since the model minimizes navigation time and not distance, and only starts to matter at \(Q=2500\), where the small number of routes also makes the median per route sensitive to small changes.
 
 \subsection{Boat Scheduling}
 \label{subsec:boat-scheduling}
 
-The next step of the methodology was to optimize the assignment of routes to boats and shifts. Since this model does not require any additional manual information, unlike the port distances after the \ac{psclp}, it was run on all route solutions. Two key metrics are shown and discussed: the number of boats and the number of employees per day needed to serve the routes for each configuration, for both \texttt{t15} and \texttt{t28}. Both metrics can be seen in Figure~\ref{fig:boats_and_employees}.
+The next step was to optimize the assignment of routes to boats and shifts. Since this model does not require any additional manual information, unlike the port distances after the \ac{psclp}, it was run on all route solutions. Two key metrics are discussed are the number of boats and the number of employees per day needed to serve the routes for each configuration, for both \texttt{t15} and \texttt{t28}. Both metrics can be seen in Figure~\ref{fig:boats_and_employees}.
 
 \begin{figure}[htbp]
   \centering
@@ -1063,7 +1075,7 @@ The next step of the methodology was to optimize the assignment of routes to boa
 
 The first observation concerns the low number of boats needed compared to the number of routes from Figure~\ref{fig:total_routes_and_median_capacity}. For example, with \(Q=500\) at peak demand, all \num{76} routes are covered by only \num{10} boats. This works because the routes are very short, so many of them can be chained on the same boat within the \qty{24}{\hour} daily window. As routes get longer, fewer of them fit on a single boat. The variation in boat count between demand scenarios stays high, although it shrinks when more employees are assigned per boat, since a larger crew shortens each route.
 
-The second observation is that the number of boats needed across \(Q\) values within the same demand scenario is roughly constant. For both low and average demand, the standard deviation stays below \num{1}, with values between \numrange{1}{3} boats for low demand and \numrange{2}{5} boats for average demand. The peak scenario shows more variation, with the boat count ranging from \num{5} to \num{10} and a standard deviation of about \num{1.8}. On top of that, both \texttt{t15} and \texttt{t28} require a very similar number of boats, which means the capital cost of the fleet cannot really be used to decide between the two routing scenarios. Moving from average to peak demand, however, increases the boats needed by \qty{95}{\percent} on average, which confirms that demand level is by far the strongest driver of fleet size.
+The second observation is that the number of boats needed across \(Q\) values within the same demand scenario is stay similar for both low and average demand scenarios. Indeed, the standard deviation stays below \num{1}, with values between \numrange{1}{3} boats for low demand and \numrange{2}{5} boats for average demand. The peak scenario shows more variation, with the boat count ranging from \num{5} to \num{10} and a standard deviation of about \num{1.8}. On top of that, both \texttt{t15} and \texttt{t28} require a very similar number of boats, which means the capital cost of the fleet cannot really be used to decide between the two routing scenarios. Moving from average to peak demand, however, increases the boats needed by \qty{95}{\percent} on average, which confirms that demand level is a real driver of fleet size.
 
 The final observation for the boats needed is that the number of employees per boat still plays a role in reducing the boat count in higher-demand scenarios, while reducing it by only \num{1} in the low-demand scenario. This still represents around \qtyrange{33}{50}{\percent}, depending on boat capacity. Nevertheless, for all scenarios, even if the smallest crew size is used for the low-demand scenario and the highest for the peak scenario, the number of boats would still have to at least double to serve all demand scenarios for a given \(Q\).
 
@@ -1076,11 +1088,10 @@ For the other values of \(Q\), the behaviour is more straightforward. Going from
 
 In a real-world setting, this tradeoff between fleet size and crew size could be settled on a cost basis, as long as the daily operating cost of a boat and the daily cost of an employee are both known. Without those figures, only assumptions can be made here, and the best configuration stays dependent on the cost structure a future operator works with.
 
-
 \subsection{Summary of Results}
 \label{subsec:results-summary}
 
-In summary, since both \texttt{t15} and \texttt{t28} serve the same total amount of demand, the logistics between the two scenarios do not change very much. They would require similar numbers of boats and employees, travelling roughly the same distances, for the same amount of time, and with a similar number of routes. These results can be seen in Table~\ref{tab:results-sum}. Nevertheless, the available budget for boats and employees would probably drive the final decision.
+In summary, since both \texttt{t15} and \texttt{t28} serve the same total amount of demand, the logistics between the two scenarios do not change very much. They would require similar numbers of boats and employees, travelling roughly the same distances, for the same amount of time, and with a similar number of routes. These results can be seen in Table~\ref{tab:results-sum}. Nevertheless, without any cost information, it can still be said that because the average percentage changes for the variables related to financial cost, employees, route distance and route duration, are always lower or at least equal in \texttt{t28} compared to \texttt{t15}, the operating cost of going with \texttt{t28} would be lower compared to \texttt{t15}.
 
 \begin{table}[htbp]
   \centering
@@ -1129,16 +1140,35 @@ In summary, since both \texttt{t15} and \texttt{t28} serve the same total amount
 \section{Conclusion}
 \label{sec:conclusion}
 
-\subsection{Summary of Findings}
+\subsection{Answer to the Research Question}
 \label{subsec:summary-of-findings}
 
-This thesis investigated how a waterborne parcel delivery network could operate in Bergen, through three stages: port selection, boat routing, and boat scheduling. The full network was then tested against low, average and peak demand scenarios.
+With the results now defined, the research question asked at the beginning can now be answered in three parts.
 
-The port selection stage showed that Bergen's geography sets a floor on the average walking time. It stayed between \qty{19.68}{\minute} and \qty{21.92}{\minute} across all runs, even as \(T_{\max}\) doubled from \qtyrange{15}{30}{\minute} and the number of ports dropped from \num{28} to \num{17}. Two configurations were retained for the next stages using the utopia point method, \texttt{t15} (\(T_{\max}=15\), \(\alpha=0.95\)) and \texttt{t28} (\(T_{\max}=28\), \(\alpha=0.98\)).
+\begin{quote}
+  \textit{How can a waterborne parcel delivery network be designed for the city of Bergen, and what fleet and crew would such a network need to operate?}
+\end{quote}
 
-The routing stage showed that boat capacity is the strongest driver of the number of routes. \(Q=500\) was capacity bound, with utilization always near full, while \(Q=2500\) was time bound, with the routes capped by the \qty{8}{\hour} limit rather than the load. \(Q=1500\) gave the most balanced behaviour. Crew size barely changed the number of routes but reduced their total duration.
+\begin{enumerate}
+  \item How many ports are needed, and where should they be placed, to cover the population of Bergen within a reasonable walking time?
+\end{enumerate}
 
-The scheduling stage confirmed that only a small fleet is needed, since short routes can be chained within the day. Demand scenario was by far the strongest driver of fleet size, with peak demand requiring about \qty{95}{\percent} more boats than the average. \texttt{t15} and \texttt{t28} ended within a few percent of each other on every routing metric, which means the two layouts are operationally equivalent.
+Two reasonable walking times were chosen, 15 and 28 minutes. For the lowest, it was found that 28 ports could cover \qty{95}{\percent} of the population within the walking reach, and 17 ports for \qty{98}{\percent} of its reachable population. The first scenario demonstrate a good walking time target to acheive a more plausible distance, while the former serves as a compromise between the amoung of prots and the walking distance.
+
+\begin{enumerate}[resume]
+  \item Given a set of selected ports and their parcel demand, what set of boat routes can serve them while respecting realistic capacity and shift limits?
+\end{enumerate}
+
+Three demand scenarios were tested, representing a low, average and peak demand period. For both ports scenarios, the amount of routes were similar, the real deal breaker was the demand. The number of routes range from only 4 to 18 for the low demand depending on the capacities, 8 to 37 for the average and 15 to 76 for the peak.
+
+\begin{enumerate}[resume]
+  \item Given these routes, how many boats and crews are required to operate the network across low, average and peak demand days?
+\end{enumerate}
+
+For both walking distance scenarios, the amount of boats and employees is extremily similar, varying again mostly based on the demand scenarios. For low demand, the fleets ranges from 1 to 3 boats, with 10 to 20 employees. For the average demand, the fleet range from 2 to 5 5 boats with 20 to 36 employees. Finnaly, for the peak demand, the fleet would have to be from 5 to 10 boats with 38 to 76 employees.
+
+
+Nonetheless, \texttt{t15} and \texttt{t28} ended within a few percent of each other on every metrics, which means the two layouts would be similar to operates. The results however shows the scale at wich the operations would have to scale to accomode the low and the peak demand. Furthermore, the results showed that the boat capacity of 1500 parcels would be more efficient compared to the low and hight capacity, offering more flexibility than the 500 capacity with a better overall capacity utilization. For the crew size, 3 employees helped reduce the boat needed, while increasing the size to 4 showed great results in peak demand scenarios.
 
 \subsection{Answer to the Research Question}
 \label{subsec:answer-to-the-research-question}
@@ -1273,23 +1303,6 @@ Finally, the environmental side of the project, which motivated this thesis but 
   \text{CAGR} = \left( \frac{D_{2025}}{D_{2022}} \right)^{\frac{1}{3}} - 1 \approx 4.68\%
 \end{equation}
 Equation~\ref{eq:postnord_cagr} outlines the \ac{cagr} formula for PostNord parcel volume, where \(D_{2025}\) and \(D_{2022}\) are the company yearly demand for those years. See Table~\ref{anx:yearly_pn_demand} for all yearly demand.
-
-\begin{table}[htbp]
-  \centering
-  \caption{Sequential adjustments and dataset filtration of parcel demand volumes.}
-  \label{anx:parcel_volumes}
-  \begin{tabular}{lrr}
-    \toprule
-    \textbf{Data Cleaning / Scaling Step}    & \textbf{Parcel Volume} & \textbf{Delta Variance} \\
-    \midrule
-    PostNord 2020 Baseline                   & 1,628,441              & --                      \\
-    PostNord 2026 Projection                 & 2,419,134              & \(+790,693\)            \\
-    With Total Market Share (20\%)           & 12,336,226             & \(+9,917,092\)          \\
-    Only Households                          & 8,125,871              & \(-4,210,355\)          \\
-    Operational Dataset (Filtered Districts) & 5,977,449              & \(-2,148,422\)          \\
-    \bottomrule
-  \end{tabular}
-\end{table}
 
 \begin{table}[htbp]
   \centering
