@@ -555,7 +555,30 @@ As discussed in the background section, a walking time of \qty{15}{\minute} is o
 
 % ['Arna', 'Bergenhus', 'Fana', 'Fyllingsdalen', 'Laksevåg', 'Ytrebygda', 'Årstad', 'Åsane']
 
-The districts can be visually grouped into three categories based on how their population coverage evolves with the walking time threshold. The first group, composed of Bergenhus ({\color[HTML]{FF7500}\rule{1.5ex}{1.5ex}}), Ytrebygda ({\color[HTML]{7F7F7F}\rule{1.5ex}{1.5ex}}), and Laksevåg ({\color[HTML]{955348}\rule{1.5ex}{1.5ex}}), shows a rapid increase in coverage, reaching near-full coverage within approximately \qtyrange{35}{40}{\minute} of walking. The second group, composed of Årstad ({\color[HTML]{BCBD00}\rule{1.5ex}{1.5ex}}) and Fyllingsdalen ({\color[HTML]{9C65C2}\rule{1.5ex}{1.5ex}}), follows an intermediate pattern: their coverage initially grows more slowly than in the first group, but eventually reaches \qty{100}{\percent} at higher walking thresholds, around \qtyrange{50}{55}{\minute}. The third group, formed by Arna ({\color[HTML]{0079B9}\rule{1.5ex}{1.5ex}}), Fana ({\color[HTML]{00A300}\rule{1.5ex}{1.5ex}}), and Åsane ({\color[HTML]{00C1D2}\rule{1.5ex}{1.5ex}}), shows the opposite trend: coverage grows slowly and does not reach \qty{90}{\percent} even at a one-hour walking threshold, plateauing between \qtyrange{75}{85}{\percent}. Based on these observations, and combined with the points discussed in the background section, Arna, Fana, and Åsane are excluded from the thesis, as the port locations cannot reach them within a realistic time.
+The districts can be visually grouped into three categories based on how their population coverage evolves with the walking time threshold. The first group, composed of Bergenhus ({\color[HTML]{FF7500}\rule{1.5ex}{1.5ex}}), Ytrebygda ({\color[HTML]{7F7F7F}\rule{1.5ex}{1.5ex}}), and Laksevåg ({\color[HTML]{955348}\rule{1.5ex}{1.5ex}}), shows a rapid increase in coverage, reaching near-full coverage within approximately \qtyrange{35}{40}{\minute} of walking. The second group, composed of Årstad ({\color[HTML]{BCBD00}\rule{1.5ex}{1.5ex}}) and Fyllingsdalen ({\color[HTML]{9C65C2}\rule{1.5ex}{1.5ex}}), follows an intermediate pattern: their coverage initially grows more slowly than in the first group, but eventually reaches \qty{100}{\percent} at higher walking thresholds, around \qtyrange{50}{55}{\minute}. The third group, formed by Arna ({\color[HTML]{0079B9}\rule{1.5ex}{1.5ex}}), Fana ({\color[HTML]{00A300}\rule{1.5ex}{1.5ex}}), and Åsane ({\color[HTML]{00C1D2}\rule{1.5ex}{1.5ex}}), shows the opposite trend: coverage grows slowly and does not reach \qty{90}{\percent} even at a one-hour walking threshold, plateauing between \qtyrange{75}{85}{\percent}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Weighted nearest port walking time statistics (in minutes) by district.}
+  \label{tab:walking_times}
+
+  \begin{tabular}{l c c c}
+    \toprule
+    \textbf{District} & \textbf{Avg. Time} & \textbf{Std. Dev.} & \textbf{Median Time} \\
+    \midrule
+    Åsane             & 38.07              & 19.29              & 36.52                \\
+    Fana              & 37.13              & 24.26              & 33.18                \\
+    Arna              & 38.76              & 28.02              & 29.38                \\
+    Fyllingsdalen     & 29.37              & 12.87              & 29.23                \\
+    Årstad            & 22.74              & 12.19              & 23.56                \\
+    Laksevåg          & 16.13              & 8.67               & 15.44                \\
+    Ytrebygda         & 14.83              & 9.78               & 12.90                \\
+    Bergenhus         & 8.91               & 7.60               & 6.26                 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The same pattern appears in Table~\ref{tab:walking_times}: Arna, Fana, and Åsane have the highest average walking times to the nearest port by a clear margin, all around \qtyrange{37}{39}{\minute}, while every other district stays below \qty{30}{\minute}. These three also show the largest standard deviations, which means some residents do live close to a port, but many others live much further out than the average suggests, so access across these districts stays poor overall. Based on these observations, and combined with the points discussed in the background section, Arna, Fana, and Åsane are excluded from the thesis, as the port locations cannot reach them within a realistic walking time.
 
 The walking time threshold considered for this problem ranges from \qtyrange{15}{30}{\minute}, with every integer value within this range tested. Values below \qty{15}{\minute} were judged as too low for this context, as the resulting coverage was very limited, while values above \qty{30}{\minute} were judged as impractical, since citizens are unlikely to walk such distances to collect a parcel.
 
