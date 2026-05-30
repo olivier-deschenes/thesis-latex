@@ -377,7 +377,7 @@ To reduce the size of the data, the household coordinates were snapped to the ne
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.8\textwidth]{graphs/district_population.pdf}
+  \includegraphics[width=0.8\textwidth]{python/graphs/population_total_by_district.pdf}
   \caption{Total population of Bergen in 2020 aggregated by district.}
   \label{fig:populations}
 \end{figure}
@@ -406,6 +406,13 @@ To retrieve potential port locations, \texttt{OSMnx} was again used. The \texttt
 \end{table}
 
 The resulting data contain \num{746} port locations. The distribution of the ports by the tags used in Table~\ref{tab:osm_port_tags} can be found in Table~\ref{anx:port_nodes_by_tag} of the \nameref{sec:appendix}. As previously done with the household coordinates, the port locations were snapped to the nearest \ac{osm} node on the walking graph. This reduced the data to \num{390} candidate port nodes. These locations were then projected on a map and manually filtered to remove locations that were not suitable for this thesis. For example, some nodes were in a body of water that was not accessible from the main waterways, or were extremely close to another node that was more suitable. A total of \num{80} nodes were removed, for a final total of \num{310} port nodes.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{maps/all_ports.pdf}
+  \caption{Map of the ports nodes across Bergen's eight districts. Nodes kept for the analysis are shown as candidates, while the nodes removed by hand are marked as not suitable.}
+  \label{fig:all_ports}
+\end{figure}
 
 \subsection{Distance and Travel Time Data}
 \label{subsec:distance-travel-time-data}
