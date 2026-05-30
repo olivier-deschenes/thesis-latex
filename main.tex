@@ -299,6 +299,15 @@ The same geography that constrains road delivery offers a natural alternative. B
 
 Bergen also has the existing infrastructure to support such a system. As the second largest city in Norway, it hosts both the second largest port \parencite{bergenport} and the second largest cargo rail station \parencite{bergenrail} in the country, both located in the central area of the city. In practice, this means that the heavy logistics needed to feed a waterborne parcel system are already in place and would not need to be built from scratch.
 
+\subsection{Bergen as a Testbed for Zero-Emission Urban Mobility}
+\label{subsec:zero-emission-mobility}
+
+Beyond its geography and existing infrastructure, Bergen is also actively changing how transport works inside the city. The city has set the goal of an emission-free city centre by 2030, and rather than banning cars outright, it focuses on shared and electric mobility \parencite{investbergen_sharedmobility}. As part of this effort, Bergen became the first city in Norway to open dedicated mobility hubs, which combine reserved spaces for shared electric cars with public transport access, bicycle parking and charging points. Since a single shared car is estimated to replace up to ten privately owned ones \parencite{investbergen_sharedmobility}, the city sees this as a way to free up a large amount of road space while still keeping motorised transport available to everyone.
+
+Moreover, in March 2025, the Norwegian government decided to let cities introduce zero-emission zones, following requests from Oslo, Bergen and Trondheim \parencite{energymix_zez}. The measure targets freight in particular, since a large share of the vans sold in Norway still run on diesel, and it sits alongside the existing plan to make all new trucks sold in the country electric by 2030 \parencite{energymix_zez}. For a delivery operator, this points to a future where conventional diesel trucks face tighter and tighter access to central Bergen, which only strengthens the case for cleaner ways of moving parcels.
+
+Bergen is also being used directly to test these alternatives. For exemple, with the Shift2Zero project, the electric vehicle maker Paxster is working with DHL and the City of Bergen to test zero-emission last-mile delivery in shared pedestrian and vehicle zones \parencite{paxster_shift2zero}. The pilot pairs vehicles that automatically adjust their speed depending on where they are with a modular ``swap box'' system that removes the need for large micro-depots \parencite{paxster_shift2zero}. Bergen is therefore already testing clean urban logistics in practice, and a road-free delivery channel such as the waterborne network studied in this thesis would fit naturally into this direction.
+
 \subsection{Waterborne Transport as an Urban Freight Alternative}
 \label{subsec:waterborne-urban-freight}
 
@@ -675,13 +684,13 @@ Building upon the established notation, the problem is formulated as an optimisa
 
 The objective function~\eqref{eq:psclp-objective} traditionally minimises the total fixed cost of the opened ports. Since every candidate port is given the same opening cost (\(f_i = 1\)), this is the same as minimising the number of ports selected for the network.
 
-Constraint~\eqref{eq:psclp-coverage} ensures that for a household node \(j\) to be covered (\(z_j = 1\)), at least one port from its subset \(I(j)\) must be opened. If no port able to reach \(j\) within the walking threshold \(T_{\max}\) is opened, \(z_j\) is forced to remain uncovered (\(z_j = 0\)).
+Constraints~\eqref{eq:psclp-coverage} ensure that for a household node \(j\) to be covered (\(z_j = 1\)), at least one port from its subset \(I(j)\) must be opened. If no port able to reach \(j\) within the walking threshold \(T_{\max}\) is opened, \(z_j\) is forced to remain uncovered (\(z_j = 0\)).
 
-Constraint~\eqref{eq:psclp-demand} ensures that the covered set of household populations is greater than or equal to the minimum covered population \(D\).
+Constraints~\eqref{eq:psclp-demand} ensures that the covered set of household populations is greater than or equal to the minimum covered population \(D\).
 
-Constraint~\eqref{eq:psclp-preselected} forces every preselected port to be opened. The depot is part of this set, as the boats operate out of it and it must therefore always be among the selected ports (Section~\ref{subsec:depot-location}).
+Constraints~\eqref{eq:psclp-preselected} force every preselected port to be opened. The depot is part of this set, as the boats operate out of it and it must therefore always be among the selected ports (Section~\ref{subsec:depot-location}).
 
-The last two constraints,~\eqref{eq:psclp-y-binary} and~\eqref{eq:psclp-z-binary}, keep the port and coverage variables binary.
+The last two sets of constraints,~\eqref{eq:psclp-y-binary} and~\eqref{eq:psclp-z-binary}, keep the port and coverage variables binary.
 
 \subsubsection{Model Implementation}
 \label{subsubsec:psclp-implementation}
@@ -850,13 +859,13 @@ The problem is formulated as follows:
 
 The objective function~\eqref{eq:sched-objective} minimises the number of boats used first and the total number of shifts second. The fleet size is prioritised because each additional boat is a capital investment, while a shift only adds a crew for the day. The weight \(M\) on the boat count is set well above the maximum possible total shift count \(|K| \cdot \bar{n}\), so the solver can never trade a shift saving for an extra boat.
 
-Constraint~\eqref{eq:sched-assign} forces every route to be assigned to exactly one (boat, shift) pair.
+Constraints~\eqref{eq:sched-assign} force every route to be assigned to exactly one (boat, shift) pair.
 
-Constraint~\eqref{eq:sched-day} limits the total workload of boat \(k\) to the operating day length \(H\) when the boat is used, and forces it to zero otherwise.
+Constraints~\eqref{eq:sched-day} limit the total workload of boat \(k\) to the operating day length \(H\) when the boat is used, and forces it to zero otherwise.
 
-Constraint~\eqref{eq:sched-shift} ensures that the sum of route durations placed in shift \(s\) of boat \(k\) fits within the maximum shift length \(S\). This per-shift constraint is what guarantees feasibility at the crew level, since routes are indivisible and cannot be split across shifts.
+Constraints~\eqref{eq:sched-shift} ensure that the sum of route durations placed in shift \(s\) of boat \(k\) fits within the maximum shift length \(S\). This per-shift constraint is what guarantees feasibility at the crew level, since routes are indivisible and cannot be split across shifts.
 
-Constraint~\eqref{eq:sched-link} prevents a shift from being used unless its boat is also marked as used, keeping the boat count \(\sum_k u_k\) consistent with the shift assignment.
+Constraints~\eqref{eq:sched-link} prevent a shift from being used unless its boat is also marked as used, keeping the boat count \(\sum_k u_k\) consistent with the shift assignment.
 
 Constraints~\eqref{eq:sched-symmetry-boat} and~\eqref{eq:sched-symmetry-shift} break symmetry by forcing boats and the shifts within each boat to be used in increasing index order. Without them, the solver would explore equivalent permutations of the same assignment, which slows the search considerably.
 

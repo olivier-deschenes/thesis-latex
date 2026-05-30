@@ -1,0 +1,69 @@
+\acswitchoff 
+\contentsline {section}{\numberline {1}Acknowledgements}{1}{section.1}%
+\contentsline {section}{\numberline {2}Licences and Attributions}{2}{section.2}%
+\contentsline {section}{\numberline {3}Abstract}{3}{section.3}%
+\contentsline {section}{\numberline {4}Introduction}{8}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Problem Description}{8}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Research Question}{9}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Scope}{10}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Thesis Structure}{10}{subsection.4.4}%
+\contentsline {section}{\numberline {5}Background}{12}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Urban Parcel Delivery and Last-Mile Logistics}{12}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Bergen as a Constrained Logistics Environment}{13}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Bergen as a Testbed for Zero-Emission Urban Mobility}{15}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Waterborne Transport as an Urban Freight Alternative}{16}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Bergen Waterway Speed Restrictions}{18}{subsection.5.5}%
+\contentsline {section}{\numberline {6}Theory}{19}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Facility Location Problems}{19}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Vehicle Routing Problem}{20}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Vehicle Scheduling Problem}{21}{subsection.6.3}%
+\contentsline {section}{\numberline {7}Data and Operational Constraints}{22}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Walking Network of Bergen}{22}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Population and Household Data}{22}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Candidate Ports}{23}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Distance and Travel Time Data}{24}{subsection.7.4}%
+\contentsline {subsection}{\numberline {7.5}PostNord Parcel Demand Data}{26}{subsection.7.5}%
+\contentsline {subsection}{\numberline {7.6}Disaggregating Weekly Demand into Daily Demand}{27}{subsection.7.6}%
+\contentsline {subsection}{\numberline {7.7}Disaggregating Postal Code Demand into Household Demand}{28}{subsection.7.7}%
+\contentsline {subsection}{\numberline {7.8}Depot Location}{28}{subsection.7.8}%
+\contentsline {subsection}{\numberline {7.9}Operational Constraints}{30}{subsection.7.9}%
+\contentsline {subsubsection}{\numberline {7.9.1}Boat Maximum Capacity and Speed}{30}{subsubsection.7.9.1}%
+\contentsline {subsubsection}{\numberline {7.9.2}Crew Size}{31}{subsubsection.7.9.2}%
+\contentsline {subsubsection}{\numberline {7.9.3}Manoeuvring Time}{31}{subsubsection.7.9.3}%
+\contentsline {subsubsection}{\numberline {7.9.4}Discharge Time}{31}{subsubsection.7.9.4}%
+\contentsline {subsubsection}{\numberline {7.9.5}Operating Hours}{32}{subsubsection.7.9.5}%
+\contentsline {section}{\numberline {8}Methodology}{33}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Port Selection Model}{33}{subsection.8.1}%
+\contentsline {subsubsection}{\numberline {8.1.1}Walking Thresholds}{33}{subsubsection.8.1.1}%
+\contentsline {subsubsection}{\numberline {8.1.2}Coverage Percentages}{34}{subsubsection.8.1.2}%
+\contentsline {subsubsection}{\numberline {8.1.3}Partial Set Covering Location Problem}{35}{subsubsection.8.1.3}%
+\contentsline {subsubsection}{\numberline {8.1.4}Model Implementation}{37}{subsubsection.8.1.4}%
+\contentsline {subsubsection}{\numberline {8.1.5}Scenario Selection}{37}{subsubsection.8.1.5}%
+\contentsline {subsection}{\numberline {8.2}Boat Routing Models}{38}{subsection.8.2}%
+\contentsline {subsubsection}{\numberline {8.2.1}Demand Allocation to Selected Ports}{38}{subsubsection.8.2.1}%
+\contentsline {subsubsection}{\numberline {8.2.2}Port Distance Matrix}{39}{subsubsection.8.2.2}%
+\contentsline {subsubsection}{\numberline {8.2.3}Demand Scenarios}{40}{subsubsection.8.2.3}%
+\contentsline {subsubsection}{\numberline {8.2.4}Model Implementation}{41}{subsubsection.8.2.4}%
+\contentsline {subsection}{\numberline {8.3}Boat Scheduling Model}{42}{subsection.8.3}%
+\contentsline {section}{\numberline {9}Results and Discussion}{46}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Walking Thresholds}{46}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Port Locations}{47}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}Demand Scenarios}{49}{subsection.9.3}%
+\contentsline {subsection}{\numberline {9.4}Port Demands}{50}{subsection.9.4}%
+\contentsline {subsection}{\numberline {9.5}Boat Routing}{51}{subsection.9.5}%
+\contentsline {subsubsection}{\numberline {9.5.1}Port Distances}{51}{subsubsection.9.5.1}%
+\contentsline {subsubsection}{\numberline {9.5.2}Total Number of Routes}{52}{subsubsection.9.5.2}%
+\contentsline {subsubsection}{\numberline {9.5.3}Total Route Duration}{53}{subsubsection.9.5.3}%
+\contentsline {subsubsection}{\numberline {9.5.4}Total Route Distances}{55}{subsubsection.9.5.4}%
+\contentsline {subsection}{\numberline {9.6}Boat Scheduling}{56}{subsection.9.6}%
+\contentsline {subsubsection}{\numberline {9.6.1}Boats Needed}{56}{subsubsection.9.6.1}%
+\contentsline {subsubsection}{\numberline {9.6.2}Employees Needed}{58}{subsubsection.9.6.2}%
+\contentsline {subsection}{\numberline {9.7}Summary of Results}{58}{subsection.9.7}%
+\contentsline {section}{\numberline {10}Conclusion}{60}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Answer to the Research Question}{60}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Further Research}{61}{subsection.10.2}%
+\contentsline {section}{\numberline {A}Appendix}{72}{section.A}%
+\contentsline {subsection}{\numberline {A.1}Population}{72}{subsection.A.1}%
+\contentsline {subsection}{\numberline {A.2}Ports}{72}{subsection.A.2}%
+\contentsline {subsection}{\numberline {A.3}Demand}{72}{subsection.A.3}%
+\contentsline {subsection}{\numberline {A.4}Results}{72}{subsection.A.4}%
