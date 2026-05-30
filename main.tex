@@ -387,25 +387,30 @@ Since the goal of these data is to identify good port candidates based on popula
 \subsection{Candidate Ports}
 \label{subsec:candidate-ports}
 
-To retrieve potential port locations, \texttt{OSMnx} was again used. The \texttt{features\_from\_place()} function can filter potential features by \ac{osm} tags. Table~\ref{tab:osm_port_tags} shows the filter tags used to retrieve port candidates based on the \ac{osm} documentation \parencite{osm_map_features}.
+To retrieve potential port locations, \texttt{OSMnx} was again used. The \texttt{features\_from\_place()} function can filter potential features by \ac{osm} tags. Table~\ref{anx:osm_port_tags} shows the filter tags used to retrieve port candidates based on the \ac{osm} documentation \parencite{osm_map_features}.
 
 \begin{table}[htbp]
   \centering
-  \caption{OpenStreetMap tags used to extract candidate ports.}
-  \label{tab:osm_port_tags}
+  \caption{Candidate and excluded ports by district.}
+  \label{tab:district_ports}
 
-  \begin{tabular}{l l p{8.5cm}}
+  \begin{tabular}{l c c}
     \toprule
-    \textbf{Key} & \textbf{Value}  & \textbf{Description}                                          \\
+    \textbf{District} & \textbf{Candidate Ports} & \textbf{Excluded Ports} \\
     \midrule
-    amenity      & ferry\_terminal & Ferry terminal/stop.                                          \\
-    man\_made    & pier            & Raised walkway over water.                                    \\
-    man\_made    & quay            & Structure alongside navigable water used for loading vessels. \\
+    Ytrebygda         & 130                      & 24                      \\
+    Bergenhus         & 47                       & 9                       \\
+    Laksevåg          & 41                       & 6                       \\
+    Fana              & 31                       & 23                      \\
+    Fyllingsdalen     & 21                       & 6                       \\
+    Åsane             & 18                       & 10                      \\
+    Årstad            & 17                       & 0                       \\
+    Arna              & 5                        & 2                       \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-The resulting data contain \num{746} port locations. The distribution of the ports by the tags used in Table~\ref{tab:osm_port_tags} can be found in Table~\ref{anx:port_nodes_by_tag} of the \nameref{sec:appendix}. As previously done with the household coordinates, the port locations were snapped to the nearest \ac{osm} node on the walking graph. This reduced the data to \num{390} candidate port nodes. These locations were then projected on a map and manually filtered to remove locations that were not suitable for this thesis. For example, some nodes were in a body of water that was not accessible from the main waterways, or were extremely close to another node that was more suitable. A total of \num{80} nodes were removed, for a final total of \num{310} port nodes.
+The resulting data contain \num{746} port locations. The distribution of the ports by the tags used in Table~\ref{anx:osm_port_tags} can be found in Table~\ref{anx:port_nodes_by_tag} of the \nameref{sec:appendix}. As previously done with the household coordinates, the port locations were snapped to the nearest \ac{osm} node on the walking graph. This reduced the data to \num{390} candidate port nodes. These locations were then projected on a map and manually filtered to remove locations that were not suitable for this thesis. For example, some nodes were in a body of water that was not accessible from the main waterways, or were extremely close to another node that was more suitable. A total of \num{80} nodes were removed, for a final total of \num{310} port nodes. The breakdown of candidate and excluded ports by district is shown in Table~\ref{tab:district_ports}.
 
 \begin{figure}[htbp]
   \centering
@@ -419,7 +424,9 @@ The resulting data contain \num{746} port locations. The distribution of the por
 
 Having defined the household-node and port-node datasets, the distance matrix can now be built. To achieve this, the Python package \texttt{networkx} \parencite{networkx} was used to calculate the shortest distance between all combinations of port and household nodes using its \texttt{single\_source\_dijkstra\_path\_length()} function. This resulted in an \(m \times n\) matrix \(D\), with \(d_{i,j}\) representing the Dijkstra shortest-path distance between the \(i\)-th port and the \(j\)-th household node\footnote{All pairs were reachable by walking due to the \ac{osm} node snapping and filtering of the port nodes.}. For this thesis, the distance between any \(port_i\) and \(household_j\) is assumed to be symmetric (\(d_{i,j} = d_{j,i}\)).
 
-To calculate walking time, an average walking speed first needed to be defined. Based on the work of \cite{walkingspeed}, which reviewed numerous walking speed studies worldwide, a walking speed of \qty{1.25}{m/s} was identified as an appropriate general assumption. A second study by \cite{walkingspeed2}, which aggregated walking speed data from over 200 measurements in the literature, instead reported a reference walking speed of \qty{1.34}{m/s}. As these two sources are close but not identical, their midpoint of approximately \qty{1.3}{m/s} was taken as the general assumption for this thesis. However, in the absence of studies specifically focused on Bergen, walking speed may differ from this assumption and could be significantly affected by seasonal, weather, and topographical conditions, particularly elevation changes along walking paths. As the impact of these factors on walking speed is difficult to quantify specifically, the general assumption will be retained for this thesis. The resulting population coverage by walking time can be seen in Figure~\ref{fig:population_coverage} when all candidate port nodes are available.
+To convert distances into walking times, an average walking speed first had to be defined. \cite{walkingspeed2}, which aggregated walking speed data from more than 200 measurements reported in the literature, gives a reference free-flow speed of \qty{1.34}{m/s}. \cite{walkingspeed}, in a systematic review of walking speed studies, reports a slightly lower value of \qty{1.25}{m/s} as the speed commonly recommended for pedestrian design. Since these two reference values are close, a walking speed of \qty{1.3}{m/s}, approximately their midpoint, was adopted as the general assumption in this thesis. This value is therefore consistent both with the average speed observed in empirical studies and with the value used in pedestrian design practice.
+
+No walking speed study specific to Bergen was available, and the actual speed is likely to vary with season and weather and, in particular, with the city's topography. \cite{walkingspeed} further notes that walking speed decreases on inclined surfaces and is significantly affected by weather, both of which are relevant for Bergen given its hilly terrain and wet climate. Because the magnitude of these effects is difficult to quantify for the specific paths considered, the value of \qty{1.3}{m/s} was retained. The resulting population coverage as a function of walking time, with all candidate port nodes available, is shown in Figure~\ref{fig:population_coverage}.
 
 \begin{figure}[htbp]
   \centering
@@ -566,9 +573,9 @@ The districts can be visually grouped into three categories based on how their p
     \toprule
     \textbf{District} & \textbf{Avg. Time} & \textbf{Std. Dev.} & \textbf{Median Time} \\
     \midrule
+    Arna              & 38.76              & 28.02              & 29.38                \\
     Åsane             & 38.07              & 19.29              & 36.52                \\
     Fana              & 37.13              & 24.26              & 33.18                \\
-    Arna              & 38.76              & 28.02              & 29.38                \\
     Fyllingsdalen     & 29.37              & 12.87              & 29.23                \\
     Årstad            & 22.74              & 12.19              & 23.56                \\
     Laksevåg          & 16.13              & 8.67               & 15.44                \\
@@ -1210,6 +1217,22 @@ Finally, the environmental side of the project, which motivated this thesis but 
 
 \subsection{Ports}
 \label{subsec:appendix-ports}
+
+\begin{table}[htbp]
+  \centering
+  \caption{OpenStreetMap tags used to extract candidate ports.}
+  \label{anx:osm_port_tags}
+
+  \begin{tabular}{l l p{8.5cm}}
+    \toprule
+    \textbf{Key} & \textbf{Value}  & \textbf{Description}                                          \\
+    \midrule
+    amenity      & ferry\_terminal & Ferry terminal/stop.                                          \\
+    man\_made    & pier            & Raised walkway over water.                                    \\
+    man\_made    & quay            & Structure alongside navigable water used for loading vessels. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 \begin{table}[htbp]
   \centering
